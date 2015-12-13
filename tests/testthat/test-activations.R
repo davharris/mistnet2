@@ -3,22 +3,22 @@ x = matrix(rnorm(12), ncol = 3)
 
 test_that("Activation functions' gradients are correct",{
   expect_equal(
-    numDeriv::grad(elu_f$f, x),
-    c(elu_f$grad(x))
+    numDeriv::grad(elu_activator$f, x),
+    c(elu_activator$grad(x))
   )
 
   expect_equal(
-    numDeriv::grad(identity_f$f, x),
-    c(identity_f$grad(x))
+    numDeriv::grad(identity_activator$f, x),
+    c(identity_activator$grad(x))
   )
 
   expect_equal(
-    numDeriv::grad(relu_f$f, x),
-    c(relu_f$grad(x))
+    numDeriv::grad(relu_activator$f, x),
+    c(relu_activator$grad(x))
   )
 
   expect_equal(
-    numDeriv::grad(sigmoid_f$f, x),
-    c(sigmoid_f$grad(x))
+    numDeriv::grad(sigmoid_activator$f, x),
+    c(sigmoid_activator$grad(x))
   )
 })

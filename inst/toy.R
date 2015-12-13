@@ -1,21 +1,16 @@
+devtools::load_all(".")
 library(gamlss.dist)
 library(optimx)
 
 n = 501
 n_x = 9
 n_z = 5
-n_y = 23
+n_y = 17
 bd = 51
 
 # functions ---------------------------------------------------------------
 
-nonlinearity = function(x){
-  # Sometimes slightly slower than plogis, but has a floor and ceiling to avoid
-  # hitting 0 or 1
-  storage.mode(x) = "numeric"
-  make.link("logit")$linkinv(x)
-}
-nonlinearity_grad = make.link("logit")$mu.eta
+activator = sigmoid_activator
 
 error_dist = BI()
 log_error_density = function(mu){
@@ -26,7 +21,7 @@ density_grad = function(mu){
 }
 
 
-activation = function(z, b){
+pre_activation = function(z, b){
   cbind(x, z) %*% b
 }
 
@@ -34,16 +29,16 @@ loglik = function(p){
   z = relist(p, plist)$z
   b = relist(p, plist)$b
 
-  sum(log_error_density(nonlinearity(activation(z, b))))
+  sum(log_error_density(activator$f(pre_activation(z, b))))
 }
 grad = function(p){
   z = relist(p, plist)$z
   b = relist(p, plist)$b
-  act = activation(z, b)
-  mu = nonlinearity(act)
+  act = pre_activation(z, b)
+  mu = activator$f(act)
 
 
-  coef_grad = nonlinearity_grad(act) * density_grad(mu)
+  coef_grad = activator$grad(act) * density_grad(mu)
   input_grad = tcrossprod(coef_grad, b)
 
 
@@ -69,12 +64,11 @@ plist = list(
 start_p = unlist(plist)
 is_slope = grepl("^b", names(start_p))
 slope_is_for_observed = c(col(true_b) <= n_x)
-# finite_grads = numDeriv::grad(loglik, start_p)
 
 
 y = rBI(
   n = n_y * n,
-  mu = nonlinearity(activation(true_z, true_b) + rnorm(n * n_y)),
+  mu = activator$f(pre_activation(true_z, true_b) + rnorm(n * n_y)),
   bd = bd
 )
 dim(y) = c(n, n_y)
@@ -83,7 +77,7 @@ dim(y) = c(n, n_y)
 
 # Optimize ----------------------------------------------------------------
 
-starttests = FALSE
+starttests = TRUE
 o = optimx(
   par = start_p,
   fn = loglik,
