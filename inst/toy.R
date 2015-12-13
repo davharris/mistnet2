@@ -1,15 +1,13 @@
 library(gamlss.dist)
 library(optimx)
-n = 250
-n_x = 3
-n_z = 2
-n_y = 25
-bd = 50
 
+n = 501
+n_x = 9
+n_z = 5
+n_y = 23
+bd = 51
 
-x = matrix(rnorm(n * n_x), ncol = n_x)
-true_z = matrix(rnorm(n * n_z, sd = .25), ncol = n_z)
-true_b = matrix(rnorm((n_x + n_z) * n_y, sd = .25), ncol = n_y)
+# functions ---------------------------------------------------------------
 
 nonlinearity = function(x){
   # Sometimes slightly slower than plogis, but has a floor and ceiling to avoid
@@ -18,21 +16,6 @@ nonlinearity = function(x){
   make.link("logit")$linkinv(x)
 }
 nonlinearity_grad = make.link("logit")$mu.eta
-#nonlinearity = identity
-#nonlinearity_grad = function(x) rep(1, length(x))
-
-y = rBI(
-  n = n_y * n,
-  mu = nonlinearity(cbind(x, true_z) %*% true_b + rnorm(n * n_y)),
-  bd = bd
-)
-dim(y) = c(n, n_y)
-
-plist = list(
-  z = true_z * 0 + rnorm(length(true_z), sd = .01),
-  b = true_b * 0 + rnorm(length(true_b), sd = .01)
-)
-
 
 error_dist = BI()
 log_error_density = function(mu){
@@ -43,15 +26,6 @@ density_grad = function(mu){
 }
 
 
-# error_dist = NO()
-# log_error_density = function(mu){
-#   dNO(x = y, mu = mu, log = TRUE)
-# }
-# density_grad = function(mu){
-#   error_dist$dldm(y = y, mu = mu, sigma = 1)
-# }
-
-
 activation = function(z, b){
   cbind(x, z) %*% b
 }
@@ -59,7 +33,6 @@ activation = function(z, b){
 loglik = function(p){
   z = relist(p, plist)$z
   b = relist(p, plist)$b
-
 
   sum(log_error_density(nonlinearity(activation(z, b))))
 }
@@ -70,31 +43,53 @@ grad = function(p){
   mu = nonlinearity(act)
 
 
-  outgoing_grad = nonlinearity_grad(act) * density_grad(mu)
-  incoming_grad = tcrossprod(outgoing_grad, b)
+  coef_grad = nonlinearity_grad(act) * density_grad(mu)
+  input_grad = tcrossprod(coef_grad, b)
 
 
   c(
-    z = incoming_grad[ , -(1:ncol(x))],
-    b = crossprod(cbind(x, z), outgoing_grad)
+    z = input_grad[ , -(1:ncol(x))],
+    b = crossprod(cbind(x, z), coef_grad)
   )
 }
 
 
+# Parameters --------------------------------------------------------------
+
+x = matrix(rnorm(n * n_x), ncol = n_x)
+true_z = matrix(rnorm(n * n_z, sd = .25), ncol = n_z)
+true_b = matrix(rnorm((n_x + n_z) * n_y, sd = .25), ncol = n_y)
+
+
+
+plist = list(
+  z = true_z * 0 + rnorm(length(true_z), sd = .01),
+  b = true_b * 0 + rnorm(length(true_b), sd = .01)
+)
 start_p = unlist(plist)
 is_slope = grepl("^b", names(start_p))
 slope_is_for_observed = c(col(true_b) <= n_x)
 # finite_grads = numDeriv::grad(loglik, start_p)
 
 
+y = rBI(
+  n = n_y * n,
+  mu = nonlinearity(activation(true_z, true_b) + rnorm(n * n_y)),
+  bd = bd
+)
+dim(y) = c(n, n_y)
 
-starttests = TRUE
+
+
+# Optimize ----------------------------------------------------------------
+
+starttests = FALSE
 o = optimx(
   par = start_p,
   fn = loglik,
   gr = grad,
   method = "L-BFGS-B",
-  control = list(trace = 1, REPORT = 1, fnscale = -1, starttests = starttests),
+  control = list(trace = 0, maximize = TRUE, starttests = starttests, maxit = 1000),
   hessian = FALSE
 )
 
