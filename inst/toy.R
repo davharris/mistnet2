@@ -21,30 +21,33 @@ density_grad = function(mu){
 }
 
 
-pre_activation = function(z, w){
-  cbind(x, z) %*% w
+pre_activation = function(z, w, b){
+  (cbind(x, z) %*% w) %plus% b
 }
 
 loglik = function(p){
   z = relist(p, plist)$z
   w = relist(p, plist)$w
+  b = relist(p, plist)$b
 
-  sum(log_error_density(activator$f(pre_activation(z, w))))
+  sum(log_error_density(activator$f(pre_activation(z, w, b))))
 }
 grad = function(p){
   z = relist(p, plist)$z
   w = relist(p, plist)$w
-  act = pre_activation(z, w)
+  b = relist(p, plist)$b
+
+  act = pre_activation(z, w, b)
   mu = activator$f(act)
 
 
   coef_grad = activator$grad(act) * density_grad(mu)
   input_grad = tcrossprod(coef_grad, w)
 
-
   c(
     z = input_grad[ , -(1:ncol(x))],
-    w = crossprod(cbind(x, z), coef_grad)
+    w = crossprod(cbind(x, z), coef_grad),
+    b = colSums(coef_grad)
   )
 }
 
@@ -54,12 +57,14 @@ grad = function(p){
 x = matrix(rnorm(n * n_x), ncol = n_x)
 true_z = matrix(rnorm(n * n_z, sd = .25), ncol = n_z)
 true_w = matrix(rnorm((n_x + n_z) * n_y, sd = .25), ncol = n_y)
+true_b = rnorm(n_y, sd = .25)
 
 
 
 plist = list(
   z = true_z * 0 + rnorm(length(true_z), sd = .01),
-  w = true_w * 0 + rnorm(length(true_w), sd = .01)
+  w = true_w * 0 + rnorm(length(true_w), sd = .01),
+  b = true_b * 0 + rnorm(length(true_b), sd = .01)
 )
 start_p = unlist(plist)
 is_slope = grepl("^w", names(start_p))
@@ -68,7 +73,7 @@ slope_is_for_observed = c(col(true_w) <= n_x)
 
 y = rBI(
   n = n_y * n,
-  mu = activator$f(pre_activation(true_z, true_w) + rnorm(n * n_y)),
+  mu = activator$f(pre_activation(true_z, true_w, true_b) + rnorm(n * n_y)),
   bd = bd
 )
 dim(y) = c(n, n_y)
