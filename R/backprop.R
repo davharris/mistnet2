@@ -48,4 +48,6 @@ backprop = function(network, state, ...){
       z_grads = input_grad[ , -(1:ncol(network$x))]
     }
   }
+
+  list(weight_grads, bias_grads, z_grads)
 }
