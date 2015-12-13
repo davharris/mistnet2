@@ -1,11 +1,12 @@
-#' Calculate network state from its coefficients (feedforward)
+#' Feed forward: calculate network state from its coefficients
 #' @param network a \code{network} object, as created by \code{\link{mistnet}}
 #' @param ... (currently not used)
-#' @format a \code{list} of \code{list}s.
+#' @return a \code{network_state} object, i.e. a \code{list} of \code{list}s.
 #' \itemize{
 #'    \item{\code{inputs}: A list of input matrices for each layer.  The first layer's input
-#'        is concatenated from the network's \code{x} and \code{z} matrices, while
-#'        subsequent inputs come from the previous layer's \code{output}}.
+#'        is concatenated from the network's \code{x} and \code{z} matrices using
+#'        \code{cbind}, while subsequent inputs come from the previous
+#'        layer's \code{output}}.
 #'    \item{\code{pre_activations}: A list of pre_activation matrices for each layer,
 #'        equal to the matrix product of the layer's \code{input} and its
 #'        \code{weights}, plus its \code{biases}}.
