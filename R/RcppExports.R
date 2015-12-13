@@ -5,8 +5,8 @@ rcpp_add_biases <- function(m, v) {
     .Call('mistnet2_rcpp_add_biases', PACKAGE = 'mistnet2', m, v)
 }
 
-ifelse_matrix <- function(m, yes, no) {
-    .Call('mistnet2_ifelse_matrix', PACKAGE = 'mistnet2', m, yes, no)
+ifelse_matrix_cpp <- function(test, yes, no) {
+    .Call('mistnet2_ifelse_matrix_cpp', PACKAGE = 'mistnet2', test, yes, no)
 }
 
 matrixMultiplyGrad <- function(n_out, error_grad, input_act) {

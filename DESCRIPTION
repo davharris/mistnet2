@@ -13,6 +13,7 @@ Suggests:
     testthat
 LinkingTo: Rcpp, RcppArmadillo
 Imports:
+    assertthat,
     gamlss.dist,
     optimx
 VignetteBuilder: knitr
