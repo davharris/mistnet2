@@ -22,7 +22,7 @@ feedforward = function(network, ...){
       # First layer's inputs are concatenated from x and z
       inputs[[i]] = cbind(network$x, network$z)
     }else{
-      # Subsequent layer's inputs are given by the previous layer's outputs
+      # Subsequent layers' inputs are given by the previous layers' outputs
       inputs[[i]] = outputs[[i - 1]]
     }
 
