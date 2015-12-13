@@ -3,3 +3,21 @@
 language: r
 warnings_are_errors: true
 sudo: required
+
+env:
+ global:
+   - CRAN: http://cran.rstudio.com
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change
+
+r_binary_packages:
+  - knitr
+  - testthat
+  - assertthat
+  - Rcpp
+  - optimx
+  - gamlss.dist
+  - numDeriv
