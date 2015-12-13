@@ -10,8 +10,11 @@ License: GPL-2 | GPL-3
 LazyData: TRUE
 Suggests:
     knitr,
+    numDeriv,
     testthat
-LinkingTo: Rcpp, RcppArmadillo
+LinkingTo:
+    Rcpp,
+    RcppArmadillo
 Imports:
     assertthat,
     gamlss.dist,

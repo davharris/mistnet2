@@ -9,7 +9,3 @@ ifelse_matrix_cpp <- function(test, yes, no) {
     .Call('mistnet2_ifelse_matrix_cpp', PACKAGE = 'mistnet2', test, yes, no)
 }
 
-matrixMultiplyGrad <- function(n_out, error_grad, input_act) {
-    .Call('mistnet2_matrixMultiplyGrad', PACKAGE = 'mistnet2', n_out, error_grad, input_act)
-}
-

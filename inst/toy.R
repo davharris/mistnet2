@@ -1,10 +1,10 @@
 library(gamlss.dist)
 library(optimx)
-n = 5000
-n_x = 20
-n_z = 10
-n_y = 200
-bd = 500
+n = 250
+n_x = 3
+n_z = 2
+n_y = 25
+bd = 50
 
 
 x = matrix(rnorm(n * n_x), ncol = n_x)
@@ -71,18 +71,12 @@ grad = function(p){
 
 
   outgoing_grad = nonlinearity_grad(act) * density_grad(mu)
-  incoming_grad = tcrossprod(
-    outgoing_grad,
-    b
-  )
+  incoming_grad = tcrossprod(outgoing_grad, b)
+
 
   c(
     z = incoming_grad[ , -(1:ncol(x))],
-    b = mistnet:::matrixMultiplyGrad(
-      ncol(y),
-      outgoing_grad,
-      cbind(x, z)
-    )
+    b = crossprod(cbind(x, z), outgoing_grad)
   )
 }
 
@@ -94,7 +88,7 @@ slope_is_for_observed = c(col(true_b) <= n_x)
 
 
 
-starttests = FALSE
+starttests = TRUE
 o = optimx(
   par = start_p,
   fn = loglik,
