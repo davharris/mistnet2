@@ -1,6 +1,9 @@
-#' Activator objects and activation functions
+#' Activator objects and activation functions for nonlinearities and their gradients
+#' in neural networks
 #'
-#' \code{activator} objects store three functions relating to activation functions:
+#' @format
+#' An object of class \code{activator} of length 3, containing
+#' functions relating to neural network nonlinearities:
 #' \itemize{
 #'    \item{\code{f}: The activation function (nonlinearity) itself}
 #'    \item{\code{grad}: The activation function's gradient with respect to
@@ -8,7 +11,14 @@
 #'    \item{\code{initialize_activatorinal_biases}: A function used internally to
 #'        initialize the biases of a network's output layer}
 #' }
-#'
+#' @details
+#' The following activators/activation functions are currently included:
+#' \itemize{
+#'    \item{elu}: "exponential linear unit" \code{f(x)=x} when x>0 and \code{f(x)=exp(x)-1} otherwise
+#'    \item{identity}: the identity function
+#'    \item{relu}: "rectified linear unit" \code{f(x)=x} when x>0 and \code{f(x)=0} otherwise
+#'    \item{sigmoid}: sigmoid (logistic) function, 1/(1 + exp(-x))
+#' }
 #' @rdname activator
 
 #' @rdname activator
