@@ -37,17 +37,17 @@ grad = function(p){
   w = relist(p, plist)$w
   b = relist(p, plist)$b
 
-  act = pre_activation(z, w, b)
-  mu = activator$f(act)
+  pre_act = pre_activation(z, w, b)
+  output = activator$f(pre_act)
 
 
-  coef_grad = activator$grad(act) * density_grad(mu)
-  input_grad = tcrossprod(coef_grad, w)
+  grad_from_above = activator$grad(pre_act) * density_grad(output)
+  input_grad = tcrossprod(grad_from_above, w)
 
   c(
     z = input_grad[ , -(1:ncol(x))],
-    w = crossprod(cbind(x, z), coef_grad),
-    b = colSums(coef_grad)
+    w = crossprod(cbind(x, z), grad_from_above),
+    b = colSums(grad_from_above)
   )
 }
 
