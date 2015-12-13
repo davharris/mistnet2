@@ -7,11 +7,11 @@
 #' @param ... Additional arguments (currently not used.)
 logLik.network = function(object, state, include_penalties = FALSE, ...){
   if(missing(state)){
-    state = feedforward(network)
+    state = feedforward(object)
   }
 
   out = sum(
-    network$error_distribution$logLik(
+    object$error_distribution$logLik(
       # mu comes from the output of the last layer
       mu = state$outputs[[length(state$outputs)]]
     )
@@ -19,7 +19,7 @@ logLik.network = function(object, state, include_penalties = FALSE, ...){
 
   if(include_penalties){
     stop("penalties haven't been implemented yet")
-    return(out + network$penalty)
+    return(out + object$penalty)
   }else{
    return(out)
   }
