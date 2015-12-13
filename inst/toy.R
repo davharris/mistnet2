@@ -3,15 +3,15 @@ library(gamlss.dist)
 library(optimx)
 
 n = 201
-n_x = 9
+n_x = 11
 n_z = 5
-n_y = 17
-bd = 51
+n_y = 19
+bd = 501
 
 # functions ---------------------------------------------------------------
 
 activator = sigmoid_activator
-1
+
 error_dist = BI()
 log_error_density = function(mu){
   dBI(x = y, mu = mu, bd = bd, log = TRUE)
@@ -55,9 +55,9 @@ grad = function(p){
 # Parameters --------------------------------------------------------------
 
 x = matrix(rnorm(n * n_x), ncol = n_x)
-true_z = matrix(rnorm(n * n_z, sd = .25), ncol = n_z)
-true_w = matrix(rnorm((n_x + n_z) * n_y, sd = .25), ncol = n_y)
-true_b = rnorm(n_y, sd = .25)
+true_z = matrix(rnorm(n * n_z, sd = .5), ncol = n_z)
+true_w = matrix(rnorm((n_x + n_z) * n_y, sd = .5), ncol = n_y)
+true_b = rnorm(n_y, sd = 1)
 
 
 
@@ -94,7 +94,22 @@ o = optimx(
 
 estimates = relist(coef(o), plist)
 
+par(mfrow = c(1, 2))
+
 plot(
   estimates$w[1:n_x, ],
-  c(true_w[1:n_x, ])
+  c(true_w[1:n_x, ]),
+  main = "slopes",
+  asp = 1
 )
+abline(0,1, col = 2)
+
+plot(
+  estimates$b,
+  c(true_b),
+  main = "biases",
+  asp = 1
+)
+abline(0,1, col = 2)
+
+par(mfrow = c(1, 1))
