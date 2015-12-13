@@ -33,11 +33,20 @@ in neural networks
 \details{
 The following activators/activation functions are currently included:
 \itemize{
-   \item{elu}: "exponential linear unit" \code{f(x)=x} when x>0 and \code{f(x)=exp(x)-1} otherwise
-   \item{identity}: the identity function
-   \item{relu}: "rectified linear unit" \code{f(x)=x} when x>0 and \code{f(x)=0} otherwise
-   \item{sigmoid}: sigmoid (logistic) function, 1/(1 + exp(-x))
+   \item{elu}: "exponential linear unit" \code{f(x)=x} when x>0 and \code{f(x)=exp(x)-1} otherwise. See Clevert et al. (2015)
+   \item{identity}: the identity function, \code{f(x)=x}
+   \item{relu}: "rectified linear unit" \code{f(x)=x} when x>0 and \code{f(x)=0} otherwise. See Nair and Hinton (2010).
+   \item{sigmoid}: sigmoid (logistic) function, \code{f(x)=1/(1 + exp(-x))}
 }
+}
+\references{
+Clevert, Djork-Arné, Thomas Unterthiner, and Sepp Hochreiter. "Fast and
+Accurate Deep Network Learning by Exponential Linear Units (ELUs)."
+arXiv preprint arXiv:1511.07289 (2015). Harvard
+
+Nair, Vinod, and Geoffrey E. Hinton. "Rectified linear units improve
+restricted boltzmann machines." In Proceedings of the 27th International
+Conference on Machine Learning (ICML-10), pp. 807-814. 2010.
 }
 \keyword{datasets}
 
