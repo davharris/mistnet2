@@ -13,8 +13,7 @@ Suggests:
     numDeriv,
     testthat
 LinkingTo:
-    Rcpp,
-    RcppArmadillo
+    Rcpp
 Imports:
     assertthat,
     gamlss.dist,
