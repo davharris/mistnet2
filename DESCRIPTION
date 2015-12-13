@@ -1,9 +1,19 @@
 Package: mistnet2
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Neural Networks with Random Effects
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
+Date: 2015-12-12
+Author: David J. Harris
+Maintainer: David J. Harris <dave@harris-research.me>
+Description: Insert a complete sentence.
+License: GPL-2 | GPL-3
 LazyData: TRUE
+Suggests:
+    knitr,
+    testthat
+LinkingTo: Rcpp, RcppArmadillo
+Imports:
+    gamlss.dist,
+    optimx
+VignetteBuilder: knitr
+RoxygenNote: 5.0.1

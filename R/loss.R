@@ -1,3 +1,4 @@
+#' @import gamlss.dist
 make_binomial_loss = function(n){
   structure(
     c(
@@ -10,12 +11,13 @@ make_binomial_loss = function(n){
   )
 }
 
+#' @import gamlss.dist
 make_normal_loss = function(sigma){
   structure(
     c(
-      BI(),
+      NO(),
       loss = function(x, mu){
-        -sum(dBI(x = x, mu = mu, bd = n, log = TRUE))
+        -sum(dNO(x = x, mu = mu, sigma = sigma, log = TRUE))
       }
     ),
     class = c("loss", class(BI()))

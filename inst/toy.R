@@ -1,19 +1,19 @@
 library(gamlss.dist)
 library(optimx)
 n = 5000
-n_x = 10
-n_z = 5
-n_y = 100
+n_x = 20
+n_z = 10
+n_y = 200
 bd = 500
 
 
 x = matrix(rnorm(n * n_x), ncol = n_x)
-true_z = matrix(rnorm(n * n_z, sd = 1), ncol = n_z)
-true_b = matrix(rnorm((n_x + n_z) * n_y, sd = 1), ncol = n_y)
+true_z = matrix(rnorm(n * n_z, sd = .25), ncol = n_z)
+true_b = matrix(rnorm((n_x + n_z) * n_y, sd = .25), ncol = n_y)
 
 nonlinearity = function(x){
-  # Sometimes slightly slower than plogis, but has a floor at 2.220446e-16 to
-  # prevent division-by-zero errors.
+  # Sometimes slightly slower than plogis, but has a floor and ceiling to avoid
+  # hitting 0 or 1
   storage.mode(x) = "numeric"
   make.link("logit")$linkinv(x)
 }
@@ -104,7 +104,9 @@ o = optimx(
   hessian = FALSE
 )
 
+estimates = relist(coef(o), plist)
+
 plot(
-  unlist(o[names(start_p)])[is_slope][slope_is_for_observed],
-  c(true_b[slope_is_for_observed])
+  estimates$b[1:n_x, ],
+  c(true_b[1:n_x, ])
 )
