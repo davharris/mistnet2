@@ -18,6 +18,19 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// ifelse_matrix
+NumericMatrix ifelse_matrix(LogicalMatrix m, NumericMatrix yes, NumericMatrix no);
+RcppExport SEXP mistnet2_ifelse_matrix(SEXP mSEXP, SEXP yesSEXP, SEXP noSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< LogicalMatrix >::type m(mSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type yes(yesSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type no(noSEXP);
+    __result = Rcpp::wrap(ifelse_matrix(m, yes, no));
+    return __result;
+END_RCPP
+}
 // matrixMultiplyGrad
 NumericMatrix matrixMultiplyGrad(int n_out, NumericMatrix error_grad, NumericMatrix input_act);
 RcppExport SEXP mistnet2_matrixMultiplyGrad(SEXP n_outSEXP, SEXP error_gradSEXP, SEXP input_actSEXP) {
