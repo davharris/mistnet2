@@ -6,7 +6,17 @@
 #' @param ... Additional arguments, possibly including \code{bd} (binomial denominator),
 #'    \code{sigma} (scale), \code{nu} (shape), or \code{tau} (shape),
 #'    depending on the distribution
-#' @return An \code{error_distribution} object.
+#' @return An \code{error_distribution} object, consisting of the following
+#'    functions:
+#' \itemize{
+#'    \item{\code{log_density(x, mu)}: log probability of the distribution with
+#'        location parameter \code{mu} evaluated at \code{x}.}
+#'    \item{\code{sample(n, mu)}: draw \code{n} random samples from the distribution
+#'        with location parameter \code{mu}.}
+#'    \item{Functions for calculating partial derivatives evaluated at \code{x}
+#'        with regard to mu (\code{dldm}), sigma (\code{dldd}), nu
+#'        (\code{dldv}), and tau (\code{dldt}).}
+#' }
 #' @import gamlss.dist
 #' @export
 make_gamlss_distribution = function(abbreviation, ...){
