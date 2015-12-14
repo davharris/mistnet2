@@ -1,14 +1,13 @@
-devtools::load_all(".")
-library(gamlss.dist)
-library(optimx)
+devtools::load_all(".") # Load the package in the working directory
 
-n = 201
-n_x = 11
-n_z = 5
-n_y = 19
-bd = 501
+n = 201  # Number of rows of data
+n_x = 11 # Number of observed predictor variables
+n_z = 5  # Number of latent variables
+n_y = 19 # Number of response variables
+bd = 501 # Number of coin flips per observation
 
-# Parameters --------------------------------------------------------------
+
+# “True" parameters and data ----------------------------------------------
 
 x = matrix(rnorm(n * n_x), ncol = n_x)
 true_z = matrix(rnorm(n * n_z, sd = .5), ncol = n_z)
@@ -16,7 +15,7 @@ true_weights = matrix(rnorm((n_x + n_z) * n_y, sd = .5), ncol = n_y)
 true_biases = rnorm(n_y, sd = 1)
 
 
-y = rBI(
+y = gamlss.dist::rBI(
   n = n_y * n,
   mu = sigmoid_activator$f(cbind(x, true_z) %*% true_weights %plus% true_biases + rnorm(n * n_y)),
   bd = bd
@@ -24,16 +23,20 @@ y = rBI(
 dim(y) = c(n, n_y)
 
 
+# Initialize the network --------------------------------------------------
+
+# This network has a single layer, so there's only one weight matrix, one set of
+# biases, one activator object, etc.
 network = list(
   x = x,
   y = y,
   par_skeleton = list(
-    z = true_z * 0 + rnorm(length(true_z), sd = .01),
+    z = matrix(rnorm(n * n_z, sd = .5), nrow = n, ncol = n_z),
     weights = list(
-      true_weights * 0 + rnorm(length(true_weights), sd = .01)
+      matrix(rnorm((n_x + n_z) * n_y, sd = .5), nrow = n_x + n_z, ncol = n_y)
     ),
     biases = list(
-      true_biases * 0 + rnorm(length(true_biases), sd = .01)
+      rnorm(n_y, sd = .5)
     )
   ),
   activators = list(sigmoid_activator),
@@ -44,8 +47,8 @@ class(network) = "network"
 
 # Optimize ----------------------------------------------------------------
 
-starttests = TRUE
-o = optimx(
+starttests = TRUE # Test my gradients before optimizing
+o = optimx::optimx(
   par = unlist(network$par_skeleton),
   fn = function(par){logLik.network(network, par = par)},
   gr = function(par){unlist(backprop(network, par = par))},
