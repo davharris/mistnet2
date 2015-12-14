@@ -27,19 +27,29 @@ backprop = function(network, state, par, ...){
       state$pre_activations[[i]]
     )
 
-    # The weights and biases depend on
+    # The weights and biases depend on gradients passed from higher levels in
+    # the network.
     grad_from_above = if(i == length(parameters$weights)){
       # The top layer's job is to follow the gradient with respect to the
       # outputs, as determined by the error function (eg Gaussian or binomial
       # errors)
-      network$error_distribution$dldm(network$y, state$outputs[[i]]) * activation_grad
+
+      # So it takes the raw error gradient and multiplies it by activation grad
+      # (because of the chain rule)
+      network$error_distribution$dldm(network$y, state$outputs[[i]]) *
+        activation_grad
     }else{
       # Lower layers' jobs are to follow the gradient from the inputs in the
-      # layer above.
+      # layer above.  They also multiply by activation_grad because of the chain
+      # rule
       input_grad * activation_grad
     }
 
-    weight_grads[[i]] = crossprod(cbind(network$x, parameters$z), grad_from_above)
+    # Weight gradients depend on the input values and gradients from above
+    weight_grads[[i]] = crossprod(state$inputs[[i]], grad_from_above)
+
+    # Bias gradients just sum up the gradients (equivalent to matrix multiplying
+    # by a bunch of ones)
     bias_grads[[i]] = colSums(grad_from_above)
 
     # Matrix multiply the gradient by the weights to find gradient with respect
@@ -53,5 +63,9 @@ backprop = function(network, state, par, ...){
     }
   }
 
-  list(z = z_grads, weights = weight_grads, biases = bias_grads)
+  out = list(z = z_grads, weights = weight_grads, biases = bias_grads)
+
+  # Force the output to have the same ordering as the original parameters so
+  # that unlisting/relisting doesn't destroy information
+  out[names(parameters)]
 }
