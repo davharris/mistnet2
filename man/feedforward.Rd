@@ -4,7 +4,7 @@
 \alias{feedforward}
 \title{Feed forward: calculate network state from its coefficients}
 \usage{
-feedforward(network, ...)
+feedforward(network, par, ...)
 }
 \arguments{
 \item{network}{a \code{network} object, as created by \code{\link{mistnet}}}

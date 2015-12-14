@@ -4,7 +4,7 @@
 \alias{backprop}
 \title{Backprop: calculate network gradients using backpropagation}
 \usage{
-backprop(network, state, ...)
+backprop(network, state, par, ...)
 }
 \arguments{
 \item{network}{a \code{network} object, as created by \code{\link{mistnet}}}

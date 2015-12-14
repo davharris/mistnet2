@@ -14,20 +14,23 @@
 #'        activation function to the \code{pre_activations}}.
 #' }
 #' @export
-feedforward = function(network, ...){
+feedforward = function(network, par, ...){
+
+  parameters = relist(par, network$par_skeleton)
+
   inputs = pre_activations = outputs = list()
 
-  for(i in 1:length(network$weights)){
+  for(i in 1:length(parameters$weights)){
     if(i == 1){
       # First layer's inputs are concatenated from x and z
-      inputs[[i]] = cbind(network$x, network$z)
+      inputs[[i]] = cbind(network$x, parameters$z)
     }else{
       # Subsequent layers' inputs are given by the previous layers' outputs
       inputs[[i]] = outputs[[i - 1]]
     }
 
-    pre_activations[[i]] = inputs[[i]] %*% network$weights[[i]] %plus%
-      network$biases[[i]]
+    pre_activations[[i]] = inputs[[i]] %*% parameters$weights[[i]] %plus%
+      parameters$biases[[i]]
     outputs[[i]] = network$activators[[i]]$f(pre_activations)
   }
 
