@@ -2,7 +2,7 @@
   rcpp_add_biases(matrix, vector)
 }
 
-#' @import assertthat
+#' @importFrom assertthat assert_that
 ifelse_matrix = function(test, yes, no){
 
   # Without this assertion, any nonzero entries would be coerced to TRUE
