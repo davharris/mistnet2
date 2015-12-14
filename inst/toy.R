@@ -12,14 +12,7 @@ bd = 501
 
 activator = sigmoid_activator
 
-error_dist = BI()
-log_error_density = function(mu){
-  dBI(x = y, mu = mu, bd = bd, log = TRUE)
-}
-density_grad = function(mu){
-  error_dist$dldm(y = y, mu = mu, bd = bd)
-}
-
+error_dist = make_gamlss_distribution("BI", bd = bd)
 
 pre_activation = function(z, w, b){
   (cbind(x, z) %*% w) %plus% b
@@ -30,7 +23,7 @@ loglik = function(p){
   w = relist(p, plist)$w
   b = relist(p, plist)$b
 
-  sum(log_error_density(activator$f(pre_activation(z, w, b))))
+  sum(error_dist$log_density(x = y, mu = activator$f(pre_activation(z, w, b))))
 }
 grad = function(p){
   z = relist(p, plist)$z
@@ -41,7 +34,7 @@ grad = function(p){
   output = activator$f(pre_act)
 
 
-  grad_from_above = activator$grad(pre_act) * density_grad(output)
+  grad_from_above = activator$grad(pre_act) * error_dist$dldm(y, output)
   input_grad = tcrossprod(grad_from_above, w)
 
   c(
