@@ -53,5 +53,5 @@ backprop = function(network, state, par, ...){
     }
   }
 
-  list(weights = weight_grads, biases = bias_grads, z = z_grads)
+  list(z = z_grads, weights = weight_grads, biases = bias_grads)
 }
