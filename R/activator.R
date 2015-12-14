@@ -1,5 +1,4 @@
-#' Activator objects and activation functions for nonlinearities and their gradients
-#' in neural networks
+#' Activator objects and nonlinear activation functions
 #'
 #' @format
 #' An object of class \code{activator} of length 3, containing

@@ -6,8 +6,7 @@
 \alias{identity_activator}
 \alias{relu_activator}
 \alias{sigmoid_activator}
-\title{Activator objects and activation functions for nonlinearities and their gradients
-in neural networks}
+\title{Activator objects and nonlinear activation functions}
 \format{An object of class \code{activator} of length 3, containing
 functions relating to neural network nonlinearities:
 \itemize{
@@ -27,8 +26,7 @@ relu_activator
 sigmoid_activator
 }
 \description{
-Activator objects and activation functions for nonlinearities and their gradients
-in neural networks
+Activator objects and nonlinear activation functions
 }
 \details{
 The following activators/activation functions are currently included:
