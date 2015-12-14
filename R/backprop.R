@@ -49,7 +49,7 @@ backprop = function(network, state, par, ...){
     weight_grads[[i]] = crossprod(state$inputs[[i]], grad_from_above)
 
     # Bias gradients just sum up the gradients (equivalent to matrix multiplying
-    # by a bunch of ones)
+    # by a vector of ones)
     bias_grads[[i]] = colSums(grad_from_above)
 
     # Matrix multiply the gradient by the weights to find gradient with respect
