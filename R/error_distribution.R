@@ -15,7 +15,9 @@
 #'        with location parameter \code{mu}.}
 #'    \item{Functions for calculating partial derivatives evaluated at \code{x}
 #'        with regard to mu (\code{dldm}), sigma (\code{dldd}), nu
-#'        (\code{dldv}), and tau (\code{dldt}).}
+#'        (\code{dldv}), and tau (\code{dldt}). For a few distributions,
+#'        \code{dldx}} is also defined: these distributions can be used as
+#'        prior distributions on the model's weights.
 #' }
 #' @import gamlss.dist
 #' @export
@@ -65,8 +67,20 @@ make_gamlss_distribution = function(abbreviation, ...){
       },
       dldt = function(x, mu){
         family_object$dldt(y = x, mu = mu, ...)
+      },
+      dldx = function(x, mu){
+        # gradient with respect to x is only defined for a few distributions:
+        # see below.
+        dldx[[abbreviation]](x = x, mu = mu, ...)
       }
     ),
     class = "error_distribution"
   )
 }
+
+
+dldx = list(
+  NO = function(x, mu, sigma){
+    -(x - mu) / sigma^2
+  }
+)
