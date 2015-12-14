@@ -32,7 +32,7 @@ feedforward = function(network, par, ...){
 
     pre_activations[[i]] = inputs[[i]] %*% parameters$weights[[i]] %plus%
       parameters$biases[[i]]
-    outputs[[i]] = network$activators[[i]]$f(pre_activations)
+    outputs[[i]] = network$activators[[i]]$f(pre_activations[[i]])
   }
 
   structure(

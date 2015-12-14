@@ -4,15 +4,16 @@
 #'    state will be calculated by \code{\link{feedforward}}.
 #' @param include_penalties Should penalty terms be included in the
 #'    log-likelihood?
+#' @param par a vector of parameters
 #' @param ... Additional arguments (currently not used.)
-logLik.network = function(object, state, include_penalties = FALSE, ...){
+logLik.network = function(object, state, par, include_penalties = FALSE, ...){
   if(missing(state)){
-    state = feedforward(object)
+    state = feedforward(object, par)
   }
 
   out = sum(
-    object$error_distribution$logLik(
-      # mu comes from the output of the last layer
+    object$error_distribution$log_density(
+      object$y,
       mu = state$outputs[[length(state$outputs)]]
     )
   )

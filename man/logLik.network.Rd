@@ -4,13 +4,15 @@
 \alias{logLik.network}
 \title{Calculate the log-likelihood of a network object}
 \usage{
-\method{logLik}{network}(object, state, include_penalties = FALSE, ...)
+\method{logLik}{network}(object, state, par, include_penalties = FALSE, ...)
 }
 \arguments{
 \item{object}{A \code{network} object}
 
 \item{state}{An optional \code{network_state} object. If not included,
 state will be calculated by \code{\link{feedforward}}.}
+
+\item{par}{a vector of parameters}
 
 \item{include_penalties}{Should penalty terms be included in the
 log-likelihood?}
