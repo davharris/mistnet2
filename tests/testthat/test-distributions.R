@@ -1,6 +1,13 @@
 context("make_gamlss_distribution")
 
-test_that("The bd argument is passed properly",{
+test_that("Distribution parameters are checked",{
+  expect_error(
+    make_gamlss_distribution("NO"),
+    "sigma is required for the `NO` distribution"
+  )
+})
+
+test_that("Arguments are passed properly",{
   distribution = make_gamlss_distribution("BI", bd = 5)
 
   # By default, the gamlss binomial log density dBI sets bd to 1.

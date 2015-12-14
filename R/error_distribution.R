@@ -1,7 +1,30 @@
+#' Make an \code{error_distribution} from a gamlss distribution
+#'
+#' @param abbreviation An abbreviation matching a \link[gamlss.dist]{gamlss.family},
+#'    e.g. "NO" for the normal distribution or "ZIP" for the zero-inflated
+#'    Poisson distribution
+#' @param ... Additional arguments, possibly including \code{bd} (binomial denominator),
+#'    \code{sigma} (scale), \code{nu} (shape), or \code{tau} (shape),
+#'    depending on the distribution
+#' @return An \code{error_distribution} object.
 #' @import gamlss.dist
 #' @export
 make_gamlss_distribution = function(abbreviation, ...){
   family_object = get(abbreviation, mode = "function")()
+
+  # Confirm that all the needed parameters (except mu) are included in `...`
+  for(parameter in names(family_object$parameters)){
+    if(parameter == "mu" | parameter %in% names(list(...))){
+      # all is well
+    }else{
+      stop(parameter, " is required for the `", abbreviation, "` distribution")
+    }
+  }
+
+  # Confirm that mu is *not* given
+  if("mu" %in% names(list(...))){
+    warning("mu should not be given when making an error_distribution")
+  }
 
   structure(
     c(
