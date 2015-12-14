@@ -1,5 +1,6 @@
 #' Feed forward: calculate network state from its coefficients
 #' @param network a \code{network} object, as created by \code{\link{mistnet}}
+#' @param par A vector containing the parameters
 #' @param ... (currently not used)
 #' @return a \code{network_state} object, i.e. a \code{list} of \code{list}s.
 #' \itemize{

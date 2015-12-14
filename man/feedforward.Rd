@@ -9,6 +9,8 @@ feedforward(network, par, ...)
 \arguments{
 \item{network}{a \code{network} object, as created by \code{\link{mistnet}}}
 
+\item{par}{A vector containing the parameters}
+
 \item{...}{(currently not used)}
 }
 \value{

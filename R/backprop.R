@@ -3,6 +3,7 @@
 #' @param state if a \code{network_sate} object is provided, it can be used
 #'    instead of producing a new one with \code{\link{feedforward}}. This may
 #'    save some computation time.
+#' @param par A vector containing the parameters
 #' @param ... (currently not used)
 #' @return a \code{vector} of gradients.
 #' @export
