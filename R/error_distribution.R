@@ -69,10 +69,15 @@ make_gamlss_distribution = function(abbreviation, ...){
       dldt = function(x, mu){
         family_object$dldt(y = x, mu = mu, ...)
       },
-      dldx = function(x, mu){
-        # gradient with respect to x is only defined for a few distributions:
-        # see below.
-        dldx[[abbreviation]](x = x, mu = mu, ...)
+      dldx = if(is.null(dldx[[abbreviation]])){
+        function(x, mu){
+          # no function defined for this distribution in the dldx list below
+          stop("gradient with respect to x (dldx) is not defined for the distribution ", abbreviation)
+        }
+      }else{
+        function(x, mu){
+          dldx[[abbreviation]](x = x, mu = mu, ...)
+        }
       }
     ),
     class = "error_distribution"
