@@ -22,6 +22,30 @@
 #' @import gamlss.dist
 #' @aliases error_distribution
 #' @export
+#' @examples
+#' distribution = make_gamlss_distribution("NO", sigma = 1/3)
+#'
+#' # Sample 10 random values with mean=2 (and sigma=1/3 as defined above)
+#' samples = distribution$sample(n = 10, mu = 2)
+#'
+#' # find the log_density of those samples under a distribution with mean=1
+#' distribution$log_density(samples, mu = 1)
+#'
+#' # The gradient of the log_density with respect to the mean indicates that
+#' # the log_density would be higher if mu were larger (more positive)
+#' distribution$dldm(samples, mu = 1)
+#'
+#' # The gradient with respect to x shows that the log_density would also be
+#' # higher if we reduced the values of x (more negative)
+#' distribution$dldx(samples, mu = 1)
+#'
+#' # The gradient with respect to x isn't defined for all distributions,
+#' # however. For example, this code would return an error that
+#' # " gradient with respect to x (dldx) is not defined for the distribution PO"
+#' \dontrun{
+#' another_distribution = make_gamlss_distribution("PO")
+#' another_distribution$dldx(x = 1:10, mu = 1)
+#' }
 make_gamlss_distribution = function(abbreviation, ...){
   family_object = get(abbreviation, mode = "function")()
 
@@ -54,7 +78,6 @@ make_gamlss_distribution = function(abbreviation, ...){
         # get the rABB function, where ABB is the abbreviation
         r = get(paste0("r", abbreviation), mode = "function")
 
-        #
         r(n = n, mu = mu, ...)
       },
       dldm = function(x, mu){
@@ -69,10 +92,15 @@ make_gamlss_distribution = function(abbreviation, ...){
       dldt = function(x, mu){
         family_object$dldt(y = x, mu = mu, ...)
       },
-      dldx = function(x, mu){
-        # gradient with respect to x is only defined for a few distributions:
-        # see below.
-        dldx[[abbreviation]](x = x, mu = mu, ...)
+      dldx = if(is.null(dldx[[abbreviation]])){
+        function(x, mu){
+          # no function defined for this distribution in the dldx list below
+          stop("gradient with respect to x (dldx) is not defined for the distribution ", abbreviation)
+        }
+      }else{
+        function(x, mu){
+          dldx[[abbreviation]](x = x, mu = mu, ...)
+        }
       }
     ),
     class = "error_distribution"
