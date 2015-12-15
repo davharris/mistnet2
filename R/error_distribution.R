@@ -1,7 +1,8 @@
 #' Make an \code{error_distribution} from a gamlss distribution
 #'
-#' @param abbreviation An abbreviation matching a \link[gamlss.dist]{gamlss.family},
-#'    e.g. "NO" for the normal distribution or "ZIP" for the zero-inflated
+#' @param family_function An a function that produces a
+#'    \link[gamlss.dist]{gamlss.family}, \link[gamlss.dist]{NO} for the normal
+#'    distribution or \link[gamlss.dist]{ZIP} for the zero-inflated
 #'    Poisson distribution
 #' @param ... Additional arguments, possibly including \code{bd} (binomial denominator),
 #'    \code{sigma} (scale), \code{nu} (shape), or \code{tau} (shape),
@@ -46,8 +47,20 @@
 #' another_distribution = make_gamlss_distribution("PO")
 #' another_distribution$dldx(x = 1:10, mu = 1)
 #' }
-make_gamlss_distribution = function(abbreviation, ...){
-  family_object = get(abbreviation, mode = "function")()
+make_gamlss_distribution = function(family_function, ...){
+  if(is(family_function, "family")){
+    stop("family_function should refer to a function that creates a family\nobject, not the object itself")
+  }
+
+  if(is.function(family_function)){
+    family_object = family_function()
+    abbreviation = family_object$parameters[[1]]
+  }else{
+    if(is.character(family_function)){
+      abbreviation = family_function
+      family_object = get(abbreviation, mode = "function")()
+    }
+  }
 
   included_parameters = names(family_object$parameters)
 
@@ -115,14 +128,16 @@ get_grad = function(
 
   grad_name = paste0("dld", param_abbreviation)
 
-  if(param_name %in% names(family_object$parameters)){
-    # Find the gradient in the family_object
-    out = function(x, mu){
-      family_object[[grad_name]](y = x, mu = mu, ...)
-    }
-  }else{
+
+  out = function(x, mu){
+    family_object[[grad_name]](y = x, mu = mu, ...)
+  }
+
+  # dldx won't always be inside the family object
+  if(is.null(family_object[[grad_name]])){
+
+    # Try looking for it in the package's dldx list
     if(!is.null(dldx[[abbreviation]])){
-      # Find the gradient in the dldx list below
       out = function(x, mu){
         dldx[[abbreviation]](x = x, mu = mu, ...)
       }

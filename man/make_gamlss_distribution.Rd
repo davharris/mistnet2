@@ -5,11 +5,12 @@
 \alias{make_gamlss_distribution}
 \title{Make an \code{error_distribution} from a gamlss distribution}
 \usage{
-make_gamlss_distribution(abbreviation, ...)
+make_gamlss_distribution(family_function, ...)
 }
 \arguments{
-\item{abbreviation}{An abbreviation matching a \link[gamlss.dist]{gamlss.family},
-e.g. "NO" for the normal distribution or "ZIP" for the zero-inflated
+\item{family_function}{An a function that produces a
+\link[gamlss.dist]{gamlss.family}, \link[gamlss.dist]{NO} for the normal
+distribution or \link[gamlss.dist]{ZIP} for the zero-inflated
 Poisson distribution}
 
 \item{...}{Additional arguments, possibly including \code{bd} (binomial denominator),
