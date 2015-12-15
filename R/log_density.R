@@ -6,21 +6,21 @@
 #'    log-likelihood?
 #' @param par a vector of parameters
 #' @param ... Additional arguments (currently not used.)
-logLik.network = function(object, state, par, include_penalties = FALSE, ...){
+log_density = function(network, state, par, include_penalties = FALSE, ...){
   if(missing(state)){
-    state = feedforward(object, par)
+    state = feedforward(network, par)
   }
 
   out = sum(
-    object$error_distribution$log_density(
-      object$y,
+    network$error_distribution$log_density(
+      network$y,
       mu = state$outputs[[length(state$outputs)]]
     )
   )
 
   if(include_penalties){
     stop("penalties haven't been implemented yet")
-    return(out + object$penalty)
+    return(out + network$penalty)
   }else{
    return(out)
   }
