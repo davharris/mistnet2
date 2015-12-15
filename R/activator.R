@@ -12,12 +12,28 @@
 #' }
 #' @details
 #' The following activators/activation functions are currently included:
+#'
 #' \itemize{
 #'    \item{elu}: "exponential linear unit" \code{f(x)=x} when x>0 and \code{f(x)=exp(x)-1} otherwise. See Clevert et al. (2015)
 #'    \item{identity}: the identity function, \code{f(x)=x}
 #'    \item{relu}: "rectified linear unit" \code{f(x)=x} when x>0 and \code{f(x)=0} otherwise. See Nair and Hinton (2010).
 #'    \item{sigmoid}: sigmoid (logistic) function, \code{f(x)=1/(1 + exp(-x))}
 #' }
+#'
+#' The sigmoid activation function used to be the most common in neural networks.
+#' Most modern networks use relus, although Clevert et al. (2015) have recently
+#' shown that elus can work better because it can produce negative values.
+#'
+#' @note The C++ code used to speed up some activation functions (relu and elu)
+#'    assumes that they are passed \code{matrix} objects, rather than vectors.
+#' @examples
+#' x = matrix(seq(-4, 4, .01), ncol = 1)
+#' par(mfrow = c(2, 2))
+#' plot(x = x, y = elu_activator$f(x), type = "l", main = "elu")
+#' plot(x = x, y = identity_activator$f(x), type = "l", main = "identity")
+#' plot(x = x, y = relu_activator$f(x), type = "l", main = "relu")
+#' plot(x = x, y = sigmoid_activator$f(x), type = "l", main = "sigmoid")
+#' abline(h = 0, col = "gray")
 #' @rdname activator
 #' @aliases activator
 #' @references
