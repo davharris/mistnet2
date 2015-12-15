@@ -20,6 +20,7 @@
 #'        prior distributions on the model's weights.
 #' }
 #' @import gamlss.dist
+#' @aliases error_distribution
 #' @export
 make_gamlss_distribution = function(abbreviation, ...){
   family_object = get(abbreviation, mode = "function")()

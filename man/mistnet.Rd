@@ -5,30 +5,40 @@
 \title{Build and fit a neural network with random effects}
 \usage{
 mistnet(x, y, n_z, activators, error_distribution, fit = TRUE,
-  starttests = TRUE, sigma, tau, nu, bd)
+  starttests = FALSE, sigma, tau, nu, bd)
 }
 \arguments{
-\item{x}{asdf}
+\item{x}{A numeric matrix of predictor variables}
 
-\item{y}{asdf}
+\item{y}{A numeric or integer matrix of response variables}
 
-\item{n_z, }{asdf}
+\item{n_z, }{The number of latent random variables to include as predictors
+alongside x}
 
-\item{activators}{asdf}
+\item{activators}{A list of \code{\link{activator}} functions, one per
+network layer}
 
-\item{error_distribution}{asdf}
+\item{error_distribution}{Either an \code{\link{error_distribution}} object
+or a \link[gamlss.dist]{gamlss.family} abbreviation (such as "NO" for the
+normal distribution)}
 
-\item{fit}{asdf}
+\item{fit}{Logical. Should the model be fitted or should an untrained model
+be returned. Defaults to TRUE}
 
-\item{starttests}{asdf}
+\item{starttests}{Should \code{\link[optimx]{optimx}}'s \code{starttests} be
+run? Can be useful for identifying errors but is not usually needed.}
 
-\item{sigma}{asdf}
+\item{sigma}{(optional) scale parameter passed to
+\code{\link{make_gamlss_distribution}}}
 
-\item{tau}{asdf}
+\item{tau}{(optional) shape parameter passed to
+\code{\link{make_gamlss_distribution}}}
 
-\item{nu}{asdf}
+\item{nu}{(optional) shape parameter passed to
+\code{\link{make_gamlss_distribution}}}
 
-\item{bd}{asdf}
+\item{bd}{(optional) binomial denominator passed to
+\code{\link{make_gamlss_distribution}}}
 }
 \value{
 A \code{network} object

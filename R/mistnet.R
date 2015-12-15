@@ -1,15 +1,25 @@
 #' Build and fit a neural network with random effects
-#' @param x asdf
-#' @param y asdf
-#' @param n_z, asdf
-#' @param activators asdf
-#' @param error_distribution asdf
-#' @param fit asdf
-#' @param starttests asdf
-#' @param sigma asdf
-#' @param tau asdf
-#' @param nu asdf
-#' @param bd asdf
+#' @param x A numeric matrix of predictor variables
+#' @param y A numeric or integer matrix of response variables
+#' @param n_z, The number of latent random variables to include as predictors
+#'    alongside x
+#' @param activators A list of \code{\link{activator}} functions, one per
+#'    network layer
+#' @param error_distribution Either an \code{\link{error_distribution}} object
+#'    or a \link[gamlss.dist]{gamlss.family} abbreviation (such as "NO" for the
+#'    normal distribution)
+#' @param fit Logical. Should the model be fitted or should an untrained model
+#'    be returned. Defaults to TRUE
+#' @param starttests Should \code{\link[optimx]{optimx}}'s \code{starttests} be
+#'    run? Can be useful for identifying errors but is not usually needed.
+#' @param sigma (optional) scale parameter passed to
+#'    \code{\link{make_gamlss_distribution}}
+#' @param tau (optional) shape parameter passed to
+#'    \code{\link{make_gamlss_distribution}}
+#' @param nu (optional) shape parameter passed to
+#'    \code{\link{make_gamlss_distribution}}
+#' @param bd (optional) binomial denominator passed to
+#'    \code{\link{make_gamlss_distribution}}
 #' @return A \code{network} object
 #' @useDynLib mistnet2
 #' @importFrom optimx optimx
@@ -21,7 +31,7 @@ mistnet = function(
   activators,
   error_distribution,
   fit = TRUE,
-  starttests = TRUE,
+  starttests = FALSE,
   sigma,
   tau,
   nu,
