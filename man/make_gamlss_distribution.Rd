@@ -52,8 +52,8 @@ distribution$dldm(samples, mu = 1)
 distribution$dldx(samples, mu = 1)
 
 # The gradient with respect to x isn't defined for all distributions,
-however. For example, this code would return an error that
-" gradient with respect to x (dldx) is not defined for the distribution PO"
+# however. For example, this code would return an error that
+# " gradient with respect to x (dldx) is not defined for the distribution PO"
 \dontrun{
 another_distribution = make_gamlss_distribution("PO")
 another_distribution$dldx(x = 1:10, mu = 1)
