@@ -7,6 +7,8 @@
 log_density(network, state, par, include_penalties = FALSE, ...)
 }
 \arguments{
+\item{network}{A \code{network} object}
+
 \item{state}{An optional \code{network_state} object. If not included,
 state will be calculated by \code{\link{feedforward}}.}
 
@@ -16,8 +18,6 @@ state will be calculated by \code{\link{feedforward}}.}
 log-likelihood?}
 
 \item{...}{Additional arguments (currently not used.)}
-
-\item{object}{A \code{network} object}
 }
 \description{
 Calculate the log-likelihood of a network object

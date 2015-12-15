@@ -74,7 +74,7 @@ mistnet = function(
   if(fit){
     opt = optimx::optimx(
       par = unlist(network$par_skeleton),
-      fn = function(par){logLik.network(network, par = par)},
+      fn = function(par){sum(log_density(network, par = par))},
       gr = function(par){unlist(backprop(network, par = par))},
       method = "L-BFGS-B",
       control = list(trace = 0, maximize = TRUE, starttests = starttests, maxit = 1000),
