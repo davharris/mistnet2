@@ -11,17 +11,15 @@ log_density = function(network, state, par, include_penalties = FALSE, ...){
     state = feedforward(network, par)
   }
 
-  out = sum(
-    network$error_distribution$log_density(
-      network$y,
-      mu = state$outputs[[length(state$outputs)]]
-    )
+  out = network$error_distribution$log_density(
+    network$y,
+    mu = state$outputs[[length(state$outputs)]]
   )
 
   if(include_penalties){
     stop("penalties haven't been implemented yet")
     return(out + network$penalty)
   }else{
-   return(out)
+    return(out)
   }
 }
