@@ -4,7 +4,31 @@
 \alias{mistnet}
 \title{Build and fit a neural network with random effects}
 \usage{
-mistnet()
+mistnet(x, y, n_z, activators, error_distribution, fit = TRUE,
+  starttests = TRUE, sigma, tau, nu, bd)
+}
+\arguments{
+\item{x}{asdf}
+
+\item{y}{asdf}
+
+\item{n_z, }{asdf}
+
+\item{activators}{asdf}
+
+\item{error_distribution}{asdf}
+
+\item{fit}{asdf}
+
+\item{starttests}{asdf}
+
+\item{sigma}{asdf}
+
+\item{tau}{asdf}
+
+\item{nu}{asdf}
+
+\item{bd}{asdf}
 }
 \value{
 A \code{network} object
