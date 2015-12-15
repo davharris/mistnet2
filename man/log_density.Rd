@@ -12,10 +12,10 @@ log_density(network, state, par, include_penalties = FALSE, ...)
 \item{state}{An optional \code{network_state} object. If not included,
 state will be calculated by \code{\link{feedforward}}.}
 
-\item{par}{a vector of parameters}
+\item{par}{a vector of network parameters}
 
-\item{include_penalties}{Should penalty terms be included in the
-log-likelihood?}
+\item{include_penalties}{Should penalty terms (e.g. from prior distributions)
+be included in the log-density?}
 
 \item{...}{Additional arguments (currently not used.)}
 }
