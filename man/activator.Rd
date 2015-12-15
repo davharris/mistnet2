@@ -2,6 +2,7 @@
 % Please edit documentation in R/activator.R
 \docType{data}
 \name{elu_activator}
+\alias{activator}
 \alias{elu_activator}
 \alias{identity_activator}
 \alias{relu_activator}

@@ -19,9 +19,7 @@
 #'    \item{sigmoid}: sigmoid (logistic) function, \code{f(x)=1/(1 + exp(-x))}
 #' }
 #' @rdname activator
-
-#' @rdname activator
-#' @export elu_activator
+#' @aliases activator
 #' @references
 #' Clevert, Djork-Arné, Thomas Unterthiner, and Sepp Hochreiter. "Fast and
 #' Accurate Deep Network Learning by Exponential Linear Units (ELUs)."
@@ -32,6 +30,8 @@
 #' Conference on Machine Learning (ICML-10), pp. 807-814. 2010.
 
 
+#' @rdname activator
+#' @export elu_activator
 elu_activator = structure(
   list(
     f = function(x){
