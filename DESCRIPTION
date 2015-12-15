@@ -15,7 +15,6 @@ Suggests:
 LinkingTo:
     Rcpp
 Imports:
-    assertthat,
     gamlss.dist,
     optimx
 RoxygenNote: 5.0.1
