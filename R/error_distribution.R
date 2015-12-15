@@ -49,8 +49,10 @@
 make_gamlss_distribution = function(abbreviation, ...){
   family_object = get(abbreviation, mode = "function")()
 
+  included_parameters = names(family_object$parameters)
+
   # Confirm that all the needed parameters (except mu) are included in `...`
-  for(parameter in names(family_object$parameters)){
+  for(parameter in included_parameters){
     if(parameter == "mu" | parameter %in% names(list(...))){
       # all is well
     }else{
@@ -58,9 +60,11 @@ make_gamlss_distribution = function(abbreviation, ...){
     }
   }
 
-  # Confirm that mu is *not* given
+  # Confirm that mu is *not* given. If it's part of `...`, it could get
+  # passed in weird ways if the user forgets to add mu to one of the objects's
+  # functions.
   if("mu" %in% names(list(...))){
-    warning("mu should not be given when making an error_distribution")
+    stop("mu should not be given when making an error_distribution")
   }
 
   structure(
@@ -80,36 +84,89 @@ make_gamlss_distribution = function(abbreviation, ...){
 
         r(n = n, mu = mu, ...)
       },
-      dldm = function(x, mu){
-        family_object$dldm(y = x, mu = mu, ...)
-      },
-      dldd = function(x, mu){
-        family_object$dldd(y = x, mu = mu, ...)
-      },
-      dldv = function(x, mu){
-        family_object$dldv(y = x, mu = mu, ...)
-      },
-      dldt = function(x, mu){
-        family_object$dldt(y = x, mu = mu, ...)
-      },
-      dldx = if(is.null(dldx[[abbreviation]])){
-        function(x, mu){
-          # no function defined for this distribution in the dldx list below
-          stop("gradient with respect to x (dldx) is not defined for the distribution ", abbreviation)
-        }
-      }else{
-        function(x, mu){
-          dldx[[abbreviation]](x = x, mu = mu, ...)
-        }
-      }
+      dldm = get_grad(family_object, "mu", ...),
+      dldd = get_grad(family_object, "sigma", ...),
+      dldv = get_grad(family_object, "nu", ...),
+      dldt = get_grad(family_object, "tau", ...),
+      dldx = get_grad(family_object, "x", ...)
     ),
     class = "error_distribution"
   )
 }
 
-# Partial derivatives with respect to x, used for optimizing x
-# with respect to the prior (as opposed to optimizing the distribution
-# with respect to x, as with dldm).
+
+get_grad = function(
+  family_object,
+  param_name,
+  ...
+){
+  abbreviation = family_object$family[[1]]
+
+  # One-letter abbreviations for parameters used in names of gradients
+  # (e.g. dldd for sigma)
+  param_abbreviation = switch(
+    param_name,
+    mu    = "m",
+    sigma = "d",
+    tau   = "t",
+    nu    = "v",
+    x     = "x"
+  )
+
+  grad_name = paste0("dld", param_abbreviation)
+
+  if(param_name %in% names(family_object$parameters)){
+    # Find the gradient in the family_object
+    out = function(x, mu){
+      family_object[[grad_name]](y = x, mu = mu, ...)
+    }
+  }else{
+    if(!is.null(dldx[[abbreviation]])){
+      # Find the gradient in the dldx list below
+      out = function(x, mu){
+        dldx[[abbreviation]](x = x, mu = mu, ...)
+      }
+    }else{
+      out = function(...){
+        # No gradient defined
+        stop(
+          "gradient with respect to ",
+          param_name,
+          " (",
+          grad_name,
+          ") is not defined for the distribution '",
+          abbreviation,
+          "'"
+        )
+      }
+    }
+  }
+
+  return(out)
+}
+
+#' Partial derivatives with respect to x
+#'
+#' These gradients are used for optimizing x with respect to the log-prior density
+#' (as opposed to optimizing the distribution's parameters with respect to x, as with dldm
+#' and the other derivatives available from \code{\link{error_distribution}}
+#' objects). Mostly used internally by \code{\link{make_gamlss_distribution}}.
+#' @format A list of functions, named according to their
+#' \link[gamlss.dist]{gamlss.family} abbreviations (e.g. "NO" for the normal
+#' distribution).  Additional functions can be added to the list by the user,
+#' making it possible to use the corresponding distributions as priors.
+#'
+#' Currently, the only distribution with built-in support is
+#' "\link[gamlss.dist]{NO}", the normal distribution
+#' @export
+#' @examples
+#' # find the gradient with respect to x using dldx
+#' exact_gradient = dldx$NO(x = 1, mu = 2, sigma = pi)
+#'
+#' # Compare with the numerical gradient for the same distribution
+#' numerical_gradient = numDeriv::grad(function(x)dnorm(x = x, mean = 2, sd = pi, log = TRUE), x = 1)
+#'
+#' stopifnot(all.equal(exact_gradient, numerical_gradient))
 dldx = list(
   NO = function(x, mu, sigma){
     -(x - mu) / sigma^2
