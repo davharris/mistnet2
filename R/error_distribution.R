@@ -79,7 +79,9 @@ make_gamlss_distribution = function(abbreviation, ...){
   )
 }
 
-
+# Partial derivatives with respect to x, used for optimizing x
+# with respect to the prior (as opposed to optimizing the distribution
+# with respect to x, as with dldm).
 dldx = list(
   NO = function(x, mu, sigma){
     -(x - mu) / sigma^2
