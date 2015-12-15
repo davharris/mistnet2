@@ -3,7 +3,7 @@
 #' @param y A numeric or integer matrix of response variables
 #' @param n_z, The number of latent random variables to include as predictors
 #'    alongside x
-#' @param activators A list of \code{\link{activator}} functions, one per
+#' @param activators A list of \code{\link{activator}} objects, one per
 #'    network layer
 #' @param error_distribution Either an \code{\link{error_distribution}} object
 #'    or a \link[gamlss.dist]{gamlss.family} abbreviation (such as "NO" for the

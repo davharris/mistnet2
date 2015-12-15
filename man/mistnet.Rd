@@ -15,7 +15,7 @@ mistnet(x, y, n_z, activators, error_distribution, fit = TRUE,
 \item{n_z, }{The number of latent random variables to include as predictors
 alongside x}
 
-\item{activators}{A list of \code{\link{activator}} functions, one per
+\item{activators}{A list of \code{\link{activator}} objects, one per
 network layer}
 
 \item{error_distribution}{Either an \code{\link{error_distribution}} object
