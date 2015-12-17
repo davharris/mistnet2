@@ -8,14 +8,18 @@
 make_gamlss_distribution(family_function, ...)
 }
 \arguments{
-\item{family_function}{An a function that produces a
-\link[gamlss.dist]{gamlss.family}, \link[gamlss.dist]{NO} for the normal
-distribution or \link[gamlss.dist]{ZIP} for the zero-inflated
-Poisson distribution}
+\item{family_function}{Either a character vector containing the name of a
+function that produces a \code{\link[gamlss.dist]{gamlss.family}} (e.g.
+\code{family_function = "\link[gamlss.dist]{NO}"} for the normal
+distribution), or a user-created function that returns an object with
+the same structure. [[Add explanation of how to do this: see dEXAMPLE in
+test-distributions.R]]
+\code{\link[gamlss.dist]{gamlss.family}}.}
 
 \item{...}{Additional arguments, possibly including \code{bd} (binomial denominator),
 \code{sigma} (scale), \code{nu} (shape), or \code{tau} (shape),
-depending on the distribution}
+depending on the distribution. These must be named, and partial matching
+is not allowed.}
 }
 \value{
 An \code{error_distribution} object, consisting of the following
@@ -29,7 +33,9 @@ An \code{error_distribution} object, consisting of the following
        with regard to mu (\code{dldm}), sigma (\code{dldd}), nu
        (\code{dldv}), and tau (\code{dldt}). For a few distributions,
        \code{dldx}} is also defined: these distributions can be used as
-       prior distributions on the model's weights.
+       prior distributions on the model's weights. Users can add \code{dldx}
+       functions by creating their own distributions that include a function
+       called \code{dldx}.
 }
 }
 \description{
@@ -59,5 +65,6 @@ distribution$dldx(samples, mu = 1)
 another_distribution = make_gamlss_distribution("PO")
 another_distribution$dldx(x = 1:10, mu = 1)
 }
+
 }
 

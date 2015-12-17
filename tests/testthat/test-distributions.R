@@ -1,8 +1,13 @@
 context("Distributions")
 
+test_that("make_gamlss_distribution accepts functions", {
+  dist = make_gamlss_distribution(gamlss.dist::NO, sigma = 2)
+})
+
+
 test_that("make_gamlss_distribution rejects family objects", {
   expect_error(
-    make_gamlss_distribution(NO()),
+    make_gamlss_distribution(NO(), sigma = 2),
     "not the object itself"
   )
 })
@@ -78,20 +83,28 @@ test_that("dldx works for distributions that have it", {
 
 test_that("new distributions can be created", {
   EXAMPLE = function(){
-    list(
-      parameters = list(mu = TRUE, sigma = TRUE),
-      family = "EXAMPLE",
-      dldx = function(x, mu, ...){
-        1234
-      },
-      dldm = function(x, mu, ...){
-        9876
-      },
-      dldd = function(x, mu, ...){
-        3333
-      }
+    structure(
+      list(
+        parameters = list(mu = TRUE, sigma = TRUE),
+        family = "EXAMPLE",
+        dldx = function(x, mu, ...){
+          1234
+        },
+        dldm = function(x, mu, ...){
+          9876
+        },
+        dldd = function(x, mu, ...){
+          3333
+        }
+      ),
+      class = "family"
     )
   }
+
+  dEXAMPLE = function(x, mu, sigma, log){
+    8765
+  }
+  attach(list(dEXAMPLE = dEXAMPLE))
 
   dist = make_gamlss_distribution(EXAMPLE, sigma = 4)
 
@@ -108,4 +121,29 @@ test_that("new distributions can be created", {
     3333
   )
 
+  expect_equal(
+    dist$log_density(x = 1, mu = 1),
+    8765
+  )
+
+})
+
+
+test_that("Improper uniform distribution works", {
+  dist = make_gamlss_distribution("IU")
+
+  expect_equal(
+    dist$log_density(1:100, 1:100),
+    rep(0, 100)
+  )
+
+  expect_equal(
+    dist$dldm(x = 1:10, mu = 1:10),
+    rep(0, 10)
+  )
+
+  expect_equal(
+    dist$dldx(x = 1:10, mu = 1),
+    rep(0, 10)
+  )
 })
