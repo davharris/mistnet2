@@ -1,8 +1,13 @@
 context("Distributions")
 
+test_that("make_gamlss_distribution accepts functions", {
+  dist = make_gamlss_distribution(gamlss.dist::NO, sigma = 2)
+})
+
+
 test_that("make_gamlss_distribution rejects family objects", {
   expect_error(
-    make_gamlss_distribution(NO()),
+    make_gamlss_distribution(NO(), sigma = 2),
     "not the object itself"
   )
 })
@@ -78,18 +83,21 @@ test_that("dldx works for distributions that have it", {
 
 test_that("new distributions can be created", {
   EXAMPLE = function(){
-    list(
-      parameters = list(mu = TRUE, sigma = TRUE),
-      family = "EXAMPLE",
-      dldx = function(x, mu, ...){
-        1234
-      },
-      dldm = function(x, mu, ...){
-        9876
-      },
-      dldd = function(x, mu, ...){
-        3333
-      }
+    structure(
+      list(
+        parameters = list(mu = TRUE, sigma = TRUE),
+        family = "EXAMPLE",
+        dldx = function(x, mu, ...){
+          1234
+        },
+        dldm = function(x, mu, ...){
+          9876
+        },
+        dldd = function(x, mu, ...){
+          3333
+        }
+      ),
+      class = "family"
     )
   }
 

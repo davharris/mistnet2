@@ -1,12 +1,15 @@
 #' Make an \code{error_distribution} from a gamlss distribution
 #'
-#' @param family_function An a function that produces a
-#'    \link[gamlss.dist]{gamlss.family}, \link[gamlss.dist]{NO} for the normal
-#'    distribution or \link[gamlss.dist]{ZIP} for the zero-inflated
-#'    Poisson distribution
+#' @param family_function Either a character vector containing the name of a
+#'    function that produces a \code{\link[gamlss.dist]{gamlss.family}} (e.g.
+#'    \code{family_function = "\link[gamlss.dist]{NO}"} for the normal
+#'    distribution), or a user-created function that returns an object with
+#'    the same structure.
+#'    \code{\link[gamlss.dist]{gamlss.family}}.
 #' @param ... Additional arguments, possibly including \code{bd} (binomial denominator),
 #'    \code{sigma} (scale), \code{nu} (shape), or \code{tau} (shape),
-#'    depending on the distribution
+#'    depending on the distribution. These must be named, and partial matching
+#'    is not allowed.
 #' @return An \code{error_distribution} object, consisting of the following
 #'    functions:
 #' \itemize{
@@ -18,7 +21,9 @@
 #'        with regard to mu (\code{dldm}), sigma (\code{dldd}), nu
 #'        (\code{dldv}), and tau (\code{dldt}). For a few distributions,
 #'        \code{dldx}} is also defined: these distributions can be used as
-#'        prior distributions on the model's weights.
+#'        prior distributions on the model's weights. Users can add \code{dldx}
+#'        functions by creating their own distributions that include a function
+#'        called \code{dldx}.
 #' }
 #' @import gamlss.dist
 #' @aliases error_distribution
@@ -47,6 +52,7 @@
 #' another_distribution = make_gamlss_distribution("PO")
 #' another_distribution$dldx(x = 1:10, mu = 1)
 #' }
+#'
 make_gamlss_distribution = function(family_function, ...){
   if(is(family_function, "family")){
     stop("family_function should refer to a function that creates a family\nobject, not the object itself")
@@ -137,9 +143,9 @@ get_grad = function(
   if(is.null(family_object[[grad_name]])){
 
     # Try looking for it in the package's dldx list
-    if(!is.null(dldx[[abbreviation]])){
+    if(!is.null(dldx_list[[abbreviation]])){
       out = function(x, mu){
-        dldx[[abbreviation]](x = x, mu = mu, ...)
+        dldx_list[[abbreviation]](x = x, mu = mu, ...)
       }
     }else{
       out = function(...){
@@ -160,29 +166,8 @@ get_grad = function(
   return(out)
 }
 
-#' Partial derivatives with respect to x
-#'
-#' These gradients are used for optimizing x with respect to the log-prior density
-#' (as opposed to optimizing the distribution's parameters with respect to x, as with dldm
-#' and the other derivatives available from \code{\link{error_distribution}}
-#' objects). Mostly used internally by \code{\link{make_gamlss_distribution}}.
-#' @format A list of functions, named according to their
-#' \link[gamlss.dist]{gamlss.family} abbreviations (e.g. "NO" for the normal
-#' distribution).  Additional functions can be added to the list by the user,
-#' making it possible to use the corresponding distributions as priors.
-#'
-#' Currently, the only distribution with built-in support is
-#' "\link[gamlss.dist]{NO}", the normal distribution
-#' @export
-#' @examples
-#' # find the gradient with respect to x using dldx
-#' exact_gradient = dldx$NO(x = 1, mu = 2, sigma = pi)
-#'
-#' # Compare with the numerical gradient for the same distribution
-#' numerical_gradient = numDeriv::grad(function(x)dnorm(x = x, mean = 2, sd = pi, log = TRUE), x = 1)
-#'
-#' stopifnot(all.equal(exact_gradient, numerical_gradient))
-dldx = list(
+
+dldx_list = list(
   NO = function(x, mu, sigma){
     -(x - mu) / sigma^2
   }
