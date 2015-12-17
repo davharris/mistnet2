@@ -40,7 +40,10 @@ network = list(
     )
   ),
   activators = list(sigmoid_activator),
-  error_distribution = make_gamlss_distribution("BI", bd = bd)
+  error_distribution = make_gamlss_distribution("BI", bd = bd),
+  priors = list(
+    make_gamlss_distribution("IU")
+  )
 )
 class(network) = "network"
 
