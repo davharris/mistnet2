@@ -176,6 +176,9 @@ dldx_list = list(
 
 
 #' Improper uniform distribution
+#'
+#' This distribution produces a flat prior with no bounds.  Its gradient and
+#' log-density are always zero.
 #' @export
 IU = function(){
   structure(
