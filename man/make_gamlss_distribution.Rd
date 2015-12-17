@@ -12,12 +12,14 @@ make_gamlss_distribution(family_function, ...)
 function that produces a \code{\link[gamlss.dist]{gamlss.family}} (e.g.
 \code{family_function = "\link[gamlss.dist]{NO}"} for the normal
 distribution), or a user-created function that returns an object with
-the same structure.
+the same structure. [[Add explanation of how to do this: see dEXAMPLE in
+test-distributions.R]]
 \code{\link[gamlss.dist]{gamlss.family}}.}
 
 \item{...}{Additional arguments, possibly including \code{bd} (binomial denominator),
 \code{sigma} (scale), \code{nu} (shape), or \code{tau} (shape),
-depending on the distribution}
+depending on the distribution. These must be named, and partial matching
+is not allowed.}
 }
 \value{
 An \code{error_distribution} object, consisting of the following

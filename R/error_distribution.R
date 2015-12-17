@@ -4,7 +4,8 @@
 #'    function that produces a \code{\link[gamlss.dist]{gamlss.family}} (e.g.
 #'    \code{family_function = "\link[gamlss.dist]{NO}"} for the normal
 #'    distribution), or a user-created function that returns an object with
-#'    the same structure.
+#'    the same structure. [[Add explanation of how to do this: see dEXAMPLE in
+#'    test-distributions.R]]
 #'    \code{\link[gamlss.dist]{gamlss.family}}.
 #' @param ... Additional arguments, possibly including \code{bd} (binomial denominator),
 #'    \code{sigma} (scale), \code{nu} (shape), or \code{tau} (shape),
@@ -60,7 +61,7 @@ make_gamlss_distribution = function(family_function, ...){
 
   if(is.function(family_function)){
     family_object = family_function()
-    abbreviation = family_object$parameters[[1]]
+    abbreviation = family_object$family[[1]]
   }else{
     if(is.character(family_function)){
       abbreviation = family_function
@@ -86,14 +87,14 @@ make_gamlss_distribution = function(family_function, ...){
     stop("mu should not be given when making an error_distribution")
   }
 
+  # Get the dABB function, where ABB is the abbreviation.
+  # Can't specify function location without attaching whole gamlss.dist
+  # package??
+  d = get(paste0("d", abbreviation), mode = "function")
+
   structure(
     c(
       log_density = function(x, mu){
-        # Get the dABB function, where ABB is the abbreviation.
-        # Can't specify function location without attaching whole gamlss.dist
-        # package??
-        d = get(paste0("d", abbreviation), mode = "function")
-
         # log density at x with location mu and additional arguments from `...`
         d(x = x, mu = mu, log = TRUE, ...)
       },
@@ -148,7 +149,7 @@ get_grad = function(
         dldx_list[[abbreviation]](x = x, mu = mu, ...)
       }
     }else{
-      out = function(...){
+      out = function(x, mu){
         # No gradient defined
         stop(
           "gradient with respect to ",
@@ -172,3 +173,33 @@ dldx_list = list(
     -(x - mu) / sigma^2
   }
 )
+
+
+#' Improper uniform distribution
+#' @export
+IU = function(){
+  structure(
+    list(
+      family = c("IU", "imporper uniform"),
+      parameters = list(
+        mu = TRUE # All distributions currently need mu
+      ),
+      dldm = function(y, mu){
+        rep(0, length(mu))
+      },
+      dldx = function(y, mu){
+        rep(0, length(y))
+      }
+    ),
+    class = "family"
+  )
+}
+
+# density function (only defined for log == TRUE).
+# Since the prior is improper, it doesn't have to sum to one and
+# can return any constant: zero is most convenient because it doesn't
+# affect the posterior
+dIU = function(x, mu, log){
+  stopifnot(log)
+  rep(0, max(length(x), length(mu)))
+}

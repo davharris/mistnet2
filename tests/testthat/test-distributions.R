@@ -101,6 +101,11 @@ test_that("new distributions can be created", {
     )
   }
 
+  dEXAMPLE = function(x, mu, sigma, log){
+    8765
+  }
+  attach(list(dEXAMPLE = dEXAMPLE))
+
   dist = make_gamlss_distribution(EXAMPLE, sigma = 4)
 
   expect_equal(
@@ -116,4 +121,29 @@ test_that("new distributions can be created", {
     3333
   )
 
+  expect_equal(
+    dist$log_density(x = 1, mu = 1),
+    8765
+  )
+
+})
+
+
+test_that("Improper uniform distribution works", {
+  dist = make_gamlss_distribution("IU")
+
+  expect_equal(
+    dist$log_density(1:100, 1:100),
+    rep(0, 100)
+  )
+
+  expect_equal(
+    dist$dldm(x = 1:10, mu = 1:10),
+    rep(0, 10)
+  )
+
+  expect_equal(
+    dist$dldx(x = 1:10, mu = 1),
+    rep(0, 10)
+  )
 })
