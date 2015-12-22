@@ -60,94 +60,100 @@ make_gamlss_distribution = function(family_function, ...){
   }
 
   if(is.function(family_function)){
+    # Call the function and pull out the abbreviation
     family_object = family_function()
     abbreviation = family_object$family[[1]]
   }else{
     if(is.character(family_function)){
+      # Use the abbreviation to grab the function and call it
       abbreviation = family_function
       family_object = get(abbreviation, mode = "function")()
     }
   }
 
-  included_parameters = names(family_object$parameters)
+  family_parameters = family_object$parameters
 
-  # Confirm that all the needed parameters (except mu) are included in `...`
-  for(parameter in included_parameters){
-    if(parameter == "mu" | parameter %in% names(list(...))){
-      # all is well
+  if("bd" %in% names(formals(z$dldm))){
+    family_parameters$bd = NA
+  }
+
+  dots = list(...)
+
+  for(param_name in names(family_parameters)){
+    if(param_name %in% names(dots)){
+      family_parameters[[param_name]] = dots[[param_name]]
     }else{
-      stop(parameter, " is required for the `", abbreviation, "` distribution")
+      if(param_name == "mu"){
+        # mu doesn't always need to be included in `dots` because network error
+        # distributions get mu values from the network's final layer instead
+        family_parameters[[param_name]] = NA
+      }else{
+        stop(param_name, " is required for the `", abbreviation, "` distribution")
+      }
     }
   }
 
-  # Confirm that mu is *not* given. If it's part of `...`, it could get
-  # passed in weird ways if the user forgets to add mu to one of the objects's
-  # functions.
-  if("mu" %in% names(list(...))){
-    stop("mu should not be given when making an error_distribution")
-  }
-
-  # Get the dABB function, where ABB is the abbreviation.
-  # Can't specify function location without attaching whole gamlss.dist
-  # package??
-  d = get(paste0("d", abbreviation), mode = "function")
+  # Get the `dABB` and `rABB` functions, where ABB is the abbreviation.
+  log_density = get(paste0("d", abbreviation), mode = "function")
+  sample = get(paste0("r", abbreviation), mode = "function")
 
   structure(
-    c(
-      log_density = function(x, mu){
-        # log density at x with location mu and additional arguments from `...`
-        d(x = x, mu = mu, log = TRUE, ...)
-      },
-      sample = function(n, mu){
-        # get the rABB function, where ABB is the abbreviation
-        r = get(paste0("r", abbreviation), mode = "function")
-
-        r(n = n, mu = mu, ...)
-      },
-      dldm = get_grad(family_object, "mu", ...),
-      dldd = get_grad(family_object, "sigma", ...),
-      dldv = get_grad(family_object, "nu", ...),
-      dldt = get_grad(family_object, "tau", ...),
-      dldx = get_grad(family_object, "x", ...)
+    list(
+      family = family_object$family,
+      family_parameters = family_parameters,
+      log_density = function(...){log_density(..., log= TRUE)},
+      sample = function(...){sample(...)},
+      dldm = expand_formals(family_object$dldm),
+      dldd = expand_formals(family_object$dldd),
+      dldv = expand_formals(family_object$dldv),
+      dldt = expand_formals(family_object$dldt),
+      dldx = expand_formals(get_dldx(family_object))
     ),
     class = "error_distribution"
   )
 }
 
+#' Get parameter values from a distribution object
+#'
+#' @param distribution a distribution object
+#' @param adjusted_values a \code{list} of adjusted values (for adjustable
+#' parameters)
+#' @param ... additional arguments, which will override values contained within
+#'    the \code{error_distribution} object or in the \code{adjusted_values}
+get_values = function(distribution, adjusted_values, ...){
 
-get_grad = function(
-  family_object,
-  param_name,
-  ...
-){
-  abbreviation = family_object$family[[1]]
+  values = list(...)
 
-  # One-letter abbreviations for parameters used in names of gradients
-  # (e.g. dldd for sigma)
-  param_abbreviation = switch(
-    param_name,
-    mu    = "m",
-    sigma = "d",
-    tau   = "t",
-    nu    = "v",
-    x     = "x"
-  )
-
-  grad_name = paste0("dld", param_abbreviation)
-
-
-  out = function(x, mu){
-    family_object[[grad_name]](y = x, mu = mu, ...)
+  for(param_name in names(distribution$family_parameters)){
+    if(param_name %in% names(values)){
+      # Do nothing: a value has already been provided
+    }else{
+      if(is.adjustable(distribution$family_parameters[[param_name]])){
+        # Get the updated value from `adjusted_values`
+        values[[param_name]] = adjusted_values[[param_name]]
+      }else{
+        # pull the value from the distribution object itself
+        values[[param_name]] = distribution$family_parameters[[param_name]]
+      }
+    }
   }
 
-  # dldx won't always be inside the family object
-  if(is.null(family_object[[grad_name]])){
+  return(values)
+}
+
+
+get_dldx = function(family_object){
+  abbreviation = family_object$family[[1]]
+
+  # User-defined objects should contain dldx if needed
+  out = family_object$dldx
+
+  # gamlss-based objects won't contain dldx
+  if(is.null(family_object$dldx)){
 
     # Try looking for it in the package's dldx list
     if(!is.null(dldx_list[[abbreviation]])){
-      out = function(x, mu){
-        dldx_list[[abbreviation]](x = x, mu = mu, ...)
-      }
+      out = dldx_list[[abbreviation]]
     }else{
       out = function(x, mu){
         # No gradient defined
@@ -205,4 +211,10 @@ IU = function(){
 dIU = function(x, mu, log){
   stopifnot(log)
   rep(0, max(length(x), length(mu)))
+}
+
+
+dldm = function(distribution, y, mu, sigma, nu, tau, bd){
+#dldm = function(distribution, y, mu, sigma, nu, tau, bd){
+  names(distribution$parameters)
 }

@@ -19,3 +19,20 @@ ifelse_matrix = function(test, yes, no){
 
   ifelse_matrix_cpp(test, yes, no)
 }
+
+expand_formals = function(f){
+  out = f
+
+  formals(out) = alist(y = , mu = , sigma = , nu = , tau = , bd = )
+
+
+  return(out)
+}
+
+adjustable = function(x){
+  structure(x, class = c("adjustable", class(x)))
+}
+
+is.adjustable = function(x){
+  is(x, "adjustable")
+}
