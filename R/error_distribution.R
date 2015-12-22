@@ -159,9 +159,9 @@ get_dldx = function(family_object){
         # No gradient defined
         stop(
           "gradient with respect to ",
-          param_name,
+          x,
           " (",
-          grad_name,
+          dldx,
           ") is not defined for the distribution '",
           abbreviation,
           "'"
@@ -184,7 +184,8 @@ dldx_list = list(
 #' Improper uniform distribution
 #'
 #' This distribution produces a flat prior with no bounds.  Its gradient and
-#' log-density are always zero.
+#' log-density are always zero. It's improper because its integral is not one
+#' (and is not finite).
 #' @export
 IU = function(){
   structure(

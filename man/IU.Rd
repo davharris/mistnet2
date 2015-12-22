@@ -8,6 +8,7 @@ IU()
 }
 \description{
 This distribution produces a flat prior with no bounds.  Its gradient and
-log-density are always zero.
+log-density are always zero. It's improper because its integral is not one
+(and is not finite).
 }
 
