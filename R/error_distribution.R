@@ -212,9 +212,3 @@ dIU = function(x, mu, log){
   stopifnot(log)
   rep(0, max(length(x), length(mu)))
 }
-
-
-dldm = function(distribution, y, mu, sigma, nu, tau, bd){
-#dldm = function(distribution, y, mu, sigma, nu, tau, bd){
-  names(distribution$parameters)
-}
