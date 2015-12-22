@@ -205,11 +205,9 @@ IU = function(){
   )
 }
 
-# density function (only defined for log == TRUE).
-# Since the prior is improper, it doesn't have to sum to one and
-# can return any constant: zero is most convenient because it doesn't
-# affect the posterior
-dIU = function(x, mu, log){
+#' @export
+#' @rdname IU
+dIU = function(x, mu){
   stopifnot(log)
   rep(0, max(length(x), length(mu)))
 }

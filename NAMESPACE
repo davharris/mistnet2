@@ -2,6 +2,7 @@
 
 export(IU)
 export(backprop)
+export(dIU)
 export(elu_activator)
 export(feedforward)
 export(identity_activator)

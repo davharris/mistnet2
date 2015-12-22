@@ -2,9 +2,12 @@
 % Please edit documentation in R/error_distribution.R
 \name{IU}
 \alias{IU}
+\alias{dIU}
 \title{Improper uniform distribution}
 \usage{
 IU()
+
+dIU(x, mu)
 }
 \description{
 This distribution produces a flat prior with no bounds.  Its gradient and
