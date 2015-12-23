@@ -5,9 +5,13 @@
 #'    alongside x
 #' @param activators A list of \code{\link{activator}} objects, one per
 #'    network layer
+#' @param n_hidden An integer vector determining the number of hidden nodes in
+#'    each hidden layer. Its length should be one less than that of the
+#'    \code{activators} list.
 #' @param error_distribution Either an \code{\link{error_distribution}} object
 #'    or a \link[gamlss.dist]{gamlss.family} abbreviation (such as "NO" for the
 #'    normal distribution)
+#' @param priors [[Add me]]
 #' @param fit Logical. Should the model be fitted or should an untrained model
 #'    be returned. Defaults to TRUE
 #' @param starttests Should \code{\link[optimx]{optimx}}'s \code{starttests} be
@@ -29,44 +33,69 @@ mistnet = function(
   y,
   n_z,
   activators,
+  n_hidden,
   error_distribution,
+  priors,
   fit = TRUE,
   starttests = FALSE,
-  sigma,
-  tau,
-  nu,
-  bd
+  sigma = NULL,
+  tau = NULL,
+  nu = NULL,
+  bd = NULL
 ){
   # TODO: Figure out weight/bias/latent initialization
+
+  stopifnot(length(n_hidden) == (length(activators) - 1))
+  stopifnot(length(priors) == length(activators))
+
+  n_layers = length(activators)
 
   n = nrow(x)
   n_x = ncol(x)
   n_y = ncol(y)
+
+
+  weight_dims = numeric(n_layers + 1)
+  weight_dims[1] = n_x + n_z              # nrow of first weight matrix
+  weight_dims[length(weight_dims)] = n_y  # ncol of last weight matrix
+  if (n_layers > 1) {
+    for (i in 2:n_layers) {
+      weight_dims[i] = n_hidden[i - 1]
+    }
+  }
 
   network = list(
     x = x,
     y = y,
     par_skeleton = list(
       z = matrix(rnorm(n * n_z, sd = .5), nrow = n, ncol = n_z),
-      weights = list(
-        matrix(rnorm((n_x + n_z) * n_y, sd = .5), nrow = n_x + n_z, ncol = n_y)
+      weights = lapply(
+        1:n_layers,
+        function(i){
+          matrix(
+            rnorm(
+              prod(weight_dims[c(i, i + 1)]),
+              sd = .5
+            ),
+            nrow = weight_dims[i],
+            ncol = weight_dims[i + 1]
+          )
+        }
       ),
-      biases = list(
-        rnorm(n_y, sd = .5)
+      biases = c(
+        lapply(n_hidden, function(n){rnorm(n, sd = 0.5)}),
+        list(rnorm(n_y, sd = .5))
       )
     ),
     activators = activators,
-    error_distribution = if(is.character(error_distribution)){
-      make_gamlss_distribution(
-        error_distribution,
-        sigma = sigma,
-        tau = tau,
-        nu = nu,
-        bd = bd
-      )
-    }else{
-      error_distribution
-    }
+    priors = priors,
+    error_distribution = make_gamlss_distribution(
+      error_distribution,
+      sigma = sigma,
+      tau = tau,
+      nu = nu,
+      bd = bd
+    )
   )
   class(network) = "network"
 

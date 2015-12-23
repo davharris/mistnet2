@@ -47,7 +47,7 @@ backprop = function(network, state, par, ...){
 
     # Weight gradients depend on the input values and gradients from above
     weight_grads[[i]] = crossprod(state$inputs[[i]], grad_from_above) +
-      grad(network$priors[[i]], "x", x = parameters$weights[[i]], mu = 0)
+      grad(network$priors[[i]], "x", x = parameters$weights[[i]])
 
     # Bias gradients just sum up the gradients (equivalent to matrix multiplying
     # by a vector of ones)
