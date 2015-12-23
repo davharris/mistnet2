@@ -25,8 +25,9 @@ log_density.network = function(network, state, par, include_penalties = FALSE, .
     state = feedforward(network, par)
   }
 
-  out = network$error_distribution$log_density(
-    network$y,
+  out = log_density(
+    network$error_distribution,
+    x = network$y,
     mu = state$outputs[[length(state$outputs)]]
   )
 
