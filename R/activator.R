@@ -1,8 +1,9 @@
 #' Activator objects and nonlinear activation functions
 #'
 #' @format
-#' An object of class \code{activator} of length 3, containing
-#' functions relating to neural network nonlinearities:
+#' An object of class \code{activator} of length 4, containing the name of the
+#' activation function (a character vector) and three functions relating
+#' to neural network nonlinearities:
 #' \itemize{
 #'    \item{\code{f}: The activation function (nonlinearity) itself}
 #'    \item{\code{grad}: The activation function's gradient with respect to
@@ -50,6 +51,7 @@
 #' @export elu_activator
 elu_activator = structure(
   list(
+    name = "elu",
     f = function(x){
       ifelse_matrix(x > 0, x, exp(x) - 1)
     },
@@ -69,6 +71,7 @@ elu_activator = structure(
 #' @export identity_activator
 identity_activator = structure(
   list(
+    name = "identity",
     f = identity,
     grad = function(x){
       matrix(1, nrow(x), ncol(x))
@@ -86,6 +89,7 @@ identity_activator = structure(
 #' @export relu_activator
 relu_activator = structure(
   list(
+    name = "relu",
     f = function(x){
       zeros = matrix(0, nrow(x), ncol(x))
 
@@ -108,6 +112,7 @@ relu_activator = structure(
 #' @export sigmoid_activator
 sigmoid_activator = structure(
   list(
+    name = "sigmoid",
     f = function(x){
       # Sometimes slightly slower than plogis, but has a ceiling and floor
       # to avoid boundaries at 0 and 1.

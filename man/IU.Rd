@@ -2,12 +2,29 @@
 % Please edit documentation in R/error_distribution.R
 \name{IU}
 \alias{IU}
+\alias{dIU}
+\alias{rIU}
 \title{Improper uniform distribution}
 \usage{
 IU()
+
+dIU(x, mu, log)
+
+rIU(n, mu)
+}
+\arguments{
+\item{x}{vector of quantiles}
+
+\item{mu}{vector of location parameters (not used)}
+
+\item{log}{logical; if TRUE, probabilities p are given as log(p)}
+
+\item{n}{number of samples}
 }
 \description{
 This distribution produces a flat prior with no bounds.  Its gradient and
-log-density are always zero.
+log-density are always zero. It's improper because its integral is not one
+(and is not finite). Sampling from the distribution is not defined, so calling
+rIU results in an error.
 }
 

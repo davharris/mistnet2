@@ -36,7 +36,7 @@ backprop = function(network, state, par, ...){
 
       # So it takes the raw error gradient and multiplies it by activation grad
       # (because of the chain rule)
-      network$error_distribution$dldm(network$y, state$outputs[[i]]) *
+      grad(network$error_distribution, "mu", y = network$y, mu = state$outputs[[i]]) *
         activation_grad
     }else{
       # Lower layers' jobs are to follow the gradient from the inputs in the
@@ -47,7 +47,7 @@ backprop = function(network, state, par, ...){
 
     # Weight gradients depend on the input values and gradients from above
     weight_grads[[i]] = crossprod(state$inputs[[i]], grad_from_above) +
-      network$priors[[i]]$dldx(x = parameters$weights[[i]], mu = 0)
+      grad(network$priors[[i]], "x", x = parameters$weights[[i]], mu = 0)
 
     # Bias gradients just sum up the gradients (equivalent to matrix multiplying
     # by a vector of ones)

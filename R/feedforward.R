@@ -19,6 +19,7 @@ feedforward = function(network, par, ...){
 
   parameters = relist(par, network$par_skeleton)
 
+  # inputs, pre-activations, and outputs start empty
   inputs = pre_activations = outputs = list()
 
   for(i in 1:length(parameters$weights)){

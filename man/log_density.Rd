@@ -2,24 +2,20 @@
 % Please edit documentation in R/log_density.R
 \name{log_density}
 \alias{log_density}
-\title{Calculate the log-likelihood of a network object}
+\title{Calculate the log probability density of an object}
 \usage{
-log_density(network, state, par, include_penalties = FALSE, ...)
+log_density(object, ...)
 }
 \arguments{
-\item{network}{A \code{network} object}
+\item{object}{an object}
 
-\item{state}{An optional \code{network_state} object. If not included,
-state will be calculated by \code{\link{feedforward}}.}
-
-\item{par}{a vector of network parameters}
-
-\item{include_penalties}{Should penalty terms (e.g. from prior distributions)
-be included in the log-density?}
-
-\item{...}{Additional arguments (currently not used.)}
+\item{...}{additional arguments to be passed to other methods}
 }
 \description{
-Calculate the log-likelihood of a network object
+Calculate the log probability density of an object
+}
+\seealso{
+\code{\link{log_density.error_distribution}},
+   \code{\link{log_density.network}}
 }
 

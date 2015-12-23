@@ -33,18 +33,18 @@
 #' distribution = make_gamlss_distribution("NO", sigma = 1/3)
 #'
 #' # Sample 10 random values with mean=2 (and sigma=1/3 as defined above)
-#' samples = distribution$sample(n = 10, mu = 2)
+#' samples = random_sample(distribution, n = 10, mu = 2)
 #'
 #' # find the log_density of those samples under a distribution with mean=1
-#' distribution$log_density(samples, mu = 1)
+#' log_density(distribution, x = samples, mu = 1)
 #'
 #' # The gradient of the log_density with respect to the mean indicates that
 #' # the log_density would be higher if mu were larger (more positive)
-#' distribution$dldm(samples, mu = 1)
+#' grad(distribution, "mu", y = samples, mu = 1)
 #'
 #' # The gradient with respect to x shows that the log_density would also be
 #' # higher if we reduced the values of x (more negative)
-#' distribution$dldx(samples, mu = 1)
+#' grad(distribution, "x", x = samples, mu = 1)
 #'
 #' # The gradient with respect to x isn't defined for all distributions,
 #' # however. For example, this code would return an error that
@@ -60,103 +60,141 @@ make_gamlss_distribution = function(family_function, ...){
   }
 
   if(is.function(family_function)){
+    # Call the function and pull out the abbreviation
     family_object = family_function()
     abbreviation = family_object$family[[1]]
   }else{
     if(is.character(family_function)){
+      # Use the abbreviation to grab the function and call it
       abbreviation = family_function
       family_object = get(abbreviation, mode = "function")()
     }
   }
 
-  included_parameters = names(family_object$parameters)
+  family_parameters = family_object$parameters
 
-  # Confirm that all the needed parameters (except mu) are included in `...`
-  for(parameter in included_parameters){
-    if(parameter == "mu" | parameter %in% names(list(...))){
-      # all is well
+  # Binomial denominator acts like a parameter, but isn't included
+  # in the gamlss distributions.
+  if("bd" %in% names(formals(family_object$dldm))){
+    family_parameters$bd = NA
+  }
+
+  dots = list(...)
+
+  for(param_name in names(family_parameters)){
+    if(param_name %in% names(dots)){
+      family_parameters[[param_name]] = dots[[param_name]]
     }else{
-      stop(parameter, " is required for the `", abbreviation, "` distribution")
+      if(param_name == "mu"){
+        # mu doesn't always need to be included in `dots` because network error
+        # distributions get mu values from the network's final layer instead
+        family_parameters[[param_name]] = NA
+      }else{
+        stop(param_name, " is required for the `", abbreviation, "` distribution")
+      }
     }
   }
 
-  # Confirm that mu is *not* given. If it's part of `...`, it could get
-  # passed in weird ways if the user forgets to add mu to one of the objects's
-  # functions.
-  if("mu" %in% names(list(...))){
-    stop("mu should not be given when making an error_distribution")
-  }
-
-  # Get the dABB function, where ABB is the abbreviation.
-  # Can't specify function location without attaching whole gamlss.dist
-  # package??
+  # Get the `dABB` and `rABB` functions, where ABB is the abbreviation.
   d = get(paste0("d", abbreviation), mode = "function")
+  r = get(paste0("r", abbreviation), mode = "function")
 
   structure(
-    c(
-      log_density = function(x, mu){
-        # log density at x with location mu and additional arguments from `...`
-        d(x = x, mu = mu, log = TRUE, ...)
-      },
-      sample = function(n, mu){
-        # get the rABB function, where ABB is the abbreviation
-        r = get(paste0("r", abbreviation), mode = "function")
-
-        r(n = n, mu = mu, ...)
-      },
-      dldm = get_grad(family_object, "mu", ...),
-      dldd = get_grad(family_object, "sigma", ...),
-      dldv = get_grad(family_object, "nu", ...),
-      dldt = get_grad(family_object, "tau", ...),
-      dldx = get_grad(family_object, "x", ...)
+    list(
+      family = family_object$family,
+      family_parameters = family_parameters,
+      d = d,
+      r = r,
+      dldm = family_object$dldm,
+      dldd = family_object$dldd,
+      dldv = family_object$dldv,
+      dldt = family_object$dldt,
+      dldx = get_dldx(family_object)
     ),
     class = "error_distribution"
   )
 }
 
-
-get_grad = function(
-  family_object,
-  param_name,
-  ...
-){
-  abbreviation = family_object$family[[1]]
-
-  # One-letter abbreviations for parameters used in names of gradients
-  # (e.g. dldd for sigma)
-  param_abbreviation = switch(
-    param_name,
-    mu    = "m",
-    sigma = "d",
-    tau   = "t",
-    nu    = "v",
-    x     = "x"
+#' Calculate the gradient of a distribution
+#' @param distribution An \code{\link{error_distribution}} object
+#' @param name One of \code{"mu"}, \code{"sigma"}, \code{"nu"}, \code{"tau"}, or \code{"x"}
+#' @param ... additional arguments passed to \code{\link{get_values}}
+#' @export
+grad = function(distribution, name, ...){
+  f = switch(
+    name,
+    mu = distribution$dldm,
+    sigma = distribution$dldd,
+    nu = distribution$dldv,
+    tau = distribution$dldt,
+    x = distribution$dldx
   )
 
-  grad_name = paste0("dld", param_abbreviation)
+  do.call(f, get_values(distribution, ...))
+}
+
+#' Sample random numbers from a probability distribution
+#' @param distribution an \code{\link{error_distribution}} object
+#' @param ... additional arguments passed to \code{\link{get_values}}
+#' @export
+random_sample = function(distribution, ...){
+  do.call(
+    distribution$r,
+    get_values(distribution, ...)
+  )
+}
 
 
-  out = function(x, mu){
-    family_object[[grad_name]](y = x, mu = mu, ...)
+#' Get parameter values from a distribution object
+#'
+#' @param distribution a distribution object
+#' @param ... additional arguments, which will override values contained within
+#'    the \code{error_distribution} object or in the \code{adjusted_values}
+#' @param adjusted_values a \code{list} of adjusted values (for adjustable
+#' parameters)
+#' @export
+get_values = function(distribution, ..., adjusted_values){
+
+  values = list(...)
+
+  for(param_name in names(distribution$family_parameters)){
+    if(param_name %in% names(values)){
+      # Do nothing: a value has already been provided
+    }else{
+      if(is.adjustable(distribution$family_parameters[[param_name]])){
+        # Get the updated value from `adjusted_values`
+        if(missing(adjusted_values)){
+          stop("Distribution has adjustable parameters but `adjusted_values` is missing")
+        }
+        values[[param_name]] = adjusted_values[[param_name]]
+      }else{
+        # pull the value from the distribution object itself
+        values[[param_name]] = distribution$family_parameters[[param_name]]
+      }
+    }
   }
 
-  # dldx won't always be inside the family object
-  if(is.null(family_object[[grad_name]])){
+  return(values)
+}
+
+
+get_dldx = function(family_object){
+  abbreviation = family_object$family[[1]]
+
+  # User-defined objects should contain dldx if needed
+  out = family_object$dldx
+
+  # gamlss-based objects won't contain dldx
+  if(is.null(family_object$dldx)){
 
     # Try looking for it in the package's dldx list
     if(!is.null(dldx_list[[abbreviation]])){
-      out = function(x, mu){
-        dldx_list[[abbreviation]](x = x, mu = mu, ...)
-      }
+      out = dldx_list[[abbreviation]]
     }else{
       out = function(x, mu){
         # No gradient defined
         stop(
-          "gradient with respect to ",
-          param_name,
-          " (",
-          grad_name,
-          ") is not defined for the distribution '",
+          "gradient with respect to x (\"dldx\") is not defined for the distribution '",
           abbreviation,
           "'"
         )
@@ -178,7 +216,13 @@ dldx_list = list(
 #' Improper uniform distribution
 #'
 #' This distribution produces a flat prior with no bounds.  Its gradient and
-#' log-density are always zero.
+#' log-density are always zero. It's improper because its integral is not one
+#' (and is not finite). Sampling from the distribution is not defined, so calling
+#' rIU results in an error.
+#' @param x vector of quantiles
+#' @param mu vector of location parameters (not used)
+#' @param n number of samples
+#' @param log logical; if TRUE, probabilities p are given as log(p)
 #' @export
 IU = function(){
   structure(
@@ -190,19 +234,27 @@ IU = function(){
       dldm = function(y, mu){
         rep(0, length(mu))
       },
-      dldx = function(y, mu){
-        rep(0, length(y))
+      dldx = function(x, mu){
+        rep(0, length(x))
       }
     ),
     class = "family"
   )
 }
 
-# density function (only defined for log == TRUE).
-# Since the prior is improper, it doesn't have to sum to one and
-# can return any constant: zero is most convenient because it doesn't
-# affect the posterior
+#' @export
+#' @rdname IU
 dIU = function(x, mu, log){
-  stopifnot(log)
-  rep(0, max(length(x), length(mu)))
+  if(log){
+    rep(0, max(length(x), length(mu)))
+  }else{
+    rep(1, max(length(x), length(mu)))
+  }
+
+}
+
+#' @export
+#' @rdname IU
+rIU = function(n, mu){
+  stop("Sampling is not defined for improper distributions")
 }
