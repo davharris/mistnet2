@@ -9,7 +9,11 @@
 #'    \code{optimization_results}
 #' @export
 mistnet_fit = function(network, mistnet_optimizer = mistnet_fit_optimx, ...){
-  fn = function(par){sum(log_density(network, par = par, include_penalties = TRUE))}
+  fn = function(par){
+    sum(
+      log_density(network, par = par, include_penalties = TRUE)
+    )
+  }
   gr = function(par){unlist(backprop(network, par = par))}
 
   network = mistnet_optimizer(network, fn = fn, gr = gr, ...)

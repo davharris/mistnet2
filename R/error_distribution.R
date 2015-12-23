@@ -55,16 +55,16 @@
 #' }
 #'
 make_gamlss_distribution = function(family_function, ...){
-  if(is(family_function, "family")){
+  if (is(family_function, "family")) {
     stop("family_function should refer to a function that creates a family\nobject, not the object itself")
   }
 
-  if(is.function(family_function)){
+  if (is.function(family_function)) {
     # Call the function and pull out the abbreviation
     family_object = family_function()
     abbreviation = family_object$family[[1]]
-  }else{
-    if(is.character(family_function)){
+  } else {
+    if (is.character(family_function)) {
       # Use the abbreviation to grab the function and call it
       abbreviation = family_function
       family_object = get(abbreviation, mode = "function")()
@@ -75,22 +75,23 @@ make_gamlss_distribution = function(family_function, ...){
 
   # Binomial denominator acts like a parameter, but isn't included
   # in the gamlss distributions.
-  if("bd" %in% names(formals(family_object$dldm))){
+  if ("bd" %in% names(formals(family_object$dldm))) {
     family_parameters$bd = NA
   }
 
   dots = list(...)
 
-  for(param_name in names(family_parameters)){
-    if(param_name %in% names(dots)){
+  for (param_name in names(family_parameters)) {
+    if (param_name %in% names(dots)) {
       family_parameters[[param_name]] = dots[[param_name]]
-    }else{
-      if(param_name == "mu"){
+    } else {
+      if (param_name == "mu") {
         # mu doesn't always need to be included in `dots` because network error
         # distributions get mu values from the network's final layer instead
         family_parameters[[param_name]] = NA
       }else{
-        stop(param_name, " is required for the `", abbreviation, "` distribution")
+        stop(param_name, " is required for the `", abbreviation,
+             "` distribution")
       }
     }
   }
@@ -157,13 +158,13 @@ get_values = function(distribution, ..., adjusted_values){
 
   values = list(...)
 
-  for(param_name in names(distribution$family_parameters)){
-    if(param_name %in% names(values)){
+  for (param_name in names(distribution$family_parameters)) {
+    if (param_name %in% names(values)) {
       # Do nothing: a value has already been provided
-    }else{
-      if(is.adjustable(distribution$family_parameters[[param_name]])){
+    } else {
+      if (is.adjustable(distribution$family_parameters[[param_name]])) {
         # Get the updated value from `adjusted_values`
-        if(missing(adjusted_values)){
+        if (missing(adjusted_values)) {
           stop("Distribution has adjustable parameters but `adjusted_values` is missing")
         }
         values[[param_name]] = adjusted_values[[param_name]]
@@ -185,12 +186,12 @@ get_dldx = function(family_object){
   out = family_object$dldx
 
   # gamlss-based objects won't contain dldx
-  if(is.null(family_object$dldx)){
+  if (is.null(family_object$dldx)) {
 
     # Try looking for it in the package's dldx list
-    if(!is.null(dldx_list[[abbreviation]])){
+    if (!is.null(dldx_list[[abbreviation]])) {
       out = dldx_list[[abbreviation]]
-    }else{
+    } else {
       out = function(x, mu){
         # No gradient defined
         stop(
@@ -245,9 +246,9 @@ IU = function(){
 #' @export
 #' @rdname IU
 dIU = function(x, mu, log){
-  if(log){
+  if (log) {
     rep(0, max(length(x), length(mu)))
-  }else{
+  } else {
     rep(1, max(length(x), length(mu)))
   }
 

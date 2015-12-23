@@ -59,4 +59,3 @@ log_density.network = function(object, state, par, include_penalties, ...){
     return(out)
   }
 }
-

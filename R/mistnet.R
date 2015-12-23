@@ -108,4 +108,3 @@ mistnet = function(
 
   return(network)
 }
-

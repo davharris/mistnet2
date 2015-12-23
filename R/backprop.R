@@ -15,12 +15,12 @@ backprop = function(network, state, par, ...){
   # Start them with empty lists.  Gradient for z is defined later.
   weight_grads = bias_grads = list()
 
-  if(missing(state)){
+  if (missing(state)) {
     state = feedforward(network, par = par)
   }
 
   # Start from the top of the network and work downwards:
-  for(i in length(parameters$weights):1){
+  for (i in length(parameters$weights):1) {
 
     # Gradient of the activation function (nonlinearity) for this layer
     activation_grad = network$activators[[i]]$grad(
@@ -29,7 +29,7 @@ backprop = function(network, state, par, ...){
 
     # The weights and biases depend on gradients passed from higher levels in
     # the network.
-    grad_from_above = if(i == length(parameters$weights)){
+    grad_from_above = if (i == length(parameters$weights)) {
       # The top layer's job is to follow the gradient with respect to the
       # outputs, as determined by the error function (eg Gaussian or binomial
       # errors)
@@ -41,7 +41,8 @@ backprop = function(network, state, par, ...){
     }else{
       # Lower layers' jobs are to follow the gradient from the inputs in the
       # layer above.  They also multiply by activation_grad because of the chain
-      # rule
+      # rule. This code isn't run the first time through the loop, so the fact
+      # that input_grad hasn't been defined by this line of the source is okay.
       input_grad * activation_grad
     }
 
@@ -58,7 +59,7 @@ backprop = function(network, state, par, ...){
     # For higher layers, it won't be used until stepping through the loop again.
     input_grad = tcrossprod(grad_from_above, parameters$weights[[i]])
 
-    if(i == 1){
+    if (i == 1) {
       # The z_gradients are just the input gradients for the non-x columns
       z_grads = input_grad[ , -(1:ncol(network$x))]
     }

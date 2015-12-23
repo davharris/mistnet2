@@ -9,7 +9,7 @@ print.network = function(object){
   )
 
   cat("layers:\n")
-  for(i in 1:length(object$activators)){
+  for (i in 1:length(object$activators)) {
     n_nodes = ncol(object$par_skeleton$weights[[i]])
     cat(
       "  ",
