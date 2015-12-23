@@ -25,7 +25,7 @@ r_binary_packages:
   - gamlss.dist
   - numDeriv
 
-  r_github_packages:
+r_github_packages:
   - jimhester/covr
 
 after_success:
