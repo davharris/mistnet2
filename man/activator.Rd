@@ -8,8 +8,9 @@
 \alias{relu_activator}
 \alias{sigmoid_activator}
 \title{Activator objects and nonlinear activation functions}
-\format{An object of class \code{activator} of length 3, containing
-functions relating to neural network nonlinearities:
+\format{An object of class \code{activator} of length 4, containing the name of the
+activation function (a character vector) and three functions relating
+to neural network nonlinearities:
 \itemize{
    \item{\code{f}: The activation function (nonlinearity) itself}
    \item{\code{grad}: The activation function's gradient with respect to
