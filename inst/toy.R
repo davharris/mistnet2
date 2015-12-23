@@ -17,7 +17,8 @@ true_biases = rnorm(n_y, sd = 1)
 
 y = gamlss.dist::rBI(
   n = n_y * n,
-  mu = sigmoid_activator$f(cbind(x, true_z) %*% true_weights %plus% true_biases + rnorm(n * n_y)),
+  mu = sigmoid_activator$f(cbind(x, true_z) %*% true_weights %plus%
+                             true_biases + rnorm(n * n_y)),
   bd = bd
 )
 dim(y) = c(n, n_y)
@@ -53,10 +54,15 @@ class(network) = "network"
 starttests = TRUE # Test my gradients before optimizing
 o = optimx::optimx(
   par = unlist(network$par_skeleton),
-  fn = function(par){sum(log_density(network, par = par))},
-  gr = function(par){unlist(backprop(network, par = par))},
+  fn = function(par){
+    sum(log_density(network, par = par))
+  },
+  gr = function(par){
+    unlist(backprop(network, par = par))
+  },
   method = "L-BFGS-B",
-  control = list(trace = 0, maximize = TRUE, starttests = starttests, maxit = 1000),
+  control = list(trace = 0, maximize = TRUE, starttests = starttests,
+                 maxit = 1000),
   hessian = FALSE
 )
 

@@ -22,8 +22,8 @@ feedforward = function(network, par, ...){
   # inputs, pre-activations, and outputs start empty
   inputs = pre_activations = outputs = list()
 
-  for(i in 1:length(parameters$weights)){
-    if(i == 1){
+  for (i in 1:length(parameters$weights)) {
+    if (i == 1) {
       # First layer's inputs are concatenated from x and z
       inputs[[i]] = cbind(network$x, parameters$z)
     }else{

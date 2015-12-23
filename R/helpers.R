@@ -13,7 +13,7 @@
 ifelse_matrix = function(test, yes, no){
 
   # Without this assertion, any nonzero entries would be coerced to TRUE
-  if(!is.logical(test)){
+  if (!is.logical(test)) {
     stop("test is not logical")
   }
 
