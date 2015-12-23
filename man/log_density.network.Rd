@@ -4,12 +4,10 @@
 \alias{log_density.network}
 \title{Calculate the log-likelihood of a network object}
 \usage{
-\method{log_density}{network}(network, state, par, include_penalties = FALSE,
+\method{log_density}{network}(object, state, par, include_penalties = FALSE,
   ...)
 }
 \arguments{
-\item{network}{A \code{network} object}
-
 \item{state}{An optional \code{network_state} object. If not included,
 state will be calculated by \code{\link{feedforward}}.}
 
@@ -19,6 +17,8 @@ state will be calculated by \code{\link{feedforward}}.}
 be included in the log-density?}
 
 \item{...}{Additional arguments (currently not used.)}
+
+\item{network}{A \code{network} object}
 }
 \description{
 Calculate the log-likelihood of a network object

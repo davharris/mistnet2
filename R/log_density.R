@@ -5,10 +5,10 @@ log_density = function(object, ...){
 
 
 #' @export
-log_density.error_distribution = function(distribution, adjusted_values, ...){
+log_density.error_distribution = function(object, adjusted_values, ...){
   do.call(
-    distribution$d,
-    get_values(distribution, adjusted_values, ..., log = TRUE)
+    object$d,
+    get_values(object, adjusted_values, ..., log = TRUE)
   )
 }
 
@@ -21,20 +21,20 @@ log_density.error_distribution = function(distribution, adjusted_values, ...){
 #' be included in the log-density?
 #' @param par a vector of network parameters
 #' @param ... Additional arguments (currently not used.)
-log_density.network = function(network, state, par, include_penalties = FALSE, ...){
+log_density.network = function(object, state, par, include_penalties = FALSE, ...){
   if(missing(state)){
-    state = feedforward(network, par)
+    state = feedforward(object, par)
   }
 
   out = log_density(
-    network$error_distribution,
-    x = network$y,
+    object$error_distribution,
+    x = object$y,
     mu = state$outputs[[length(state$outputs)]]
   )
 
   if(include_penalties){
     stop("penalties haven't been implemented yet")
-    return(out + network$penalty)
+    return(out + object$penalty)
   }else{
     return(out)
   }
