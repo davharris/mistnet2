@@ -3,6 +3,7 @@ log_density = function(object, ...){
 }
 
 
+#' @export
 log_density.error_distribution = function(distribution, adjusted_values, ...){
   do.call(
     distribution$d,

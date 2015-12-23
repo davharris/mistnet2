@@ -48,15 +48,15 @@ distribution = make_gamlss_distribution("NO", sigma = 1/3)
 samples = random_sample(distribution, n = 10, mu = 2)
 
 # find the log_density of those samples under a distribution with mean=1
-distribution$log_density(samples, mu = 1)
+log_density(distribution, x = samples, mu = 1)
 
 # The gradient of the log_density with respect to the mean indicates that
 # the log_density would be higher if mu were larger (more positive)
-distribution$dldm(samples, mu = 1)
+grad(distribution, "mu", y = samples, mu = 1)
 
 # The gradient with respect to x shows that the log_density would also be
 # higher if we reduced the values of x (more negative)
-distribution$dldx(samples, mu = 1)
+grad(distribution, "x", x = samples, mu = 1)
 
 # The gradient with respect to x isn't defined for all distributions,
 # however. For example, this code would return an error that
