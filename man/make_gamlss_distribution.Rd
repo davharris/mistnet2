@@ -45,7 +45,7 @@ Make an \code{error_distribution} from a gamlss distribution
 distribution = make_gamlss_distribution("NO", sigma = 1/3)
 
 # Sample 10 random values with mean=2 (and sigma=1/3 as defined above)
-samples = random_smaple(distribution, n = 10, mu = 2)
+samples = random_sample(distribution, n = 10, mu = 2)
 
 # find the log_density of those samples under a distribution with mean=1
 distribution$log_density(samples, mu = 1)
