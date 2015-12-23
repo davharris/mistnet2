@@ -30,7 +30,7 @@ log_density.error_distribution = function(object, ...){
 #' be included in the log-density?
 #' @param par a vector of network parameters
 #' @param ... Additional arguments (currently not used.)
-log_density.network = function(object, state, par, include_penalties = FALSE, ...){
+log_density.network = function(object, state, par, include_penalties, ...){
   if(missing(state)){
     state = feedforward(object, par)
   }
@@ -43,8 +43,10 @@ log_density.network = function(object, state, par, include_penalties = FALSE, ..
 
   if(include_penalties){
     stop("penalties haven't been implemented yet")
-    return(out + object$penalty)
+    penalties = NULL
+    return(out + sum(penalties) / nrow(object$x))
   }else{
     return(out)
   }
 }
+

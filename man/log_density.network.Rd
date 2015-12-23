@@ -4,8 +4,7 @@
 \alias{log_density.network}
 \title{Calculate the log-likelihood of a network object}
 \usage{
-\method{log_density}{network}(object, state, par, include_penalties = FALSE,
-  ...)
+\method{log_density}{network}(object, state, par, include_penalties, ...)
 }
 \arguments{
 \item{object}{A \code{network} object}

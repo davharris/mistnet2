@@ -4,8 +4,9 @@
 \alias{mistnet}
 \title{Build and fit a neural network with random effects}
 \usage{
-mistnet(x, y, n_z, activators, error_distribution, fit = TRUE,
-  starttests = FALSE, sigma, tau, nu, bd)
+mistnet(x, y, n_z, activators, n_hidden, error_distribution, priors,
+  fit = TRUE, starttests = FALSE, sigma = NULL, tau = NULL, nu = NULL,
+  bd = NULL)
 }
 \arguments{
 \item{x}{A numeric matrix of predictor variables}
@@ -18,9 +19,15 @@ alongside x}
 \item{activators}{A list of \code{\link{activator}} objects, one per
 network layer}
 
+\item{n_hidden}{An integer vector determining the number of hidden nodes in
+each hidden layer. Its length should be one less than that of the
+\code{activators} list.}
+
 \item{error_distribution}{Either an \code{\link{error_distribution}} object
 or a \link[gamlss.dist]{gamlss.family} abbreviation (such as "NO" for the
 normal distribution)}
+
+\item{priors}{[[Add me]]}
 
 \item{fit}{Logical. Should the model be fitted or should an untrained model
 be returned. Defaults to TRUE}
