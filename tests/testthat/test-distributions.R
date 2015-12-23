@@ -138,7 +138,7 @@ test_that("Improper uniform distribution works", {
   dist = make_gamlss_distribution("IU")
 
   expect_equal(
-    log_density(dist, 1:100, 1:100),
+    log_density(dist, x = 1:100, mu = 1:100),
     rep(0, 100)
   )
 

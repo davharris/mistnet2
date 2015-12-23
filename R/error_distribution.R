@@ -131,10 +131,10 @@ grad = function(distribution, name, ...){
 
 
 #' @export
-random_sample = function(distribution, adjusted_values, ...){
+random_sample = function(distribution, ...){
   do.call(
     distribution$r,
-    get_values(distribution, adjusted_values, ...)
+    get_values(distribution, ...)
   )
 }
 
@@ -142,11 +142,12 @@ random_sample = function(distribution, adjusted_values, ...){
 #' Get parameter values from a distribution object
 #'
 #' @param distribution a distribution object
-#' @param adjusted_values a \code{list} of adjusted values (for adjustable
-#' parameters)
 #' @param ... additional arguments, which will override values contained within
 #'    the \code{error_distribution} object or in the \code{adjusted_values}
-get_values = function(distribution, adjusted_values, ...){
+#' @param adjusted_values a \code{list} of adjusted values (for adjustable
+#' parameters)
+#' @export
+get_values = function(distribution, ...){
 
   values = list(...)
 

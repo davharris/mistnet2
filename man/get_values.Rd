@@ -4,16 +4,16 @@
 \alias{get_values}
 \title{Get parameter values from a distribution object}
 \usage{
-get_values(distribution, adjusted_values, ...)
+get_values(distribution, ...)
 }
 \arguments{
 \item{distribution}{a distribution object}
 
-\item{adjusted_values}{a \code{list} of adjusted values (for adjustable
-parameters)}
-
 \item{...}{additional arguments, which will override values contained within
 the \code{error_distribution} object or in the \code{adjusted_values}}
+
+\item{adjusted_values}{a \code{list} of adjusted values (for adjustable
+parameters)}
 }
 \description{
 Get parameter values from a distribution object

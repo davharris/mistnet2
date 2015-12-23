@@ -1,14 +1,21 @@
+#' Calculate the log probability density of an object
+#'
+#' @param object an object
+#' @param ... additional arguments to be passed to other methods
+#'
 #' @export
+#' @seealso \code{\link{log_density.error_distribution}},
+#'    \code{\link{log_density.network}}
 log_density = function(object, ...){
   UseMethod("log_density", object)
 }
 
 
 #' @export
-log_density.error_distribution = function(object, adjusted_values, ...){
+log_density.error_distribution = function(object, ...){
   do.call(
     object$d,
-    get_values(object, adjusted_values, ..., log = TRUE)
+    get_values(object, log = TRUE, ...)
   )
 }
 
