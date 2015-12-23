@@ -115,6 +115,7 @@ make_gamlss_distribution = function(family_function, ...){
   )
 }
 
+#' @export
 grad = function(distribution, name, ...){
   f = switch(
     name,
