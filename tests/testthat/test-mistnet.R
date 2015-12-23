@@ -85,16 +85,16 @@ test_that("mistnet function runs and prints with two hidden layers", {
 
 context("Mistnet: numeric gradients")
 
-test_that("mistnet's gradients are numerically accurate (without priors)",{
+test_that("mistnet's gradients are numerically accurate",{
   net = mistnet(
     x = x,
     y = y,
     n_z = n_z,
     activators = list(sigmoid_activator, elu_activator, sigmoid_activator),
     priors = list(
-      make_gamlss_distribution("IU", mu = 0),
-      make_gamlss_distribution("IU", mu = 0),
-      make_gamlss_distribution("IU", mu = 0)
+      make_gamlss_distribution("NO", mu = -1, sigma = 8),
+      make_gamlss_distribution("NO", mu = 0, sigma = 3),
+      make_gamlss_distribution("NO", mu = 1, sigma = 2)
     ),
     n_hidden = c(5, 7),
     error_distribution = "BI",
@@ -104,7 +104,7 @@ test_that("mistnet's gradients are numerically accurate (without priors)",{
 
   numeric_grad = numDeriv::grad(
     func = function(x){
-      sum(log_density(net, par = x, include_penalties = FALSE))
+      sum(log_density(net, par = x, include_penalties = TRUE))
     },
     x = unlist(net$par_skeleton)
   )
@@ -116,5 +116,30 @@ test_that("mistnet's gradients are numerically accurate (without priors)",{
     numeric_grad,
     backprop_grad,
     tolerance = 1E-5
+  )
+})
+
+
+context("Mistnet: fit")
+
+test_that("mistnet_fit runs with three layers", {
+  net = suppressWarnings(
+    capture.output(
+      mistnet(
+        x = x,
+        y = y,
+        n_z = n_z,
+        activators = list(sigmoid_activator, elu_activator, sigmoid_activator),
+        priors = list(
+          make_gamlss_distribution("NO", mu = -1, sigma = 8),
+          make_gamlss_distribution("NO", mu = 0, sigma = 3),
+          make_gamlss_distribution("NO", mu = 1, sigma = 2)
+        ),
+        n_hidden = c(5, 7),
+        error_distribution = "BI",
+        fit = TRUE,
+        bd = bd
+      )
+    )
   )
 })

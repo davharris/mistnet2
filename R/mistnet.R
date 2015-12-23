@@ -24,6 +24,7 @@
 #'    \code{\link{make_gamlss_distribution}}
 #' @param bd (optional) binomial denominator passed to
 #'    \code{\link{make_gamlss_distribution}}
+#' @param ... Additional arguments to fit
 #' @return A \code{network} object
 #' @useDynLib mistnet2
 #' @importFrom optimx optimx
@@ -41,10 +42,9 @@ mistnet = function(
   sigma = NULL,
   tau = NULL,
   nu = NULL,
-  bd = NULL
+  bd = NULL,
+  ...
 ){
-  # TODO: Figure out weight/bias/latent initialization
-
   stopifnot(length(n_hidden) == (length(activators) - 1))
   stopifnot(length(priors) == length(activators))
 
@@ -100,24 +100,10 @@ mistnet = function(
   class(network) = "network"
 
 
-  if(fit){
-    opt = optimx::optimx(
-      par = unlist(network$par_skeleton),
-      fn = function(par){sum(log_density(network, par = par))},
-      gr = function(par){unlist(backprop(network, par = par))},
-      method = "L-BFGS-B",
-      control = list(trace = 0, maximize = TRUE, starttests = starttests, maxit = 1000),
-      hessian = FALSE
-    )
-
-    network$optimization_results = list(
-      fevals = opt$fevals,
-      gevals = opt$gevals,
-      convcode = opt$convcode,
-      xtimes = opt$xtimes
-    )
-
-    network$par_skeleton = relist(coef(opt), network$par_skeleton)
+  if (fit) {
+    network = mistnet_fit(network, ...)
+  } else {
+    network$optimization_results = list()
   }
 
   return(network)

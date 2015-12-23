@@ -31,7 +31,7 @@ log_density.error_distribution = function(object, ...){
 #' @param par a vector of network parameters
 #' @param ... Additional arguments (currently not used.)
 log_density.network = function(object, state, par, include_penalties, ...){
-  if(missing(state)){
+  if (missing(state)) {
     state = feedforward(object, par)
   }
 
@@ -41,11 +41,21 @@ log_density.network = function(object, state, par, include_penalties, ...){
     mu = state$outputs[[length(state$outputs)]]
   )
 
-  if(include_penalties){
-    stop("penalties haven't been implemented yet")
-    penalties = NULL
-    return(out + sum(penalties) / nrow(object$x))
-  }else{
+  if (include_penalties) {
+    parameters = relist(par, object$par_skeleton)
+
+    penalties = sapply(
+      1:length(object$priors),
+      function(i){
+        sum(log_density(object$priors[[i]], x = parameters$weights[[i]], ...))
+      }
+    )
+
+    # The sum of the returned values needs to equal
+    # sum(log_density.error_distribution) + sum(penalties). Dividing by
+    # length(out) prevents double-counting when the output is summed up later.
+    return(out + sum(penalties) / length(out))
+  } else {
     return(out)
   }
 }
