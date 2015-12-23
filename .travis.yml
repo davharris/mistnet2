@@ -24,3 +24,7 @@ r_binary_packages:
   - optimx
   - gamlss.dist
   - numDeriv
+  - covr
+
+after_success:
+  - Rscript -e 'covr::codecov()'
