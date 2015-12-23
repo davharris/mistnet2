@@ -10,7 +10,9 @@ log_density = function(object, ...){
   UseMethod("log_density", object)
 }
 
-
+#' Calculate the log probability of a distribution
+#' @param object an \code{\link{error_distribution}} object
+#' @param ... additional arguments passed to \code{\link{get_values}}
 #' @export
 log_density.error_distribution = function(object, ...){
   do.call(

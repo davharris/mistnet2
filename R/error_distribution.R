@@ -115,6 +115,10 @@ make_gamlss_distribution = function(family_function, ...){
   )
 }
 
+#' Calculate the gradient of a distribution
+#' @param distribution An \code{\link{error_distribution}} object
+#' @param name One of \code{"mu"}, \code{"sigma"}, \code{"nu"}, \code{"tau"}, or \code{"x"}
+#' @param ... additional arguments passed to \code{\link{get_values}}
 #' @export
 grad = function(distribution, name, ...){
   f = switch(
@@ -129,7 +133,9 @@ grad = function(distribution, name, ...){
   do.call(f, get_values(distribution, ...))
 }
 
-
+#' Sample random numbers from a probability distribution
+#' @param distribution an \code{\link{error_distribution}} object
+#' @param ... additional arguments passed to \code{\link{get_values}}
 #' @export
 random_sample = function(distribution, ...){
   do.call(
@@ -147,7 +153,7 @@ random_sample = function(distribution, ...){
 #' @param adjusted_values a \code{list} of adjusted values (for adjustable
 #' parameters)
 #' @export
-get_values = function(distribution, ...){
+get_values = function(distribution, ..., adjusted_values){
 
   values = list(...)
 

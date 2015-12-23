@@ -4,7 +4,7 @@
 \alias{get_values}
 \title{Get parameter values from a distribution object}
 \usage{
-get_values(distribution, ...)
+get_values(distribution, ..., adjusted_values)
 }
 \arguments{
 \item{distribution}{a distribution object}
