@@ -19,8 +19,8 @@ test_that("Distribution parameters are checked",{
   )
 
   expect_error(
-    make_gamlss_distribution("NO", mu = 3, sigma = 2),
-    "mu should not be given when making an error_distribution"
+    make_gamlss_distribution("BI"),
+    "bd is required for the `BI` distribution"
   )
 })
 
@@ -32,17 +32,18 @@ test_that("Arguments are passed properly",{
   # By default, the gamlss binomial log density dBI sets bd to 1.
   # If these are equal, it means bd=5 from above is being passed properly
   expect_equal(
-    distribution$log_density(3, .2),
+    log_density(distribution, x = 3, mu = 0.2),
     dbinom(3, size = 5, prob = .2, log = TRUE)
   )
 
   # Similarly, if bd=5 and mu = 1 are passed, all the samples should equal 5
   expect_true(
-    all(distribution$sample(300, mu = 1) == 5)
+    all.equal(random_sample(distribution, n = 300, mu = 1), rep(5, 300))
   )
 
+  # Gradient with respect to mu
   expect_equal(
-    distribution$dldm(0:5, .9),
+    grad(distribution, "mu", y = 0:5, mu = 0.9),
     BI()$dldm(0:5, .9, 5)
   )
 
@@ -53,7 +54,7 @@ test_that("Arguments are passed properly",{
 
   # gradient with respect to nu
   expect_equal(
-    distribution$dldv(x = 3, mu = 4),
+    grad(distribution, "nu", y = 3, mu = 4),
     ZINBI()$dldv(y = 3, mu = 4, sigma = 3, nu = 5)
   )
 })
@@ -72,9 +73,9 @@ test_that("dldx works for distributions that have it", {
   dist = make_gamlss_distribution("NO", sigma = 3)
 
   expect_equal(
-    dist$dldx(x = pi, mu = exp(1)),
+    grad(dist, "x", x = pi, mu = exp(1)),
     numDeriv::grad(
-      function(x){dist$log_density(x = x, mu = exp(1))},
+      function(x){log_density(dist, x = x, mu = exp(1))},
       x = pi
     )
   )
@@ -104,7 +105,11 @@ test_that("new distributions can be created", {
   dEXAMPLE = function(x, mu, sigma, log){
     8765
   }
+  rEXAMPLE = function(x, mu, sigma, log){
+    stop("random sampler for EXAMPLE distribution not defined")
+  }
   attach(list(dEXAMPLE = dEXAMPLE))
+  attach(list(rEXAMPLE = rEXAMPLE))
 
   dist = make_gamlss_distribution(EXAMPLE, sigma = 4)
 
@@ -122,7 +127,7 @@ test_that("new distributions can be created", {
   )
 
   expect_equal(
-    dist$log_density(x = 1, mu = 1),
+    log_density(dist, x = 1, mu = 1),
     8765
   )
 
@@ -133,12 +138,12 @@ test_that("Improper uniform distribution works", {
   dist = make_gamlss_distribution("IU")
 
   expect_equal(
-    dist$log_density(1:100, 1:100),
+    log_density(dist, 1:100, 1:100),
     rep(0, 100)
   )
 
   expect_equal(
-    dist$dldm(x = 1:10, mu = 1:10),
+    dist$dldm(y = 1:10, mu = 1:10),
     rep(0, 10)
   )
 

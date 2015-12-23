@@ -3,11 +3,14 @@
 \name{IU}
 \alias{IU}
 \alias{dIU}
+\alias{rIU}
 \title{Improper uniform distribution}
 \usage{
 IU()
 
-dIU(x, mu)
+dIU(x, mu, log)
+
+rIU(x, mu)
 }
 \description{
 This distribution produces a flat prior with no bounds.  Its gradient and

@@ -33,7 +33,7 @@
 #' distribution = make_gamlss_distribution("NO", sigma = 1/3)
 #'
 #' # Sample 10 random values with mean=2 (and sigma=1/3 as defined above)
-#' samples = distribution$sample(n = 10, mu = 2)
+#' samples = random_smaple(distribution, n = 10, mu = 2)
 #'
 #' # find the log_density of those samples under a distribution with mean=1
 #' distribution$log_density(samples, mu = 1)
@@ -73,7 +73,9 @@ make_gamlss_distribution = function(family_function, ...){
 
   family_parameters = family_object$parameters
 
-  if("bd" %in% names(formals(z$dldm))){
+  # Binomial denominator acts like a parameter, but isn't included
+  # in the gamlss distributions.
+  if("bd" %in% names(formals(family_object$dldm))){
     family_parameters$bd = NA
   }
 
@@ -94,24 +96,47 @@ make_gamlss_distribution = function(family_function, ...){
   }
 
   # Get the `dABB` and `rABB` functions, where ABB is the abbreviation.
-  log_density = get(paste0("d", abbreviation), mode = "function")
-  sample = get(paste0("r", abbreviation), mode = "function")
+  d = get(paste0("d", abbreviation), mode = "function")
+  r = get(paste0("r", abbreviation), mode = "function")
 
   structure(
     list(
       family = family_object$family,
       family_parameters = family_parameters,
-      log_density = function(...){log_density(..., log= TRUE)},
-      sample = function(...){sample(...)},
-      dldm = expand_formals(family_object$dldm),
-      dldd = expand_formals(family_object$dldd),
-      dldv = expand_formals(family_object$dldv),
-      dldt = expand_formals(family_object$dldt),
-      dldx = expand_formals(get_dldx(family_object))
+      d = d,
+      r = r,
+      dldm = family_object$dldm,
+      dldd = family_object$dldd,
+      dldv = family_object$dldv,
+      dldt = family_object$dldt,
+      dldx = get_dldx(family_object)
     ),
     class = "error_distribution"
   )
 }
+
+grad = function(distribution, name, ...){
+  f = switch(
+    name,
+    mu = distribution$dldm,
+    sigma = distribution$dldd,
+    nu = distribution$dldv,
+    tau = distribution$dldt,
+    x = distribution$dldx
+  )
+
+  do.call(f, get_values(distribution, ...))
+}
+
+
+#' @export
+random_sample = function(distribution, adjusted_values, ...){
+  do.call(
+    distribution$r,
+    get_values(distribution, adjusted_values, ...)
+  )
+}
+
 
 #' Get parameter values from a distribution object
 #'
@@ -158,11 +183,7 @@ get_dldx = function(family_object){
       out = function(x, mu){
         # No gradient defined
         stop(
-          "gradient with respect to ",
-          x,
-          " (",
-          dldx,
-          ") is not defined for the distribution '",
+          "gradient with respect to x (\"dldx\") is not defined for the distribution '",
           abbreviation,
           "'"
         )
@@ -197,8 +218,8 @@ IU = function(){
       dldm = function(y, mu){
         rep(0, length(mu))
       },
-      dldx = function(y, mu){
-        rep(0, length(y))
+      dldx = function(x, mu){
+        rep(0, length(x))
       }
     ),
     class = "family"
@@ -207,7 +228,13 @@ IU = function(){
 
 #' @export
 #' @rdname IU
-dIU = function(x, mu){
+dIU = function(x, mu, log){
   stopifnot(log)
   rep(0, max(length(x), length(mu)))
+}
+
+#' @export
+#' @rdname IU
+rIU = function(x, mu){
+  stop("Sampling is not defined for improper distributions")
 }
