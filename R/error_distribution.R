@@ -163,6 +163,9 @@ get_values = function(distribution, ..., adjusted_values){
     }else{
       if(is.adjustable(distribution$family_parameters[[param_name]])){
         # Get the updated value from `adjusted_values`
+        if(missing(adjusted_values)){
+          stop("Distribution has adjustable parameters but `adjusted_values` is missing")
+        }
         values[[param_name]] = adjusted_values[[param_name]]
       }else{
         # pull the value from the distribution object itself

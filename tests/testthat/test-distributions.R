@@ -152,3 +152,28 @@ test_that("Improper uniform distribution works", {
     rep(0, 10)
   )
 })
+
+
+test_that("interpretable error messages are thrown when `adjusted_values` is missing", {
+  dist = make_gamlss_distribution("BI", mu = adjustable(0.5), bd = 3)
+
+  expect_error(
+    grad(distribution = dist, "mu", y = 2),
+    "Distribution has adjustable parameters but `adjusted_values` is missing"
+  )
+})
+
+test_that("adjustable values are collected properly", {
+  dist = make_gamlss_distribution("BI", mu = adjustable(0.5), bd = 3)
+
+  expect_equal(
+    grad(distribution = dist, "mu", y = 2, adjusted_values = list(mu = 0.6)),
+    BI()$dldm(y = 2, mu = 0.6, bd = 3)
+  )
+
+  # Values given at the top level should trump those given in `adjusted_values`
+  expect_equal(
+    grad(distribution = dist, "mu", y = 2, mu = .1, adjusted_values = list(mu = 0.6)),
+    BI()$dldm(y = 2, mu = 0.1, bd = 3)
+  )
+})
