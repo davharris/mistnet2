@@ -1,3 +1,4 @@
+#' @export
 log_density = function(object, ...){
   UseMethod("log_density", object)
 }
