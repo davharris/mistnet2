@@ -6,7 +6,7 @@
 \usage{
 mistnet(x, y, n_z, activators, n_hidden, error_distribution, priors,
   fit = TRUE, starttests = FALSE, sigma = NULL, tau = NULL, nu = NULL,
-  bd = NULL)
+  bd = NULL, ...)
 }
 \arguments{
 \item{x}{A numeric matrix of predictor variables}
@@ -46,6 +46,8 @@ run? Can be useful for identifying errors but is not usually needed.}
 
 \item{bd}{(optional) binomial denominator passed to
 \code{\link{make_gamlss_distribution}}}
+
+\item{...}{Additional arguments to fit}
 }
 \value{
 A \code{network} object
