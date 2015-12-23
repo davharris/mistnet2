@@ -123,9 +123,12 @@ test_that("mistnet's gradients are numerically accurate",{
 context("Mistnet: fit")
 
 test_that("mistnet_fit runs with three layers", {
-  net = suppressWarnings(
+  # optimx throws unnecessary warnings and outputs into testthat's
+  # results.  Suppress them, but save `net` in the global environment so
+  # I can still run tests. Then remove it below.
+  suppressWarnings(
     capture.output(
-      mistnet(
+      net <<- mistnet(
         x = x,
         y = y,
         n_z = n_z,
@@ -142,4 +145,24 @@ test_that("mistnet_fit runs with three layers", {
       )
     )
   )
+
+
+  # Excluding the penalty from log_density should be the same as using a flat
+  # prior
+  flat_prior_net = net
+  flat_prior_net$priors = list(
+    make_gamlss_distribution("IU", mu = -1),
+    make_gamlss_distribution("IU", mu = 0),
+    make_gamlss_distribution("IU", mu = 1)
+  )
+
+  expect_equal(
+    log_density(net, par = unlist(net$par_skeleton),
+                include_penalties = FALSE),
+    log_density(flat_prior_net, par = unlist(net$par_skeleton),
+                include_penalties = TRUE)
+  )
+
+  # Don't pollute the global environment with the net object
+  rm(net, envir = .GlobalEnv)
 })
