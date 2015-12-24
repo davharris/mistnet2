@@ -15,10 +15,16 @@ log_density = function(object, ...){
 #' @param ... additional arguments passed to \code{\link{get_values}}
 #' @export
 log_density.distribution = function(object, ...){
-  do.call(
-    object$d,
-    get_values(object, log = TRUE, ...)
-  )
+  values = get_values(object, log = TRUE, ...)
+
+  # Some density functions, like gamlss.dist::dBI, give cryptic error messages
+  # in response to missing values. This warning should help explain what's
+  # wrong.
+  if (any(is.na(unlist(values)))) {
+    warning("non-finite values detected")
+  }
+
+  do.call(object$d, values)
 }
 
 

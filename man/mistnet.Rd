@@ -4,8 +4,8 @@
 \alias{mistnet}
 \title{Build and fit a neural network with random effects}
 \usage{
-mistnet(x, y, n_z, activators, n_hidden, error_distribution, weight_priors,
-  fit = TRUE, starttests = FALSE, ...)
+mistnet(x, y, n_z, layers, error_distribution, fit = TRUE,
+  starttests = FALSE, ...)
 }
 \arguments{
 \item{x}{A numeric matrix of predictor variables}
@@ -15,18 +15,10 @@ mistnet(x, y, n_z, activators, n_hidden, error_distribution, weight_priors,
 \item{n_z, }{The number of latent random variables to include as predictors
 alongside x}
 
-\item{activators}{A list of \code{\link{activator}} objects, one per
-network layer}
-
-\item{n_hidden}{An integer vector determining the number of hidden nodes in
-each hidden layer. Its length should be one less than that of the
-\code{activators} list.}
+\item{layers}{A list of \code{\link{layer}} objects. Note that \code{n_nodes}
+in the final layer must match \code{ncol(y)}.}
 
 \item{error_distribution}{An \code{\link{distribution}} object}
-
-\item{weight_priors}{A \code{list} of \code{\link{distribution}} objects,
-one per network layer. Each one acts as a prior distribution on the
-corresponding layer's weight matrix.}
 
 \item{fit}{Logical. Should the model be fitted or should an untrained model
 be returned. Defaults to TRUE}
@@ -64,11 +56,17 @@ net = mistnet(
    x = x,
    y = y,
    n_z = 2,
-   n_hidden = 10,
-   activators = list(elu_activator, exp_activator),
-   weight_priors = list(
-     make_distribution("NO", mu = 0, sigma = 1),
-     make_distribution("NO", mu = 0, sigma = 1)
+   layers = list(
+     layer(
+       activator = elu_activator,
+       n_nodes = 10,
+       weight_prior = make_distribution("NO", mu = 0, sigma = 1)
+     ),
+     layer(
+       activator = exp_activator,
+       n_nodes = ncol(y),
+       weight_prior = make_distribution("NO", mu = 0, sigma = 1)
+     )
    ),
    error_distribution = make_distribution("PO")
 )
