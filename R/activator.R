@@ -15,9 +15,12 @@
 #' The following activators/activation functions are currently included:
 #'
 #' \itemize{
-#'    \item{elu}: "exponential linear unit" \code{f(x)=x} when x>0 and \code{f(x)=exp(x)-1} otherwise. See Clevert et al. (2015)
+#'    \item{elu}: "exponential linear unit" \code{f(x)=x} when x>0 and
+#'        \code{f(x)=exp(x)-1} otherwise. See Clevert et al. (2015)
+#'    \item{exp}: "exponential unit" \code{f(x)=exp(x)}; inverts a log link
 #'    \item{identity}: the identity function, \code{f(x)=x}
-#'    \item{relu}: "rectified linear unit" \code{f(x)=x} when x>0 and \code{f(x)=0} otherwise. See Nair and Hinton (2010).
+#'    \item{relu}: "rectified linear unit" \code{f(x)=x} when x>0 and
+#'        \code{f(x)=0} otherwise. See Nair and Hinton (2010).
 #'    \item{sigmoid}: sigmoid (logistic) function, \code{f(x)=1/(1 + exp(-x))}
 #' }
 #'
@@ -29,8 +32,9 @@
 #'    assumes that they are passed \code{matrix} objects, rather than vectors.
 #' @examples
 #' x = matrix(seq(-4, 4, .01), ncol = 1)
-#' par(mfrow = c(2, 2))
+#' par(mfrow = c(2, 3))
 #' plot(x = x, y = elu_activator$f(x), type = "l", main = "elu")
+#' plot(x = x, y = exp_activator$f(x), type = "l", main = "exp")
 #' plot(x = x, y = identity_activator$f(x), type = "l", main = "identity")
 #' plot(x = x, y = relu_activator$f(x), type = "l", main = "relu")
 #' plot(x = x, y = sigmoid_activator$f(x), type = "l", main = "sigmoid")
@@ -65,6 +69,24 @@ elu_activator = structure(
   ),
   class = "activator"
 )
+
+
+#' @rdname activator
+#' @export exp_activator
+exp_activator = structure(
+  list(
+    name = "exp",
+    f = exp,
+    grad = exp,
+    initialize_activator_biases = function(y){
+      # regularized by adding 1/2 before logging to keep
+      # initializations finite
+      log((colMeans(y + 1/2)))
+    }
+  ),
+  class = "activator"
+)
+
 
 
 #' @rdname activator
@@ -133,19 +155,3 @@ sigmoid_activator = structure(
   class = "activator"
 )
 
-
-#' @rdname activator
-#' @export exp_activator
-exp_activator = structure(
-  list(
-    name = "exp",
-    f = exp,
-    grad = exp,
-    initialize_activator_biases = function(y){
-      # regularized by adding 1/2 before logging to keep
-      # initializations finite
-      log((colMeans(y + 1/2)))
-    }
-  ),
-  class = "activator"
-)

@@ -1,5 +1,5 @@
 context("Activation functions")
-x = matrix(rnorm(12), ncol = 3)
+x = matrix(rnorm(100), ncol = 4)
 
 test_that("Activation functions' edge cases work",{
   # Sigmoid should never reach 0 or 1; these produce infinite gradients
@@ -11,6 +11,11 @@ test_that("Activation functions' gradients are correct",{
   expect_equal(
     numDeriv::grad(elu_activator$f, x),
     c(elu_activator$grad(x))
+  )
+
+  expect_equal(
+    numDeriv::grad(exp_activator$f, x),
+    c(exp_activator$grad(x))
   )
 
   expect_equal(
