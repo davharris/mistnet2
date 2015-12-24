@@ -4,17 +4,17 @@
 #' @param ... additional arguments to be passed to other methods
 #'
 #' @export
-#' @seealso \code{\link{log_density.error_distribution}},
+#' @seealso \code{\link{log_density.distribution}},
 #'    \code{\link{log_density.network}}
 log_density = function(object, ...){
   UseMethod("log_density", object)
 }
 
 #' Calculate the log probability of a distribution
-#' @param object an \code{\link{error_distribution}} object
+#' @param object an \code{\link{distribution}} object
 #' @param ... additional arguments passed to \code{\link{get_values}}
 #' @export
-log_density.error_distribution = function(object, ...){
+log_density.distribution = function(object, ...){
   do.call(
     object$d,
     get_values(object, log = TRUE, ...)
@@ -37,13 +37,13 @@ log_density.network = function(object, state, par, include_penalties, ...){
   }
 
   out = log_density(
-    object$error_distribution,
+    object$distribution,
     x = object$y,
     mu = state$outputs[[length(state$outputs)]]
   )
 
   if (include_penalties) {
-    parameters = relist(par, object$par_skeleton)
+    parameters = relist(par, object$par_list)
 
     penalties = sapply(
       1:length(object$weight_priors),
@@ -53,7 +53,7 @@ log_density.network = function(object, state, par, include_penalties, ...){
     )
 
     # The sum of the returned values needs to equal
-    # sum(log_density.error_distribution) + sum(penalties). Dividing by
+    # sum(log_density.distribution) + sum(penalties). Dividing by
     # length(out) prevents double-counting when the output is summed up later.
     return(out + sum(penalties) / length(out))
   } else {

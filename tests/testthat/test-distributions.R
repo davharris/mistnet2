@@ -1,25 +1,25 @@
 context("Distributions")
 
-test_that("make_gamlss_distribution accepts functions", {
-  dist = make_gamlss_distribution(gamlss.dist::NO, sigma = 2)
+test_that("make_distribution accepts functions", {
+  dist = make_distribution(gamlss.dist::NO, sigma = 2)
 })
 
 
-test_that("make_gamlss_distribution rejects family objects", {
+test_that("make_distribution rejects family objects", {
   expect_error(
-    make_gamlss_distribution(NO(), sigma = 2),
+    make_distribution(NO(), sigma = 2),
     "not the object itself"
   )
 })
 
 test_that("Distribution parameters are checked",{
   expect_error(
-    make_gamlss_distribution("NO"),
+    make_distribution("NO"),
     "sigma is required for the `NO` distribution"
   )
 
   expect_error(
-    make_gamlss_distribution("BI"),
+    make_distribution("BI"),
     "bd is required for the `BI` distribution"
   )
 })
@@ -27,7 +27,7 @@ test_that("Distribution parameters are checked",{
 test_that("Arguments are passed properly",{
   # Binomial distribution
 
-  distribution = make_gamlss_distribution("BI", bd = 5)
+  distribution = make_distribution("BI", bd = 5)
 
   # By default, the gamlss binomial log density dBI sets bd to 1.
   # If these are equal, it means bd=5 from above is being passed properly
@@ -50,7 +50,7 @@ test_that("Arguments are passed properly",{
 
   # Zero-inflated negative binomial distribution with mu, sigma, nu
 
-  distribution = make_gamlss_distribution("ZINBI", sigma = 3, nu = 5)
+  distribution = make_distribution("ZINBI", sigma = 3, nu = 5)
 
   # gradient with respect to nu
   expect_equal(
@@ -61,7 +61,7 @@ test_that("Arguments are passed properly",{
 
 
 test_that("meaningful errors are thrown when dldx isn't available",{
-  dist = make_gamlss_distribution("BI", bd = 3)
+  dist = make_distribution("BI", bd = 3)
 
   expect_error(
     dist$dldx(x = pi, mu = exp(1)),
@@ -70,7 +70,7 @@ test_that("meaningful errors are thrown when dldx isn't available",{
 })
 
 test_that("dldx works for distributions that have it", {
-  dist = make_gamlss_distribution("NO", sigma = 3)
+  dist = make_distribution("NO", sigma = 3)
 
   expect_equal(
     grad(dist, "x", x = pi, mu = exp(1)),
@@ -111,7 +111,7 @@ test_that("new distributions can be created", {
   attach(list(dEXAMPLE = dEXAMPLE))
   attach(list(rEXAMPLE = rEXAMPLE))
 
-  dist = make_gamlss_distribution(EXAMPLE, sigma = 4)
+  dist = make_distribution(EXAMPLE, sigma = 4)
 
   expect_equal(
     dist$dldx(1, 1),
@@ -135,7 +135,7 @@ test_that("new distributions can be created", {
 
 
 test_that("Improper uniform distribution works", {
-  dist = make_gamlss_distribution("IU")
+  dist = make_distribution("IU")
 
   expect_equal(
     log_density(dist, x = 1:100, mu = 1:100),
@@ -155,7 +155,7 @@ test_that("Improper uniform distribution works", {
 
 
 test_that("missing `adjusted_values` leads to interpretable error messages", {
-  dist = make_gamlss_distribution("BI", mu = adjustable(0.5), bd = 3)
+  dist = make_distribution("BI", mu = adjustable(0.5), bd = 3)
 
   expect_error(
     grad(distribution = dist, "mu", y = 2),
@@ -164,7 +164,7 @@ test_that("missing `adjusted_values` leads to interpretable error messages", {
 })
 
 test_that("adjustable values are collected properly", {
-  dist = make_gamlss_distribution("BI", mu = adjustable(0.5), bd = 3)
+  dist = make_distribution("BI", mu = adjustable(0.5), bd = 3)
 
   expect_equal(
     grad(distribution = dist, "mu", y = 2, adjusted_values = list(mu = 0.6)),

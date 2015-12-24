@@ -15,7 +15,7 @@ log_density(object, ...)
 Calculate the log probability density of an object
 }
 \seealso{
-\code{\link{log_density.error_distribution}},
+\code{\link{log_density.distribution}},
    \code{\link{log_density.network}}
 }
 

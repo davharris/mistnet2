@@ -7,7 +7,7 @@
 grad(distribution, name, ...)
 }
 \arguments{
-\item{distribution}{An \code{\link{error_distribution}} object}
+\item{distribution}{An \code{\link{distribution}} object}
 
 \item{name}{One of \code{"mu"}, \code{"sigma"}, \code{"nu"}, \code{"tau"}, or \code{"x"}}
 

@@ -4,13 +4,13 @@ print.network = function(object){
   cat(
     ncol(object$x),
     "observed predictors and",
-    ncol(object$par_skeleton$z),
+    ncol(object$par_list$z),
     "latent variables\n\n"
   )
 
   cat("layers:\n")
   for (i in 1:length(object$activators)) {
-    n_nodes = ncol(object$par_skeleton$weights[[i]])
+    n_nodes = ncol(object$par_list$weights[[i]])
     cat(
       "  ",
       i,
@@ -22,5 +22,5 @@ print.network = function(object){
       sep = ""
     )
   }
-  cat("    ", object$error_distribution$family[[2]], "error distribution")
+  cat("    ", object$distribution$family[[2]], "error distribution")
 }

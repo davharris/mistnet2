@@ -31,7 +31,7 @@ dim(y) = c(n, n_y)
 network = list(
   x = x,
   y = y,
-  par_skeleton = list(
+  par_list = list(
     z = matrix(rnorm(n * n_z, sd = .5), nrow = n, ncol = n_z),
     weights = list(
       matrix(rnorm((n_x + n_z) * n_y, sd = .5), nrow = n_x + n_z, ncol = n_y)
@@ -41,9 +41,9 @@ network = list(
     )
   ),
   activators = list(sigmoid_activator),
-  error_distribution = make_gamlss_distribution("BI", bd = bd),
+  distribution = make_distribution("BI", bd = bd),
   priors = list(
-    make_gamlss_distribution("IU")
+    make_distribution("IU")
   )
 )
 class(network) = "network"
@@ -53,7 +53,7 @@ class(network) = "network"
 
 starttests = TRUE # Test my gradients before optimizing
 o = optimx::optimx(
-  par = unlist(network$par_skeleton),
+  par = unlist(network$par_list),
   fn = function(par){
     sum(log_density(network, par = par))
   },
@@ -66,7 +66,7 @@ o = optimx::optimx(
   hessian = FALSE
 )
 
-estimates = relist(coef(o), network$par_skeleton)
+estimates = relist(coef(o), network$par_list)
 
 
 

@@ -9,7 +9,7 @@
 #' @export
 backprop = function(network, state, par, ...){
 
-  parameters = relist(par, network$par_skeleton)
+  parameters = relist(par, network$par_list)
 
   # We'll be filling in lists of gradients for the weights and biases.
   # Start them with empty lists.  Gradient for z is defined later.
@@ -36,7 +36,7 @@ backprop = function(network, state, par, ...){
 
       # So it takes the raw error gradient and multiplies it by activation grad
       # (because of the chain rule)
-      grad(network$error_distribution, "mu", y = network$y, mu = state$outputs[[i]]) *
+      grad(network$distribution, "mu", y = network$y, mu = state$outputs[[i]]) *
         activation_grad
     }else{
       # Lower layers' jobs are to follow the gradient from the inputs in the
