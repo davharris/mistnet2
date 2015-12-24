@@ -4,7 +4,7 @@ using namespace Rcpp;
 // [[Rcpp::export]]
 NumericMatrix rcpp_add_biases(NumericMatrix m, NumericVector v) {
   if (m.ncol() != v.length()) {
-    stop("ncol(m) != length(v)");
+    stop("can't add biases when ncol(m) != length(v)");
   }
   NumericMatrix out(m.nrow(), m.ncol());
   for(int i = 0; i< m.ncol(); i++){
