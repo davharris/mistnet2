@@ -16,6 +16,6 @@ Calculate the log probability density of an object
 }
 \seealso{
 \code{\link{log_density.distribution}},
-   \code{\link{log_density.network}}
+   \code{\link{log_density.mistnet}}
 }
 
