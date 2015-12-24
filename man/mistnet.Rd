@@ -55,4 +55,44 @@ A \code{network} object
 \description{
 Build and fit a neural network with random effects
 }
+\examples{
+set.seed(1)
+
+# Load data from the `vegan` package
+data(mite, mite.env, package = "vegan")
+
+# x is a matrix of environmental predictors
+x = scale(model.matrix(~., data = mite.env)[, -1])
+
+# y is a matrix of abundances (counts) for 35 species of mites
+y = as.matrix(mite)
+
+# Fit a neural network with one hidden layer of 10 nodes and an elu
+# activation function. The response variable has a Poisson distribution
+# with a log link (exp_activator). The prior distributions for each layer
+# are each standard normal distributions, and two latent variables are used.
+net = mistnet(
+   x = x,
+   y = y,
+   n_z = 2,
+   n_hidden = 10,
+   activators = list(elu_activator, exp_activator),
+   priors = list(
+     make_gamlss_distribution("NO", mu = 0, sigma = 1),
+     make_gamlss_distribution("NO", mu = 0, sigma = 1)
+   ),
+   error_distribution = "PO"
+)
+
+print(net)
+
+# show the model's predictions for each layer
+str(feedforward(net, par = unlist(net$par_skeleton)))
+
+# Calculate the log-likelihood for each observation under the fitted model
+log_density(net, par = unlist(net$par_skeleton), include_penalties = FALSE)
+
+# Include penalty terms from the prior to calculate the log-posterior instead
+log_density(net, par = unlist(net$par_skeleton), include_penalties = TRUE)
+}
 

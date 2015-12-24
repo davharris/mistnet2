@@ -30,6 +30,7 @@ log_density.error_distribution = function(object, ...){
 #' be included in the log-density?
 #' @param par a vector of network parameters
 #' @param ... Additional arguments (currently not used.)
+#' @export
 log_density.network = function(object, state, par, include_penalties, ...){
   if (missing(state)) {
     state = feedforward(object, par)
