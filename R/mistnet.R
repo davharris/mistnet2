@@ -119,7 +119,7 @@ mistnet = function(
     weight_priors = weight_priors,
     distribution = distribution
   )
-  class(network) = "network"
+  class(network) = c("mistnet_network", "network")
 
 
   if (fit) {

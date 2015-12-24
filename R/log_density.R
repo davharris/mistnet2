@@ -31,7 +31,8 @@ log_density.distribution = function(object, ...){
 #' @param par a vector of network parameters
 #' @param ... Additional arguments (currently not used.)
 #' @export
-log_density.network = function(object, state, par, include_penalties, ...){
+log_density.mistnet_network = function(object, state, par, include_penalties,
+                                       ...){
   if (missing(state)) {
     state = feedforward(object, par)
   }
