@@ -7,7 +7,7 @@
 random_sample(distribution, ...)
 }
 \arguments{
-\item{distribution}{an \code{\link{error_distribution}} object}
+\item{distribution}{an \code{\link{distribution}} object}
 
 \item{...}{additional arguments passed to \code{\link{get_values}}}
 }

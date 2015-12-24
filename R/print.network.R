@@ -1,16 +1,16 @@
-print.network = function(object){
+print.mistnet_network = function(object){
   cat(nrow(object$x), "observations\n\n")
 
   cat(
     ncol(object$x),
     "observed predictors and",
-    ncol(object$par_skeleton$z),
+    ncol(object$par_list$z),
     "latent variables\n\n"
   )
 
   cat("layers:\n")
   for (i in 1:length(object$activators)) {
-    n_nodes = ncol(object$par_skeleton$weights[[i]])
+    n_nodes = ncol(object$par_list$weights[[i]])
     cat(
       "  ",
       i,

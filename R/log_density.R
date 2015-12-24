@@ -4,17 +4,17 @@
 #' @param ... additional arguments to be passed to other methods
 #'
 #' @export
-#' @seealso \code{\link{log_density.error_distribution}},
-#'    \code{\link{log_density.network}}
+#' @seealso \code{\link{log_density.distribution}},
+#'    \code{\link{log_density.mistnet_network}}
 log_density = function(object, ...){
   UseMethod("log_density", object)
 }
 
 #' Calculate the log probability of a distribution
-#' @param object an \code{\link{error_distribution}} object
+#' @param object an \code{\link{distribution}} object
 #' @param ... additional arguments passed to \code{\link{get_values}}
 #' @export
-log_density.error_distribution = function(object, ...){
+log_density.distribution = function(object, ...){
   do.call(
     object$d,
     get_values(object, log = TRUE, ...)
@@ -31,7 +31,8 @@ log_density.error_distribution = function(object, ...){
 #' @param par a vector of network parameters
 #' @param ... Additional arguments (currently not used.)
 #' @export
-log_density.network = function(object, state, par, include_penalties, ...){
+log_density.mistnet_network = function(object, state, par, include_penalties,
+                                       ...){
   if (missing(state)) {
     state = feedforward(object, par)
   }
@@ -43,17 +44,17 @@ log_density.network = function(object, state, par, include_penalties, ...){
   )
 
   if (include_penalties) {
-    parameters = relist(par, object$par_skeleton)
+    parameters = relist(par, object$par_list)
 
     penalties = sapply(
-      1:length(object$priors),
+      1:length(object$weight_priors),
       function(i){
-        sum(log_density(object$priors[[i]], x = parameters$weights[[i]], ...))
+        sum(log_density(object$weight_priors[[i]], x = parameters$weights[[i]], ...))
       }
     )
 
     # The sum of the returned values needs to equal
-    # sum(log_density.error_distribution) + sum(penalties). Dividing by
+    # sum(log_density.distribution) + sum(penalties). Dividing by
     # length(out) prevents double-counting when the output is summed up later.
     return(out + sum(penalties) / length(out))
   } else {

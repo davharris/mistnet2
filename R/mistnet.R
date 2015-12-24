@@ -8,14 +8,18 @@
 #' @param n_hidden An integer vector determining the number of hidden nodes in
 #'    each hidden layer. Its length should be one less than that of the
 #'    \code{activators} list.
-#' @param error_distribution An \code{\link{error_distribution}} object
-#' @param priors [[Add me]]
+#' @param error_distribution An \code{\link{distribution}} object
+#' @param weight_priors A \code{list} of \code{\link{distribution}} objects,
+#'     one per network layer. Each one acts as a prior distribution on the
+#'     corresponding layer's weight matrix.
 #' @param fit Logical. Should the model be fitted or should an untrained model
 #'    be returned. Defaults to TRUE
 #' @param starttests Should \code{\link[optimx]{optimx}}'s \code{starttests} be
 #'    run? Can be useful for identifying errors but is not usually needed.
 #' @param ... Additional arguments to \code{\link{mistnet_fit}}
-#' @return A \code{network} object
+#' @return An object of class \code{network} and subclass \code{mistnet_network}.
+#'   This object will contain the original \code{x} and \code{y} matrices,
+#'   a list of adjustable parameters (\code{par_list}),
 #' @useDynLib mistnet2
 #' @importFrom optimx optimx
 #' @export
@@ -41,23 +45,23 @@
 #'    n_z = 2,
 #'    n_hidden = 10,
 #'    activators = list(elu_activator, exp_activator),
-#'    priors = list(
-#'      make_gamlss_distribution("NO", mu = 0, sigma = 1),
-#'      make_gamlss_distribution("NO", mu = 0, sigma = 1)
+#'    weight_priors = list(
+#'      make_distribution("NO", mu = 0, sigma = 1),
+#'      make_distribution("NO", mu = 0, sigma = 1)
 #'    ),
-#'    error_distribution = make_gamlss_distribution("PO")
+#'    error_distribution = make_distribution("PO")
 #' )
 #'
 #' print(net)
 #'
 #' # show the model's predictions for each layer
-#' str(feedforward(net, par = unlist(net$par_skeleton)))
+#' str(feedforward(net, par = unlist(net$par_list)))
 #'
 #' # Calculate the log-likelihood for each observation under the fitted model
-#' log_density(net, par = unlist(net$par_skeleton), include_penalties = FALSE)
+#' log_density(net, par = unlist(net$par_list), include_penalties = FALSE)
 #'
 #' # Include penalty terms from the prior to calculate the log-posterior instead
-#' log_density(net, par = unlist(net$par_skeleton), include_penalties = TRUE)
+#' log_density(net, par = unlist(net$par_list), include_penalties = TRUE)
 
 mistnet = function(
   x,
@@ -66,13 +70,13 @@ mistnet = function(
   activators,
   n_hidden,
   error_distribution,
-  priors,
+  weight_priors,
   fit = TRUE,
   starttests = FALSE,
   ...
 ){
   stopifnot(length(n_hidden) == (length(activators) - 1))
-  stopifnot(length(priors) == length(activators))
+  stopifnot(length(weight_priors) == length(activators))
 
   n_layers = length(activators)
 
@@ -93,7 +97,7 @@ mistnet = function(
   network = list(
     x = x,
     y = y,
-    par_skeleton = list(
+    par_list = list(
       z = matrix(rnorm(n * n_z, sd = .5), nrow = n, ncol = n_z),
       weights = lapply(
         1:n_layers,
@@ -114,10 +118,10 @@ mistnet = function(
       )
     ),
     activators = activators,
-    priors = priors,
+    weight_priors = weight_priors,
     error_distribution = error_distribution
   )
-  class(network) = "network"
+  class(network) = c("mistnet_network", "network")
 
 
   if (fit) {

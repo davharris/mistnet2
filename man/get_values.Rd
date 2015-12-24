@@ -10,7 +10,7 @@ get_values(distribution, ..., adjusted_values)
 \item{distribution}{a distribution object}
 
 \item{...}{additional arguments, which will override values contained within
-the \code{error_distribution} object or in the \code{adjusted_values}}
+the \code{distribution} object or in the \code{adjusted_values}}
 
 \item{adjusted_values}{a \code{list} of adjusted values (for adjustable
 parameters)}

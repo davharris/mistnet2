@@ -1,4 +1,4 @@
-#' Make an \code{error_distribution} from a gamlss distribution
+#' Make an \code{distribution} from a gamlss distribution
 #'
 #' @param family_function Either a character vector containing the name of a
 #'    function that produces a \code{\link[gamlss.dist]{gamlss.family}} (e.g.
@@ -11,7 +11,7 @@
 #'    \code{sigma} (scale), \code{nu} (shape), or \code{tau} (shape),
 #'    depending on the distribution. These must be named, and partial matching
 #'    is not allowed.
-#' @return An \code{error_distribution} object, consisting of the following
+#' @return An \code{distribution} object, consisting of the following
 #'    functions:
 #' \itemize{
 #'    \item{\code{log_density(x, mu)}: log probability of the distribution with
@@ -27,10 +27,10 @@
 #'        called \code{dldx}.
 #' }
 #' @import gamlss.dist
-#' @aliases error_distribution
+#' @aliases distribution
 #' @export
 #' @examples
-#' distribution = make_gamlss_distribution("NO", sigma = 1/3)
+#' distribution = make_distribution("NO", sigma = 1/3)
 #'
 #' # Sample 10 random values with mean=2 (and sigma=1/3 as defined above)
 #' samples = random_sample(distribution, n = 10, mu = 2)
@@ -50,11 +50,11 @@
 #' # however. For example, this code would return an error that
 #' # " gradient with respect to x (dldx) is not defined for the distribution PO"
 #' \dontrun{
-#' another_distribution = make_gamlss_distribution("PO")
+#' another_distribution = make_distribution("PO")
 #' another_distribution$dldx(x = 1:10, mu = 1)
 #' }
 #'
-make_gamlss_distribution = function(family_function, ...){
+make_distribution = function(family_function, ...){
   if (is(family_function, "family")) {
     stop("family_function should refer to a function that creates a family\nobject, not the object itself")
   }
@@ -112,12 +112,12 @@ make_gamlss_distribution = function(family_function, ...){
       dldt = family_object$dldt,
       dldx = get_dldx(family_object)
     ),
-    class = "error_distribution"
+    class = "distribution"
   )
 }
 
 #' Calculate the gradient of a distribution
-#' @param distribution An \code{\link{error_distribution}} object
+#' @param distribution An \code{\link{distribution}} object
 #' @param name One of \code{"mu"}, \code{"sigma"}, \code{"nu"}, \code{"tau"}, or \code{"x"}
 #' @param ... additional arguments passed to \code{\link{get_values}}
 #' @export
@@ -135,7 +135,7 @@ grad = function(distribution, name, ...){
 }
 
 #' Sample random numbers from a probability distribution
-#' @param distribution an \code{\link{error_distribution}} object
+#' @param distribution an \code{\link{distribution}} object
 #' @param ... additional arguments passed to \code{\link{get_values}}
 #' @export
 random_sample = function(distribution, ...){
@@ -150,7 +150,7 @@ random_sample = function(distribution, ...){
 #'
 #' @param distribution a distribution object
 #' @param ... additional arguments, which will override values contained within
-#'    the \code{error_distribution} object or in the \code{adjusted_values}
+#'    the \code{distribution} object or in the \code{adjusted_values}
 #' @param adjusted_values a \code{list} of adjusted values (for adjustable
 #' parameters)
 #' @export

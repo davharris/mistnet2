@@ -17,7 +17,7 @@
 #' @export
 feedforward = function(network, par, ...){
 
-  parameters = relist(par, network$par_skeleton)
+  parameters = relist(par, network$par_list)
 
   # inputs, pre-activations, and outputs start empty
   inputs = pre_activations = outputs = list()

@@ -41,7 +41,7 @@ mistnet_fit_optimx = function(
 ){
 
   opt = optimx::optimx(
-    par = unlist(network$par_skeleton),
+    par = unlist(network$par_list),
     fn = fn,
     gr = gr,
     method = method,
@@ -59,7 +59,7 @@ mistnet_fit_optimx = function(
     xtimes = opt$xtimes
   )
 
-  network$par_skeleton = relist(coef(opt), network$par_skeleton)
+  network$par_list = relist(coef(opt), network$par_list)
 
   network
 }
