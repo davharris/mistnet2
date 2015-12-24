@@ -32,7 +32,7 @@ be returned. Defaults to TRUE}
 \item{starttests}{Should \code{\link[optimx]{optimx}}'s \code{starttests} be
 run? Can be useful for identifying errors but is not usually needed.}
 
-\item{...}{Additional arguments to fit}
+\item{...}{Additional arguments to \code{\link{mistnet_fit}}}
 }
 \value{
 A \code{network} object

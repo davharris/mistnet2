@@ -14,7 +14,7 @@
 #'    be returned. Defaults to TRUE
 #' @param starttests Should \code{\link[optimx]{optimx}}'s \code{starttests} be
 #'    run? Can be useful for identifying errors but is not usually needed.
-#' @param ... Additional arguments to fit
+#' @param ... Additional arguments to \code{\link{mistnet_fit}}
 #' @return A \code{network} object
 #' @useDynLib mistnet2
 #' @importFrom optimx optimx
