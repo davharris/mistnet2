@@ -36,8 +36,10 @@ backprop = function(network, state, par, ...){
 
       # So it takes the raw error gradient and multiplies it by activation grad
       # (because of the chain rule)
-      grad(network$distribution, "mu", y = network$y, mu = state$outputs[[i]]) *
-        activation_grad
+      grad(network$error_distribution,
+           "mu",
+           y = network$y,
+           mu = state$outputs[[i]]) * activation_grad
     }else{
       # Lower layers' jobs are to follow the gradient from the inputs in the
       # layer above.  They also multiply by activation_grad because of the chain

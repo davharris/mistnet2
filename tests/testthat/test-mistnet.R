@@ -26,7 +26,7 @@ test_that("mistnet function runs and prints with no hidden layers", {
       make_distribution("NO", mu = 0, sigma = 1)
     ),
     n_hidden = NULL,
-    distribution = make_distribution("BI", bd = bd),
+    error_distribution = make_distribution("BI", bd = bd),
     fit = FALSE
   )
 
@@ -46,7 +46,7 @@ test_that("mistnet function runs and prints with one hidden layer", {
       make_distribution("NO", mu = 0, sigma = 1)
     ),
     n_hidden = c(5),
-    distribution = make_distribution("BI", bd = bd),
+    error_distribution = make_distribution("BI", bd = bd),
     fit = FALSE
   )
 
@@ -70,7 +70,7 @@ test_that("mistnet function runs and prints with two hidden layers", {
       make_distribution("NO", mu = 0, sigma = 1)
     ),
     n_hidden = c(5, 7),
-    distribution = make_distribution("BI", bd = bd),
+    error_distribution = make_distribution("BI", bd = bd),
     fit = FALSE
   )
 
@@ -94,7 +94,7 @@ test_that("mistnet's gradients are numerically accurate",{
       make_distribution("NO", mu = 1, sigma = 2)
     ),
     n_hidden = c(5, 7),
-    distribution = make_distribution("BI", bd = bd),
+    error_distribution = make_distribution("BI", bd = bd),
     fit = FALSE
   )
 
@@ -135,7 +135,7 @@ test_that("mistnet_fit runs with three layers", {
           make_distribution("NO", mu = 1, sigma = 2)
         ),
         n_hidden = c(5, 7),
-        distribution = make_distribution("BI", bd = bd),
+        error_distribution = make_distribution("BI", bd = bd),
         fit = TRUE
       )
     )

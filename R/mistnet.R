@@ -8,7 +8,7 @@
 #' @param n_hidden An integer vector determining the number of hidden nodes in
 #'    each hidden layer. Its length should be one less than that of the
 #'    \code{activators} list.
-#' @param distribution An \code{\link{distribution}} object
+#' @param error_distribution An \code{\link{distribution}} object
 #' @param weight_priors A \code{list} of \code{\link{distribution}} objects,
 #'     one per network layer. Each one acts as a prior distribution on the
 #'     corresponding layer's weight matrix.
@@ -17,7 +17,9 @@
 #' @param starttests Should \code{\link[optimx]{optimx}}'s \code{starttests} be
 #'    run? Can be useful for identifying errors but is not usually needed.
 #' @param ... Additional arguments to \code{\link{mistnet_fit}}
-#' @return A \code{network} object
+#' @return An object of class \code{network} and subclass \code{mistnet_network}.
+#'   This object will contain the original \code{x} and \code{y} matrices,
+#'   a list of adjustable parameters (\code{par_list}),
 #' @useDynLib mistnet2
 #' @importFrom optimx optimx
 #' @export
@@ -47,7 +49,7 @@
 #'      make_distribution("NO", mu = 0, sigma = 1),
 #'      make_distribution("NO", mu = 0, sigma = 1)
 #'    ),
-#'    distribution = make_distribution("PO")
+#'    error_distribution = make_distribution("PO")
 #' )
 #'
 #' print(net)
@@ -67,7 +69,7 @@ mistnet = function(
   n_z,
   activators,
   n_hidden,
-  distribution,
+  error_distribution,
   weight_priors,
   fit = TRUE,
   starttests = FALSE,
@@ -117,7 +119,7 @@ mistnet = function(
     ),
     activators = activators,
     weight_priors = weight_priors,
-    distribution = distribution
+    error_distribution = error_distribution
   )
   class(network) = c("mistnet_network", "network")
 

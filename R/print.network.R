@@ -1,4 +1,4 @@
-print.network = function(object){
+print.mistnet_network = function(object){
   cat(nrow(object$x), "observations\n\n")
 
   cat(
@@ -22,5 +22,5 @@ print.network = function(object){
       sep = ""
     )
   }
-  cat("    ", object$distribution$family[[2]], "error distribution")
+  cat("    ", object$error_distribution$family[[2]], "error distribution")
 }

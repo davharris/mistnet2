@@ -4,7 +4,7 @@
 \alias{mistnet}
 \title{Build and fit a neural network with random effects}
 \usage{
-mistnet(x, y, n_z, activators, n_hidden, distribution, weight_priors,
+mistnet(x, y, n_z, activators, n_hidden, error_distribution, weight_priors,
   fit = TRUE, starttests = FALSE, ...)
 }
 \arguments{
@@ -22,7 +22,7 @@ network layer}
 each hidden layer. Its length should be one less than that of the
 \code{activators} list.}
 
-\item{distribution}{An \code{\link{distribution}} object}
+\item{error_distribution}{An \code{\link{distribution}} object}
 
 \item{weight_priors}{A \code{list} of \code{\link{distribution}} objects,
 one per network layer. Each one acts as a prior distribution on the
@@ -37,7 +37,9 @@ run? Can be useful for identifying errors but is not usually needed.}
 \item{...}{Additional arguments to \code{\link{mistnet_fit}}}
 }
 \value{
-A \code{network} object
+An object of class \code{network} and subclass \code{mistnet_network}.
+  This object will contain the original \code{x} and \code{y} matrices,
+  a list of adjustable parameters (\code{par_list}),
 }
 \description{
 Build and fit a neural network with random effects
@@ -68,7 +70,7 @@ net = mistnet(
      make_distribution("NO", mu = 0, sigma = 1),
      make_distribution("NO", mu = 0, sigma = 1)
    ),
-   distribution = make_distribution("PO")
+   error_distribution = make_distribution("PO")
 )
 
 print(net)

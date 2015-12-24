@@ -38,7 +38,7 @@ log_density.mistnet_network = function(object, state, par, include_penalties,
   }
 
   out = log_density(
-    object$distribution,
+    object$error_distribution,
     x = object$y,
     mu = state$outputs[[length(state$outputs)]]
   )
