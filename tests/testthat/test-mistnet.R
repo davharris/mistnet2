@@ -26,9 +26,8 @@ test_that("mistnet function runs and prints with no hidden layers", {
       make_gamlss_distribution("NO", mu = 0, sigma = 1)
     ),
     n_hidden = NULL,
-    error_distribution = "BI",
-    fit = FALSE,
-    bd = bd
+    error_distribution = make_gamlss_distribution("BI", bd = bd),
+    fit = FALSE
   )
 
   expect_output(print(net), "7 observations\n\n5 observed predictors and 3 latent variables\n\nlayers:\n  1: sigmoid layer with 7 nodes\n     Binomial error distribution")
@@ -47,9 +46,8 @@ test_that("mistnet function runs and prints with one hidden layer", {
       make_gamlss_distribution("NO", mu = 0, sigma = 1)
     ),
     n_hidden = c(5),
-    error_distribution = "BI",
-    fit = FALSE,
-    bd = bd
+    error_distribution = make_gamlss_distribution("BI", bd = bd),
+    fit = FALSE
   )
 
   expect_output(
@@ -72,9 +70,8 @@ test_that("mistnet function runs and prints with two hidden layers", {
       make_gamlss_distribution("NO", mu = 0, sigma = 1)
     ),
     n_hidden = c(5, 7),
-    error_distribution = "BI",
-    fit = FALSE,
-    bd = bd
+    error_distribution = make_gamlss_distribution("BI", bd = bd),
+    fit = FALSE
   )
 
   expect_output(
@@ -97,9 +94,8 @@ test_that("mistnet's gradients are numerically accurate",{
       make_gamlss_distribution("NO", mu = 1, sigma = 2)
     ),
     n_hidden = c(5, 7),
-    error_distribution = "BI",
-    fit = FALSE,
-    bd = bd
+    error_distribution = make_gamlss_distribution("BI", bd = bd),
+    fit = FALSE
   )
 
   numeric_grad = numDeriv::grad(
@@ -139,9 +135,8 @@ test_that("mistnet_fit runs with three layers", {
           make_gamlss_distribution("NO", mu = 1, sigma = 2)
         ),
         n_hidden = c(5, 7),
-        error_distribution = "BI",
-        fit = TRUE,
-        bd = bd
+        error_distribution = make_gamlss_distribution("BI", bd = bd),
+        fit = TRUE
       )
     )
   )

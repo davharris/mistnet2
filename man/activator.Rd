@@ -4,6 +4,7 @@
 \name{elu_activator}
 \alias{activator}
 \alias{elu_activator}
+\alias{exp_activator}
 \alias{identity_activator}
 \alias{relu_activator}
 \alias{sigmoid_activator}
@@ -15,7 +16,7 @@ to neural network nonlinearities:
    \item{\code{f}: The activation function (nonlinearity) itself}
    \item{\code{grad}: The activation function's gradient with respect to
        \code{x}}
-   \item{\code{initialize_activatorinal_biases}: A function used internally to
+   \item{\code{initialize_activator_biases}: A function used internally to
        initialize the biases of a network's output layer}
 }}
 \usage{
@@ -26,6 +27,8 @@ identity_activator
 relu_activator
 
 sigmoid_activator
+
+exp_activator
 }
 \description{
 Activator objects and nonlinear activation functions

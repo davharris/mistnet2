@@ -4,8 +4,8 @@
 \alias{mistnet_fit_optimx}
 \title{Optimize a mistnet model using the \code{\link[optimx]{optimx}} package}
 \usage{
-mistnet_fit_optimx(network, fn, gr, method = "L-BFGS-B", trace = 0,
-  maxit = 1000, starttests = TRUE, hessian = FALSE, ...)
+mistnet_fit_optimx(network, fn, gr, method = "L-BFGS-B", itnmax = 1000,
+  control = list(maximize = TRUE, starttests = TRUE), hessian = FALSE)
 }
 \arguments{
 \item{network}{A \code{network} object, as produced by the
@@ -18,7 +18,7 @@ mistnet_fit_optimx(network, fn, gr, method = "L-BFGS-B", trace = 0,
 gradient of the (penalized) log-likelihood with respect to all the
 parameters in \code{par}.}
 
-\item{method, trace, maxit, starttests, hessian, ...}{Additional arguments passed to
+\item{method, itnmax, control, hessian}{Additional arguments passed to
 \code{\link[optimx]{optimx}}}
 }
 \description{

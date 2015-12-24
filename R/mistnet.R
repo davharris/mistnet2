@@ -8,27 +8,57 @@
 #' @param n_hidden An integer vector determining the number of hidden nodes in
 #'    each hidden layer. Its length should be one less than that of the
 #'    \code{activators} list.
-#' @param error_distribution Either an \code{\link{error_distribution}} object
-#'    or a \link[gamlss.dist]{gamlss.family} abbreviation (such as "NO" for the
-#'    normal distribution)
+#' @param error_distribution An \code{\link{error_distribution}} object
 #' @param priors [[Add me]]
 #' @param fit Logical. Should the model be fitted or should an untrained model
 #'    be returned. Defaults to TRUE
 #' @param starttests Should \code{\link[optimx]{optimx}}'s \code{starttests} be
 #'    run? Can be useful for identifying errors but is not usually needed.
-#' @param sigma (optional) scale parameter passed to
-#'    \code{\link{make_gamlss_distribution}}
-#' @param tau (optional) shape parameter passed to
-#'    \code{\link{make_gamlss_distribution}}
-#' @param nu (optional) shape parameter passed to
-#'    \code{\link{make_gamlss_distribution}}
-#' @param bd (optional) binomial denominator passed to
-#'    \code{\link{make_gamlss_distribution}}
-#' @param ... Additional arguments to fit
+#' @param ... Additional arguments to \code{\link{mistnet_fit}}
 #' @return A \code{network} object
 #' @useDynLib mistnet2
 #' @importFrom optimx optimx
 #' @export
+#' @examples
+#' set.seed(1)
+#'
+#' # Load data from the `vegan` package
+#' data(mite, mite.env, package = "vegan")
+#'
+#' # x is a matrix of environmental predictors
+#' x = scale(model.matrix(~., data = mite.env)[, -1])
+#'
+#' # y is a matrix of abundances (counts) for 35 species of mites
+#' y = as.matrix(mite)
+#'
+#' # Fit a neural network with one hidden layer of 10 nodes and an elu
+#' # activation function. The response variable has a Poisson distribution
+#' # with a log link (exp_activator). The prior distributions for each layer
+#' # are each standard normal distributions, and two latent variables are used.
+#' net = mistnet(
+#'    x = x,
+#'    y = y,
+#'    n_z = 2,
+#'    n_hidden = 10,
+#'    activators = list(elu_activator, exp_activator),
+#'    priors = list(
+#'      make_gamlss_distribution("NO", mu = 0, sigma = 1),
+#'      make_gamlss_distribution("NO", mu = 0, sigma = 1)
+#'    ),
+#'    error_distribution = make_gamlss_distribution("PO")
+#' )
+#'
+#' print(net)
+#'
+#' # show the model's predictions for each layer
+#' str(feedforward(net, par = unlist(net$par_skeleton)))
+#'
+#' # Calculate the log-likelihood for each observation under the fitted model
+#' log_density(net, par = unlist(net$par_skeleton), include_penalties = FALSE)
+#'
+#' # Include penalty terms from the prior to calculate the log-posterior instead
+#' log_density(net, par = unlist(net$par_skeleton), include_penalties = TRUE)
+
 mistnet = function(
   x,
   y,
@@ -39,10 +69,6 @@ mistnet = function(
   priors,
   fit = TRUE,
   starttests = FALSE,
-  sigma = NULL,
-  tau = NULL,
-  nu = NULL,
-  bd = NULL,
   ...
 ){
   stopifnot(length(n_hidden) == (length(activators) - 1))
@@ -89,13 +115,7 @@ mistnet = function(
     ),
     activators = activators,
     priors = priors,
-    error_distribution = make_gamlss_distribution(
-      error_distribution,
-      sigma = sigma,
-      tau = tau,
-      nu = nu,
-      bd = bd
-    )
+    error_distribution = error_distribution
   )
   class(network) = "network"
 

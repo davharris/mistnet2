@@ -27,7 +27,7 @@ mistnet_fit = function(network, mistnet_optimizer = mistnet_fit_optimx, ...){
 #' @param gr A function of \code{par} that returns a vector containing the
 #'    gradient of the (penalized) log-likelihood with respect to all the
 #'    parameters in \code{par}.
-#' @param method,trace,maxit,starttests,hessian,... Additional arguments passed to
+#' @param method,itnmax,control,hessian Additional arguments passed to
 #'    \code{\link[optimx]{optimx}}
 #' @export mistnet_fit_optimx
 mistnet_fit_optimx = function(
@@ -35,11 +35,9 @@ mistnet_fit_optimx = function(
   fn,
   gr,
   method = "L-BFGS-B",
-  trace = 0,
-  maxit = 1000,
-  starttests = TRUE,
-  hessian = FALSE,
-  ...
+  itnmax = 1000,
+  control = list(maximize = TRUE, starttests = TRUE),
+  hessian = FALSE
 ){
 
   opt = optimx::optimx(
@@ -47,15 +45,9 @@ mistnet_fit_optimx = function(
     fn = fn,
     gr = gr,
     method = method,
-    control = list(
-      trace = trace,
-      maximize = TRUE,
-      starttests = starttests,
-      maxit = maxit,
-      ...
-    ),
-    hessian = FALSE,
-    ...
+    itnmax = itnmax,
+    control = control,
+    hessian = hessian
   )
 
   network$optimization_results = list(
