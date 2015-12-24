@@ -9,7 +9,9 @@
 #'    each hidden layer. Its length should be one less than that of the
 #'    \code{activators} list.
 #' @param error_distribution An \code{\link{error_distribution}} object
-#' @param priors [[Add me]]
+#' @param weight_priors A \code{list} of \code{\link{error_distribution}} objects,
+#'     one per network layer. Each one acts as a prior distribution on the
+#'     corresponding layer's weight matrix.
 #' @param fit Logical. Should the model be fitted or should an untrained model
 #'    be returned. Defaults to TRUE
 #' @param starttests Should \code{\link[optimx]{optimx}}'s \code{starttests} be
@@ -41,7 +43,7 @@
 #'    n_z = 2,
 #'    n_hidden = 10,
 #'    activators = list(elu_activator, exp_activator),
-#'    priors = list(
+#'    weight_priors = list(
 #'      make_gamlss_distribution("NO", mu = 0, sigma = 1),
 #'      make_gamlss_distribution("NO", mu = 0, sigma = 1)
 #'    ),
@@ -66,13 +68,13 @@ mistnet = function(
   activators,
   n_hidden,
   error_distribution,
-  priors,
+  weight_priors,
   fit = TRUE,
   starttests = FALSE,
   ...
 ){
   stopifnot(length(n_hidden) == (length(activators) - 1))
-  stopifnot(length(priors) == length(activators))
+  stopifnot(length(weight_priors) == length(activators))
 
   n_layers = length(activators)
 
@@ -114,7 +116,7 @@ mistnet = function(
       )
     ),
     activators = activators,
-    priors = priors,
+    weight_priors = weight_priors,
     error_distribution = error_distribution
   )
   class(network) = "network"

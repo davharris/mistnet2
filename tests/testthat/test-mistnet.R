@@ -22,7 +22,7 @@ test_that("mistnet function runs and prints with no hidden layers", {
     y = y,
     n_z = n_z,
     activators = list(sigmoid_activator),
-    priors = list(
+    weight_priors = list(
       make_gamlss_distribution("NO", mu = 0, sigma = 1)
     ),
     n_hidden = NULL,
@@ -41,7 +41,7 @@ test_that("mistnet function runs and prints with one hidden layer", {
     y = y,
     n_z = n_z,
     activators = list(sigmoid_activator, sigmoid_activator),
-    priors = list(
+    weight_priors = list(
       make_gamlss_distribution("NO", mu = 0, sigma = 1),
       make_gamlss_distribution("NO", mu = 0, sigma = 1)
     ),
@@ -64,7 +64,7 @@ test_that("mistnet function runs and prints with two hidden layers", {
     y = y,
     n_z = n_z,
     activators = list(sigmoid_activator, elu_activator, sigmoid_activator),
-    priors = list(
+    weight_priors = list(
       make_gamlss_distribution("NO", mu = 0, sigma = 1),
       make_gamlss_distribution("NO", mu = 0, sigma = 1),
       make_gamlss_distribution("NO", mu = 0, sigma = 1)
@@ -88,7 +88,7 @@ test_that("mistnet's gradients are numerically accurate",{
     y = y,
     n_z = n_z,
     activators = list(sigmoid_activator, elu_activator, sigmoid_activator),
-    priors = list(
+    weight_priors = list(
       make_gamlss_distribution("NO", mu = -1, sigma = 8),
       make_gamlss_distribution("NO", mu = 0, sigma = 3),
       make_gamlss_distribution("NO", mu = 1, sigma = 2)
@@ -129,7 +129,7 @@ test_that("mistnet_fit runs with three layers", {
         y = y,
         n_z = n_z,
         activators = list(sigmoid_activator, elu_activator, sigmoid_activator),
-        priors = list(
+        weight_priors = list(
           make_gamlss_distribution("NO", mu = -1, sigma = 8),
           make_gamlss_distribution("NO", mu = 0, sigma = 3),
           make_gamlss_distribution("NO", mu = 1, sigma = 2)
@@ -145,7 +145,7 @@ test_that("mistnet_fit runs with three layers", {
   # Excluding the penalty from log_density should be the same as using a flat
   # prior
   flat_prior_net = net
-  flat_prior_net$priors = list(
+  flat_prior_net$weight_priors = list(
     make_gamlss_distribution("IU", mu = -1),
     make_gamlss_distribution("IU", mu = 0),
     make_gamlss_distribution("IU", mu = 1)

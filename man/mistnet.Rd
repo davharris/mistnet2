@@ -4,7 +4,7 @@
 \alias{mistnet}
 \title{Build and fit a neural network with random effects}
 \usage{
-mistnet(x, y, n_z, activators, n_hidden, error_distribution, priors,
+mistnet(x, y, n_z, activators, n_hidden, error_distribution, weight_priors,
   fit = TRUE, starttests = FALSE, ...)
 }
 \arguments{
@@ -24,7 +24,9 @@ each hidden layer. Its length should be one less than that of the
 
 \item{error_distribution}{An \code{\link{error_distribution}} object}
 
-\item{priors}{[[Add me]]}
+\item{weight_priors}{A \code{list} of \code{\link{error_distribution}} objects,
+one per network layer. Each one acts as a prior distribution on the
+corresponding layer's weight matrix.}
 
 \item{fit}{Logical. Should the model be fitted or should an untrained model
 be returned. Defaults to TRUE}
@@ -62,7 +64,7 @@ net = mistnet(
    n_z = 2,
    n_hidden = 10,
    activators = list(elu_activator, exp_activator),
-   priors = list(
+   weight_priors = list(
      make_gamlss_distribution("NO", mu = 0, sigma = 1),
      make_gamlss_distribution("NO", mu = 0, sigma = 1)
    ),

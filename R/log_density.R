@@ -46,9 +46,9 @@ log_density.network = function(object, state, par, include_penalties, ...){
     parameters = relist(par, object$par_skeleton)
 
     penalties = sapply(
-      1:length(object$priors),
+      1:length(object$weight_priors),
       function(i){
-        sum(log_density(object$priors[[i]], x = parameters$weights[[i]], ...))
+        sum(log_density(object$weight_priors[[i]], x = parameters$weights[[i]], ...))
       }
     )
 
