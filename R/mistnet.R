@@ -3,15 +3,9 @@
 #' @param y A numeric or integer matrix of response variables
 #' @param n_z, The number of latent random variables to include as predictors
 #'    alongside x
-#' @param activators A list of \code{\link{activator}} objects, one per
-#'    network layer
-#' @param n_hidden An integer vector determining the number of hidden nodes in
-#'    each hidden layer. Its length should be one less than that of the
-#'    \code{activators} list.
+#' @param layers A list of \code{\link{layer}} objects. Note that \code{n_nodes}
+#'    in the final layer must match \code{ncol(y)}.
 #' @param error_distribution An \code{\link{distribution}} object
-#' @param weight_priors A \code{list} of \code{\link{distribution}} objects,
-#'     one per network layer. Each one acts as a prior distribution on the
-#'     corresponding layer's weight matrix.
 #' @param fit Logical. Should the model be fitted or should an untrained model
 #'    be returned. Defaults to TRUE
 #' @param starttests Should \code{\link[optimx]{optimx}}'s \code{starttests} be
@@ -43,11 +37,17 @@
 #'    x = x,
 #'    y = y,
 #'    n_z = 2,
-#'    n_hidden = 10,
-#'    activators = list(elu_activator, exp_activator),
-#'    weight_priors = list(
-#'      make_distribution("NO", mu = 0, sigma = 1),
-#'      make_distribution("NO", mu = 0, sigma = 1)
+#'    layers = list(
+#'      layer(
+#'        activator = elu_activator,
+#'        n_nodes = 10,
+#'        weight_prior = make_distribution("NO", mu = 0, sigma = 1)
+#'      ),
+#'      layer(
+#'        activator = exp_activator,
+#'        n_nodes = ncol(y),
+#'        weight_prior = make_distribution("NO", mu = 0, sigma = 1)
+#'      )
 #'    ),
 #'    error_distribution = make_distribution("PO")
 #' )
@@ -67,18 +67,13 @@ mistnet = function(
   x,
   y,
   n_z,
-  activators,
-  n_hidden,
+  layers,
   error_distribution,
-  weight_priors,
   fit = TRUE,
   starttests = FALSE,
   ...
 ){
-  stopifnot(length(n_hidden) == (length(activators) - 1))
-  stopifnot(length(weight_priors) == length(activators))
-
-  n_layers = length(activators)
+  n_layers = length(layers)
 
   n = nrow(x)
   n_x = ncol(x)
@@ -87,12 +82,12 @@ mistnet = function(
 
   weight_dims = numeric(n_layers + 1)
   weight_dims[1] = n_x + n_z              # nrow of first weight matrix
-  weight_dims[length(weight_dims)] = n_y  # ncol of last weight matrix
-  if (n_layers > 1) {
-    for (i in 2:n_layers) {
-      weight_dims[i] = n_hidden[i - 1]
-    }
+  for (i in 1:n_layers) {
+    weight_dims[i + 1] = layers[[i]]$n_nodes
   }
+
+  activators = lapply(layers, function(layer) layer$activator)
+  weight_priors = lapply(layers, function(layer) layer$weight_prior)
 
   network = list(
     x = x,
@@ -112,9 +107,7 @@ mistnet = function(
           )
         }
       ),
-      biases = c(
-        lapply(n_hidden, function(n){rnorm(n, sd = 0.5)}),
-        list(rnorm(n_y, sd = .5))
+      biases = lapply(layers, function(layer){rnorm(layer$n_nodes, sd = 0.5)}
       )
     ),
     activators = activators,

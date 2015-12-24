@@ -24,7 +24,8 @@
 #'    \item{sigmoid}: sigmoid (logistic) function, \code{f(x)=1/(1 + exp(-x))}
 #' }
 #'
-#' The sigmoid activation function used to be the most common in neural networks.
+#' The sigmoid activation function used to be the most common in neural networks,
+#' and acts as a logit link for binomial error functions.
 #' Most modern networks use relus, although Clevert et al. (2015) have recently
 #' shown that elus can work better because it can produce negative values.
 #'
