@@ -5,7 +5,7 @@
 #'
 #' @export
 #' @seealso \code{\link{log_density.distribution}},
-#'    \code{\link{log_density.mistnet}}
+#'    \code{\link{log_density.mistnet_network}}
 log_density = function(object, ...){
   UseMethod("log_density", object)
 }
