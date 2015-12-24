@@ -8,7 +8,7 @@
 #'    \item{\code{f}: The activation function (nonlinearity) itself}
 #'    \item{\code{grad}: The activation function's gradient with respect to
 #'        \code{x}}
-#'    \item{\code{initialize_activatorinal_biases}: A function used internally to
+#'    \item{\code{initialize_activator_biases}: A function used internally to
 #'        initialize the biases of a network's output layer}
 #' }
 #' @details
@@ -59,7 +59,7 @@ elu_activator = structure(
       ones = matrix(1, nrow(x), ncol(x))
       ifelse_matrix(x > 0, ones, exp(x))
     },
-    initialize_activatorinal_biases = function(y){
+    initialize_activator_biases = function(y){
       rep(0, ncol(y))
     }
   ),
@@ -76,7 +76,7 @@ identity_activator = structure(
     grad = function(x){
       matrix(1, nrow(x), ncol(x))
     },
-    initialize_activatorinal_biases = function(y){
+    initialize_activator_biases = function(y){
       colMeans(y)
     }
   ),
@@ -101,7 +101,7 @@ relu_activator = structure(
 
       ifelse_matrix(x > 0, ones, zeros)
     },
-    initialize_activatorinal_biases = function(y){
+    initialize_activator_biases = function(y){
       rep(0, ncol(y))
     }
   ),
@@ -123,11 +123,28 @@ sigmoid_activator = structure(
       storage.mode(x) = "numeric"
       make.link("logit")$mu.eta(x)
     },
-    initialize_activatorinal_biases = function(y){
+    initialize_activator_biases = function(y){
       # regularized by adding 1 success and 1 failure to keep
       # initializations finite
       out = qlogis((colSums(y) + 1) / (nrow(y) + 2))
       out
+    }
+  ),
+  class = "activator"
+)
+
+
+#' @rdname activator
+#' @export exp_activator
+exp_activator = structure(
+  list(
+    name = "exp",
+    f = exp,
+    grad = exp,
+    initialize_activator_biases = function(y){
+      # regularized by adding 1/2 before logging to keep
+      # initializations finite
+      log((colMeans(y + 1/2)))
     }
   ),
   class = "activator"
