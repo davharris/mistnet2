@@ -5,8 +5,7 @@
 \title{Build and fit a neural network with random effects}
 \usage{
 mistnet(x, y, n_z, activators, n_hidden, error_distribution, priors,
-  fit = TRUE, starttests = FALSE, sigma = NULL, tau = NULL, nu = NULL,
-  bd = NULL, ...)
+  fit = TRUE, starttests = FALSE, ...)
 }
 \arguments{
 \item{x}{A numeric matrix of predictor variables}
@@ -23,9 +22,7 @@ network layer}
 each hidden layer. Its length should be one less than that of the
 \code{activators} list.}
 
-\item{error_distribution}{Either an \code{\link{error_distribution}} object
-or a \link[gamlss.dist]{gamlss.family} abbreviation (such as "NO" for the
-normal distribution)}
+\item{error_distribution}{An \code{\link{error_distribution}} object}
 
 \item{priors}{[[Add me]]}
 
@@ -34,18 +31,6 @@ be returned. Defaults to TRUE}
 
 \item{starttests}{Should \code{\link[optimx]{optimx}}'s \code{starttests} be
 run? Can be useful for identifying errors but is not usually needed.}
-
-\item{sigma}{(optional) scale parameter passed to
-\code{\link{make_gamlss_distribution}}}
-
-\item{tau}{(optional) shape parameter passed to
-\code{\link{make_gamlss_distribution}}}
-
-\item{nu}{(optional) shape parameter passed to
-\code{\link{make_gamlss_distribution}}}
-
-\item{bd}{(optional) binomial denominator passed to
-\code{\link{make_gamlss_distribution}}}
 
 \item{...}{Additional arguments to fit}
 }
@@ -81,7 +66,7 @@ net = mistnet(
      make_gamlss_distribution("NO", mu = 0, sigma = 1),
      make_gamlss_distribution("NO", mu = 0, sigma = 1)
    ),
-   error_distribution = "PO"
+   error_distribution = make_gamlss_distribution("PO")
 )
 
 print(net)

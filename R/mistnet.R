@@ -8,22 +8,12 @@
 #' @param n_hidden An integer vector determining the number of hidden nodes in
 #'    each hidden layer. Its length should be one less than that of the
 #'    \code{activators} list.
-#' @param error_distribution Either an \code{\link{error_distribution}} object
-#'    or a \link[gamlss.dist]{gamlss.family} abbreviation (such as "NO" for the
-#'    normal distribution)
+#' @param error_distribution An \code{\link{error_distribution}} object
 #' @param priors [[Add me]]
 #' @param fit Logical. Should the model be fitted or should an untrained model
 #'    be returned. Defaults to TRUE
 #' @param starttests Should \code{\link[optimx]{optimx}}'s \code{starttests} be
 #'    run? Can be useful for identifying errors but is not usually needed.
-#' @param sigma (optional) scale parameter passed to
-#'    \code{\link{make_gamlss_distribution}}
-#' @param tau (optional) shape parameter passed to
-#'    \code{\link{make_gamlss_distribution}}
-#' @param nu (optional) shape parameter passed to
-#'    \code{\link{make_gamlss_distribution}}
-#' @param bd (optional) binomial denominator passed to
-#'    \code{\link{make_gamlss_distribution}}
 #' @param ... Additional arguments to fit
 #' @return A \code{network} object
 #' @useDynLib mistnet2
@@ -55,7 +45,7 @@
 #'      make_gamlss_distribution("NO", mu = 0, sigma = 1),
 #'      make_gamlss_distribution("NO", mu = 0, sigma = 1)
 #'    ),
-#'    error_distribution = "PO"
+#'    error_distribution = make_gamlss_distribution("PO")
 #' )
 #'
 #' print(net)
@@ -79,10 +69,6 @@ mistnet = function(
   priors,
   fit = TRUE,
   starttests = FALSE,
-  sigma = NULL,
-  tau = NULL,
-  nu = NULL,
-  bd = NULL,
   ...
 ){
   stopifnot(length(n_hidden) == (length(activators) - 1))
@@ -129,13 +115,7 @@ mistnet = function(
     ),
     activators = activators,
     priors = priors,
-    error_distribution = make_gamlss_distribution(
-      error_distribution,
-      sigma = sigma,
-      tau = tau,
-      nu = nu,
-      bd = bd
-    )
+    error_distribution = error_distribution
   )
   class(network) = "network"
 
