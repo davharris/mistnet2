@@ -17,7 +17,7 @@ dim(y) = c(n, n_y)
 
 # Test up to four layers
 layer_list = list(
-  layer(activator = sigmoid_activator,n_nodes = 11,
+  layer(activator = sigmoid_activator,n_nodes = 5,
         weight_prior = make_distribution("NO", mu = 0, sigma = 1)
   ),
   layer(activator = sigmoid_activator,n_nodes = 3,
@@ -98,18 +98,23 @@ test_that("multi-layer mistnet_fit works", {
 
 
   # Excluding the penalty from log_density should be the same as using a flat
-  # prior
+  # prior on weights and z
   flat_prior_net = net
-  flat_prior_net$weight_priors = list(
-    make_distribution("IU", mu = -1),
-    make_distribution("IU", mu = 0),
-    make_distribution("IU", mu = 1)
+  flat_prior_net$weight_priors = lapply(
+    1:length(net$weight_priors),
+    function(i){
+      make_distribution("IU", mu = 0)
+    }
   )
+  flat_prior_net$z_prior = make_distribution("IU", mu = 0)
+
 
   expect_equal(
-    log_density(net, par = unlist(net$par_list),
+    log_density(net,
+                par = unlist(net$par_list),
                 include_penalties = FALSE),
-    log_density(flat_prior_net, par = unlist(net$par_list),
+    log_density(flat_prior_net,
+                par = unlist(net$par_list),
                 include_penalties = TRUE)
   )
 

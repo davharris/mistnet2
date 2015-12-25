@@ -70,6 +70,7 @@ mistnet = function(
   n_z,
   layers,
   error_distribution,
+  z_prior = make_distribution("NO", mu = 0, sigma = 1),
   fit = TRUE,
   mistnet_optimizer = mistnet_fit_optimx,
   ...
@@ -112,6 +113,7 @@ mistnet = function(
     ),
     activators = activators,
     weight_priors = weight_priors,
+    z_prior = z_prior,
     error_distribution = error_distribution
   )
   class(network) = c("mistnet_network", "network")

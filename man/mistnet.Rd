@@ -4,7 +4,8 @@
 \alias{mistnet}
 \title{Build and fit a neural network with random effects}
 \usage{
-mistnet(x, y, n_z, layers, error_distribution, fit = TRUE,
+mistnet(x, y, n_z, layers, error_distribution,
+  z_prior = make_distribution("NO", mu = 0, sigma = 1), fit = TRUE,
   mistnet_optimizer = mistnet_fit_optimx, ...)
 }
 \arguments{
