@@ -5,7 +5,10 @@
 #'    alongside x
 #' @param layers A list of \code{\link{layer}} objects. Note that \code{n_nodes}
 #'    in the final layer must match \code{ncol(y)}.
-#' @param error_distribution An \code{\link{distribution}} object
+#' @param error_distribution An \code{\link{distribution}} object determining
+#'    the error distribution for the response variables y.
+#' @param z_prior A \code{\link{distribution}} object (standard Gaussian by
+#'    default) determining the prior on the latent variables.
 #' @param fit Logical. Should the model be fitted or should an untrained model
 #'    be returned? Defaults to \code{TRUE}.
 #' @param mistnet_optimizer passed to \code{\link{mistnet_fit}}. By default,
