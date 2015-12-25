@@ -19,7 +19,11 @@ alongside x}
 \item{layers}{A list of \code{\link{layer}} objects. Note that \code{n_nodes}
 in the final layer must match \code{ncol(y)}.}
 
-\item{error_distribution}{An \code{\link{distribution}} object}
+\item{error_distribution}{An \code{\link{distribution}} object determining
+the error distribution for the response variables y.}
+
+\item{z_prior}{A \code{\link{distribution}} object (standard Gaussian by
+default) determining the prior on the latent variables.}
 
 \item{fit}{Logical. Should the model be fitted or should an untrained model
 be returned? Defaults to \code{TRUE}.}
