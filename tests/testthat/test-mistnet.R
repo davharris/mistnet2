@@ -1,5 +1,7 @@
 context("layers")
 
+set.seed(1)
+
 n = 7    # Number of rows of data
 n_x = 5  # Number of observed predictor variables
 n_y = 7  # Number of response variables
@@ -137,7 +139,7 @@ test_that("`...` is passed through mistnet to optimx", {
         fit = TRUE,
         itnmax = 1,
         method = "Nelder-Mead",
-        control = list(maximize = TRUE)
+        control = list(maximize = TRUE, starttests = FALSE)
       )
     )
   )
@@ -148,6 +150,100 @@ test_that("`...` is passed through mistnet to optimx", {
   # If itnmax == 1, fevals should not be much more than length(unlist(par_list))
   expect_less_than(net$optimization_results$fevals,
                    2 * length(unlist(net$par_list))
+  )
+
+})
+
+
+context("Mistnet: convex parameter recovery")
+# With just one layer, neural networks have convex objective functions,
+# and we can expect a functioning network to recover the "true" parameters
+# instead of getting stuck in a local optimum (apart from identifiability
+# issues with the latent variables).
+
+# Clear the workspace for this context and start over
+rm(list = ls())
+
+test_that("single-layer network recovers 'true' parameters", {
+  n = 500   # Number of rows of data
+  n_x = 5   # Number of observed predictor variables
+  n_y = 10  # Number of response variables
+  n_z = 2   # Number of latent variables
+
+  # "true" weights used to produce the new y.
+  # Used below to confirm the model fits
+  # correctly in a one-layer network
+  true_weights = matrix(
+    rnorm((n_x + n_z) * n_y),
+    ncol = n_y
+  )
+
+  true_x = matrix(
+    rnorm(n_x * n),
+    ncol = n_x
+  )
+
+  true_z = matrix(
+    rnorm(n_z * n),
+    ncol = n_z
+  )
+
+  # No noise in this data-generating process
+  true_y = cbind(true_x, true_z) %*% true_weights
+
+  # See previous tests for why I'm suppressing warnings,
+  # capturing output, and using <<-
+  suppressWarnings(
+    capture.output(
+      net <<- mistnet(
+        x = true_x,
+        y = true_y,
+        n_z = n_z,
+        layers = list(
+          layer(activator = identity_activator,
+                n_nodes = ncol(true_y),
+                weight_prior = make_distribution("NO", mu = 0, sigma = 1)
+          )
+        ),
+        error_distribution = make_distribution("NO", mu = 0, sigma = 0.1),
+        z_prior = make_distribution("NO", mu = 0, sigma = 1),
+        control = list(maximize = TRUE, starttests = FALSE)
+      )
+    )
+  )
+
+  fitted_weights = net$par_list$weights[[1]]
+
+  # R-squared for the weights associated with all columns of x
+  # This version of R2 doesn't include an intercept or non-unit slope
+  diff = (true_weights[1:n_x, ] - fitted_weights[1:n_x, ])
+  R2 = 1 - sum(diff^2) / sum(true_weights[1:n_x, ]^2)
+  expect_more_than(R2, .99)
+
+
+  # Identify rows of weights that deal with z
+  is_z = seq(1, n_x + n_z) > n_x
+
+  # Linear models for the z-related weights.  These linear models just confirm
+  # that the z-weights are in the correct linear subspace, since the z variables
+  # are interchangeable in the model.
+  z_weight_summaries = summary(
+    lm(t(true_weights[is_z, ]) ~ t(fitted_weights[is_z, ]))
+  )
+  lapply(
+    z_weight_summaries,
+    function(summary){
+      expect_more_than(summary$r.squared, .99)
+    }
+  )
+
+  # list of summarized linear models for the latent variables themselves
+  z_summaries = summary(lm(true_z ~ net$par_list$z))
+  lapply(
+    z_summaries,
+    function(summary){
+      expect_more_than(summary$r.squared, .99)
+    }
   )
 
 })
