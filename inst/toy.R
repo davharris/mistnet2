@@ -55,7 +55,7 @@ starttests = TRUE # Test my gradients before optimizing
 o = optimx::optimx(
   par = unlist(network$par_list),
   fn = function(par){
-    sum(log_density(network, par = par))
+    sum(log_prob(network, par = par))
   },
   gr = function(par){
     unlist(backprop(network, par = par))

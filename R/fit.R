@@ -11,7 +11,7 @@
 mistnet_fit = function(network, mistnet_optimizer = mistnet_fit_optimx, ...){
   fn = function(par){
     sum(
-      log_density(network, par = par, include_penalties = TRUE)
+      log_prob(network, par = par, include_penalties = TRUE)
     )
   }
   gr = function(par){unlist(backprop(network, par = par))}

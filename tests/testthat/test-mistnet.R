@@ -60,7 +60,7 @@ test_that("mistnet's gradients are numerically accurate",{
     # Make sure the gradients are correct numerically
     numeric_grad = numDeriv::grad(
       func = function(x){
-        sum(log_density(net, par = x, include_penalties = TRUE))
+        sum(log_prob(net, par = x, include_penalties = TRUE))
       },
       x = unlist(net$par_list)
     )
@@ -97,7 +97,7 @@ test_that("multi-layer mistnet_fit works", {
   )
 
 
-  # Excluding the penalty from log_density should be the same as using a flat
+  # Excluding the penalty from log_prob should be the same as using a flat
   # prior on weights and z
   flat_prior_net = net
   flat_prior_net$weight_priors = lapply(
@@ -110,10 +110,10 @@ test_that("multi-layer mistnet_fit works", {
 
 
   expect_equal(
-    log_density(net,
+    log_prob(net,
                 par = unlist(net$par_list),
                 include_penalties = FALSE),
-    log_density(flat_prior_net,
+    log_prob(flat_prior_net,
                 par = unlist(net$par_list),
                 include_penalties = TRUE)
   )
