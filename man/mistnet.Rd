@@ -83,9 +83,9 @@ print(net)
 str(feedforward(net, par = unlist(net$par_list)))
 
 # Calculate the log-likelihood for each observation under the fitted model
-log_density(net, par = unlist(net$par_list), include_penalties = FALSE)
+log_prob(net, par = unlist(net$par_list), include_penalties = FALSE)
 
 # Include penalty terms from the prior to calculate the log-posterior instead
-log_density(net, par = unlist(net$par_list), include_penalties = TRUE)
+log_prob(net, par = unlist(net$par_list), include_penalties = TRUE)
 }
 

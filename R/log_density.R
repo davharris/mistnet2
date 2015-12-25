@@ -4,17 +4,17 @@
 #' @param ... additional arguments to be passed to other methods
 #'
 #' @export
-#' @seealso \code{\link{log_density.distribution}},
-#'    \code{\link{log_density.mistnet_network}}
-log_density = function(object, ...){
-  UseMethod("log_density", object)
+#' @seealso \code{\link{log_prob.distribution}},
+#'    \code{\link{log_prob.mistnet_network}}
+log_prob = function(object, ...){
+  UseMethod("log_prob", object)
 }
 
 #' Calculate the log probability of a distribution
 #' @param object an \code{\link{distribution}} object
 #' @param ... additional arguments passed to \code{\link{get_values}}
 #' @export
-log_density.distribution = function(object, ...){
+log_prob.distribution = function(object, ...){
   values = get_values(object, log = TRUE, ...)
 
   # Some density functions, like gamlss.dist::dBI, give cryptic error messages
@@ -37,13 +37,13 @@ log_density.distribution = function(object, ...){
 #' @param par a vector of network parameters
 #' @param ... Additional arguments (currently not used.)
 #' @export
-log_density.mistnet_network = function(object, state, par, include_penalties,
+log_prob.mistnet_network = function(object, state, par, include_penalties,
                                        ...){
   if (missing(state)) {
     state = feedforward(object, par)
   }
 
-  out = log_density(
+  out = log_prob(
     object$error_distribution,
     x = object$y,
     mu = state$outputs[[length(state$outputs)]]
@@ -55,16 +55,16 @@ log_density.mistnet_network = function(object, state, par, include_penalties,
     weight_penalties = sapply(
       1:length(object$weight_priors),
       function(i){
-        sum(log_density(object$weight_priors[[i]], x = parameters$weights[[i]], ...))
+        sum(log_prob(object$weight_priors[[i]], x = parameters$weights[[i]], ...))
       }
     )
 
-    z_penalties = log_density(object$z_prior, x = parameters$z, ...)
+    z_penalties = log_prob(object$z_prior, x = parameters$z, ...)
 
     total_penalty = sum(weight_penalties) + sum(z_penalties)
 
     # The sum of the returned values needs to equal
-    # sum(log_density.distribution) + sum(penalties). Dividing by
+    # sum(log_prob.distribution) + sum(penalties). Dividing by
     # length(out) prevents double-counting when the output is summed up later.
     return(out + total_penalty / length(out))
   } else {

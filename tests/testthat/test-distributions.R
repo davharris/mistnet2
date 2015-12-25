@@ -32,7 +32,7 @@ test_that("Arguments are passed properly",{
   # By default, the gamlss binomial log density dBI sets bd to 1.
   # If these are equal, it means bd=5 from above is being passed properly
   expect_equal(
-    log_density(distribution, x = 3, mu = 0.2),
+    log_prob(distribution, x = 3, mu = 0.2),
     dbinom(3, size = 5, prob = .2, log = TRUE)
   )
 
@@ -75,7 +75,7 @@ test_that("dldx works for distributions that have it", {
   expect_equal(
     grad(dist, "x", x = pi, mu = exp(1)),
     numDeriv::grad(
-      function(x){log_density(dist, x = x, mu = exp(1))},
+      function(x){log_prob(dist, x = x, mu = exp(1))},
       x = pi
     )
   )
@@ -127,7 +127,7 @@ test_that("new distributions can be created", {
   )
 
   expect_equal(
-    log_density(dist, x = 1, mu = 1),
+    log_prob(dist, x = 1, mu = 1),
     8765
   )
 
@@ -138,7 +138,7 @@ test_that("Improper uniform distribution works", {
   dist = make_distribution("IU")
 
   expect_equal(
-    log_density(dist, x = 1:100, mu = 1:100),
+    log_prob(dist, x = 1:100, mu = 1:100),
     rep(0, 100)
   )
 

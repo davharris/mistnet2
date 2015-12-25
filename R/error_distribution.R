@@ -14,7 +14,7 @@
 #' @return An \code{distribution} object, consisting of the following
 #'    functions:
 #' \itemize{
-#'    \item{\code{log_density(x, mu)}: log probability of the distribution with
+#'    \item{\code{log_prob(x, mu)}: log probability of the distribution with
 #'        location parameter \code{mu} evaluated at \code{x}.}
 #'    \item{\code{sample(n, mu)}: draw \code{n} random samples from the distribution
 #'        with location parameter \code{mu}.}
@@ -35,14 +35,14 @@
 #' # Sample 10 random values with mean=2 (and sigma=1/3 as defined above)
 #' samples = random_sample(distribution, n = 10, mu = 2)
 #'
-#' # find the log_density of those samples under a distribution with mean=1
-#' log_density(distribution, x = samples, mu = 1)
+#' # find the log_prob of those samples under a distribution with mean=1
+#' log_prob(distribution, x = samples, mu = 1)
 #'
-#' # The gradient of the log_density with respect to the mean indicates that
-#' # the log_density would be higher if mu were larger (more positive)
+#' # The gradient of the log_prob with respect to the mean indicates that
+#' # the log_prob would be higher if mu were larger (more positive)
 #' grad(distribution, "mu", y = samples, mu = 1)
 #'
-#' # The gradient with respect to x shows that the log_density would also be
+#' # The gradient with respect to x shows that the log_prob would also be
 #' # higher if we reduced the values of x (more negative)
 #' grad(distribution, "x", x = samples, mu = 1)
 #'
