@@ -4,8 +4,7 @@
 \alias{mistnet}
 \title{Build and fit a neural network with random effects}
 \usage{
-mistnet(x, y, n_z, layers, error_distribution, fit = TRUE,
-  starttests = FALSE, ...)
+mistnet(x, y, n_z, layers, error_distribution, fit = TRUE, ...)
 }
 \arguments{
 \item{x}{A numeric matrix of predictor variables}
@@ -23,10 +22,10 @@ in the final layer must match \code{ncol(y)}.}
 \item{fit}{Logical. Should the model be fitted or should an untrained model
 be returned. Defaults to TRUE}
 
+\item{...}{Additional arguments to \code{\link{mistnet_fit}}}
+
 \item{starttests}{Should \code{\link[optimx]{optimx}}'s \code{starttests} be
 run? Can be useful for identifying errors but is not usually needed.}
-
-\item{...}{Additional arguments to \code{\link{mistnet_fit}}}
 }
 \value{
 An object of class \code{network} and subclass \code{mistnet_network}.

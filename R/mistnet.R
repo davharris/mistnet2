@@ -70,7 +70,6 @@ mistnet = function(
   layers,
   error_distribution,
   fit = TRUE,
-  starttests = FALSE,
   ...
 ){
   n_layers = length(layers)
@@ -78,7 +77,6 @@ mistnet = function(
   n = nrow(x)
   n_x = ncol(x)
   n_y = ncol(y)
-
 
   weight_dims = numeric(n_layers + 1)
   weight_dims[1] = n_x + n_z              # nrow of first weight matrix
