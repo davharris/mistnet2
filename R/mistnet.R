@@ -97,7 +97,7 @@ mistnet = function(
     x = x,
     y = y,
     par_list = list(
-      z = matrix(rnorm(n * n_z, sd = .5), nrow = n, ncol = n_z),
+      z = matrix(random_sample(z_prior, n = n * n_z), nrow = n, ncol = n_z),
       weights = lapply(
         1:n_layers,
         function(i){
