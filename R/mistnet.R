@@ -98,14 +98,7 @@ mistnet = function(
       weights = lapply(
         1:n_layers,
         function(i){
-          matrix(
-            rnorm(
-              prod(weight_dims[c(i, i + 1)]),
-              sd = .5
-            ),
-            nrow = weight_dims[i],
-            ncol = weight_dims[i + 1]
-          )
+          initialize_weights(n_in = weight_dims[i], n_out = weight_dims[i + 1])
         }
       ),
       biases = lapply(layers, function(layer){rnorm(layer$n_nodes, sd = 0.5)}
