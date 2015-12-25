@@ -116,3 +116,33 @@ test_that("multi-layer mistnet_fit works", {
   # Don't pollute the global environment with the net object
   rm(net, envir = .GlobalEnv)
 })
+
+
+test_that("`...` is passed through mistnet to optimx", {
+  # See previous test for why I'm suppressing warnings,
+  # capturing output, and using <<-
+  suppressWarnings(
+    capture.output(
+      net <<- mistnet(
+        x = x,
+        y = y,
+        n_z = n_z,
+        layers = layer_list,
+        error_distribution = make_distribution("BI", bd = bd),
+        fit = TRUE,
+        itnmax = 1,
+        method = "Nelder-Mead",
+        control = list(maximize = TRUE)
+      )
+    )
+  )
+
+  # If it uses Nelder-Mead like I asked, it won't evaluate any gradients
+  expect_true(is.na(net$optimization_results$gevals))
+
+  # If itnmax == 1, fevals should not be much more than length(unlist(par_list))
+  expect_less_than(net$optimization_results$fevals,
+                   2 * length(unlist(net$par_list))
+  )
+
+})

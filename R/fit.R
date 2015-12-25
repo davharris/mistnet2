@@ -16,7 +16,7 @@ mistnet_fit = function(network, mistnet_optimizer = mistnet_fit_optimx, ...){
   }
   gr = function(par){unlist(backprop(network, par = par))}
 
-  network = mistnet_optimizer(network, fn = fn, gr = gr, ...)
+  mistnet_optimizer(network, fn = fn, gr = gr, ...)
 }
 
 #' Optimize a mistnet model using the \code{\link[optimx]{optimx}} package

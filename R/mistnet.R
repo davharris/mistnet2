@@ -7,9 +7,10 @@
 #'    in the final layer must match \code{ncol(y)}.
 #' @param error_distribution An \code{\link{distribution}} object
 #' @param fit Logical. Should the model be fitted or should an untrained model
-#'    be returned. Defaults to TRUE
-#' @param starttests Should \code{\link[optimx]{optimx}}'s \code{starttests} be
-#'    run? Can be useful for identifying errors but is not usually needed.
+#'    be returned? Defaults to \code{TRUE}.
+#' @param mistnet_optimizer passed to \code{\link{mistnet_fit}}. By default,
+#'    models are fitted using \code{\link{mistnet_fit_optimx}} using
+#'    \code{method = "L-BFGS-B"}.
 #' @param ... Additional arguments to \code{\link{mistnet_fit}}
 #' @return An object of class \code{network} and subclass \code{mistnet_network}.
 #'   This object will contain the original \code{x} and \code{y} matrices,
@@ -70,6 +71,7 @@ mistnet = function(
   layers,
   error_distribution,
   fit = TRUE,
+  mistnet_optimizer = mistnet_fit_optimx,
   ...
 ){
   n_layers = length(layers)
