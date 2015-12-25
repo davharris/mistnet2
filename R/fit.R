@@ -16,7 +16,7 @@ mistnet_fit = function(network, mistnet_optimizer = mistnet_fit_optimx, ...){
   }
   gr = function(par){unlist(backprop(network, par = par))}
 
-  network = mistnet_optimizer(network, fn = fn, gr = gr, ...)
+  mistnet_optimizer(network, fn = fn, gr = gr, ...)
 }
 
 #' Optimize a mistnet model using the \code{\link[optimx]{optimx}} package
@@ -27,7 +27,12 @@ mistnet_fit = function(network, mistnet_optimizer = mistnet_fit_optimx, ...){
 #' @param gr A function of \code{par} that returns a vector containing the
 #'    gradient of the (penalized) log-likelihood with respect to all the
 #'    parameters in \code{par}.
-#' @param method,itnmax,control,hessian Additional arguments passed to
+#' @param method The name of one \code{method} used by \code{\link[optimx]{optimx}}.
+#'    By default, this is "L-BFGS-B", which uses second-order information without
+#'    approximating the full (inverse) Hessian matrix, which could be very large
+#'    for some networks.  Note that the use of multiple methods is not currently
+#'    supported.
+#' @param itnmax,control,hessian Additional arguments passed to
 #'    \code{\link[optimx]{optimx}}
 #' @export mistnet_fit_optimx
 mistnet_fit_optimx = function(
@@ -39,6 +44,13 @@ mistnet_fit_optimx = function(
   control = list(maximize = TRUE, starttests = TRUE),
   hessian = FALSE
 ){
+
+  stopifnot(length(method) == 1)
+
+  if (!isTRUE(control$maximize)) {
+    warning("setting `maximize = TRUE` in optimx's control list")
+    control$maximize = TRUE
+  }
 
   opt = optimx::optimx(
     par = unlist(network$par_list),

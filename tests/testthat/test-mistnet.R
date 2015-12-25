@@ -17,7 +17,7 @@ dim(y) = c(n, n_y)
 
 # Test up to four layers
 layer_list = list(
-  layer(activator = sigmoid_activator,n_nodes = 11,
+  layer(activator = sigmoid_activator,n_nodes = 5,
         weight_prior = make_distribution("NO", mu = 0, sigma = 1)
   ),
   layer(activator = sigmoid_activator,n_nodes = 3,
@@ -98,21 +98,56 @@ test_that("multi-layer mistnet_fit works", {
 
 
   # Excluding the penalty from log_density should be the same as using a flat
-  # prior
+  # prior on weights and z
   flat_prior_net = net
-  flat_prior_net$weight_priors = list(
-    make_distribution("IU", mu = -1),
-    make_distribution("IU", mu = 0),
-    make_distribution("IU", mu = 1)
+  flat_prior_net$weight_priors = lapply(
+    1:length(net$weight_priors),
+    function(i){
+      make_distribution("IU", mu = 0)
+    }
   )
+  flat_prior_net$z_prior = make_distribution("IU", mu = 0)
+
 
   expect_equal(
-    log_density(net, par = unlist(net$par_list),
+    log_density(net,
+                par = unlist(net$par_list),
                 include_penalties = FALSE),
-    log_density(flat_prior_net, par = unlist(net$par_list),
+    log_density(flat_prior_net,
+                par = unlist(net$par_list),
                 include_penalties = TRUE)
   )
 
   # Don't pollute the global environment with the net object
   rm(net, envir = .GlobalEnv)
+})
+
+
+test_that("`...` is passed through mistnet to optimx", {
+  # See previous test for why I'm suppressing warnings,
+  # capturing output, and using <<-
+  suppressWarnings(
+    capture.output(
+      net <<- mistnet(
+        x = x,
+        y = y,
+        n_z = n_z,
+        layers = layer_list,
+        error_distribution = make_distribution("BI", bd = bd),
+        fit = TRUE,
+        itnmax = 1,
+        method = "Nelder-Mead",
+        control = list(maximize = TRUE)
+      )
+    )
+  )
+
+  # If it uses Nelder-Mead like I asked, it won't evaluate any gradients
+  expect_true(is.na(net$optimization_results$gevals))
+
+  # If itnmax == 1, fevals should not be much more than length(unlist(par_list))
+  expect_less_than(net$optimization_results$fevals,
+                   2 * length(unlist(net$par_list))
+  )
+
 })

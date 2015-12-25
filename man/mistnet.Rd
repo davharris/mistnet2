@@ -4,8 +4,9 @@
 \alias{mistnet}
 \title{Build and fit a neural network with random effects}
 \usage{
-mistnet(x, y, n_z, layers, error_distribution, fit = TRUE,
-  starttests = FALSE, ...)
+mistnet(x, y, n_z, layers, error_distribution,
+  z_prior = make_distribution("NO", mu = 0, sigma = 1), fit = TRUE,
+  mistnet_optimizer = mistnet_fit_optimx, ...)
 }
 \arguments{
 \item{x}{A numeric matrix of predictor variables}
@@ -18,13 +19,18 @@ alongside x}
 \item{layers}{A list of \code{\link{layer}} objects. Note that \code{n_nodes}
 in the final layer must match \code{ncol(y)}.}
 
-\item{error_distribution}{An \code{\link{distribution}} object}
+\item{error_distribution}{An \code{\link{distribution}} object determining
+the error distribution for the response variables y.}
+
+\item{z_prior}{A \code{\link{distribution}} object (standard Gaussian by
+default) determining the prior on the latent variables.}
 
 \item{fit}{Logical. Should the model be fitted or should an untrained model
-be returned. Defaults to TRUE}
+be returned? Defaults to \code{TRUE}.}
 
-\item{starttests}{Should \code{\link[optimx]{optimx}}'s \code{starttests} be
-run? Can be useful for identifying errors but is not usually needed.}
+\item{mistnet_optimizer}{passed to \code{\link{mistnet_fit}}. By default,
+models are fitted using \code{\link{mistnet_fit_optimx}} using
+\code{method = "L-BFGS-B"}.}
 
 \item{...}{Additional arguments to \code{\link{mistnet_fit}}}
 }

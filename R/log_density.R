@@ -52,17 +52,21 @@ log_density.mistnet_network = function(object, state, par, include_penalties,
   if (include_penalties) {
     parameters = relist(par, object$par_list)
 
-    penalties = sapply(
+    weight_penalties = sapply(
       1:length(object$weight_priors),
       function(i){
         sum(log_density(object$weight_priors[[i]], x = parameters$weights[[i]], ...))
       }
     )
 
+    z_penalties = log_density(object$z_prior, x = parameters$z, ...)
+
+    total_penalty = sum(weight_penalties) + sum(z_penalties)
+
     # The sum of the returned values needs to equal
     # sum(log_density.distribution) + sum(penalties). Dividing by
     # length(out) prevents double-counting when the output is summed up later.
-    return(out + sum(penalties) / length(out))
+    return(out + total_penalty / length(out))
   } else {
     return(out)
   }

@@ -5,11 +5,15 @@
 #'    alongside x
 #' @param layers A list of \code{\link{layer}} objects. Note that \code{n_nodes}
 #'    in the final layer must match \code{ncol(y)}.
-#' @param error_distribution An \code{\link{distribution}} object
+#' @param error_distribution An \code{\link{distribution}} object determining
+#'    the error distribution for the response variables y.
+#' @param z_prior A \code{\link{distribution}} object (standard Gaussian by
+#'    default) determining the prior on the latent variables.
 #' @param fit Logical. Should the model be fitted or should an untrained model
-#'    be returned. Defaults to TRUE
-#' @param starttests Should \code{\link[optimx]{optimx}}'s \code{starttests} be
-#'    run? Can be useful for identifying errors but is not usually needed.
+#'    be returned? Defaults to \code{TRUE}.
+#' @param mistnet_optimizer passed to \code{\link{mistnet_fit}}. By default,
+#'    models are fitted using \code{\link{mistnet_fit_optimx}} using
+#'    \code{method = "L-BFGS-B"}.
 #' @param ... Additional arguments to \code{\link{mistnet_fit}}
 #' @return An object of class \code{network} and subclass \code{mistnet_network}.
 #'   This object will contain the original \code{x} and \code{y} matrices,
@@ -69,8 +73,9 @@ mistnet = function(
   n_z,
   layers,
   error_distribution,
+  z_prior = make_distribution("NO", mu = 0, sigma = 1),
   fit = TRUE,
-  starttests = FALSE,
+  mistnet_optimizer = mistnet_fit_optimx,
   ...
 ){
   n_layers = length(layers)
@@ -78,7 +83,6 @@ mistnet = function(
   n = nrow(x)
   n_x = ncol(x)
   n_y = ncol(y)
-
 
   weight_dims = numeric(n_layers + 1)
   weight_dims[1] = n_x + n_z              # nrow of first weight matrix
@@ -112,6 +116,7 @@ mistnet = function(
     ),
     activators = activators,
     weight_priors = weight_priors,
+    z_prior = z_prior,
     error_distribution = error_distribution
   )
   class(network) = c("mistnet_network", "network")

@@ -64,7 +64,9 @@ backprop = function(network, state, par, ...){
 
     if (i == 1) {
       # The z_gradients are just the input gradients for the non-x columns
-      z_grads = input_grad[ , -(1:ncol(network$x))]
+      # plus the gradients of their prior
+      z_grads = input_grad[ , -(1:ncol(network$x))] +
+        grad(network$z_prior, "x", x = parameters$z)
     }
   }
 
