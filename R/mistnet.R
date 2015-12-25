@@ -104,7 +104,18 @@ mistnet = function(
           initialize_weights(n_in = weight_dims[i], n_out = weight_dims[i + 1])
         }
       ),
-      biases = lapply(layers, function(layer){rnorm(layer$n_nodes, sd = 0.5)}
+      biases = lapply(
+        1:n_layers,
+        function(i){
+          if (i < n_layers) {
+            rep(0, layers[[i]]$n_nodes)
+          } else {
+            # binomial denominator is needed for the sigmoid activator and
+            # is ignored by all the other ones.
+            bd = error_distribution$family_parameters$bd
+            activators[[i]]$initialize_activator_biases(y, bd = bd)
+          }
+        }
       )
     ),
     activators = activators,
