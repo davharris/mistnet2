@@ -93,30 +93,42 @@ mistnet = function(
   activators = lapply(layers, function(layer) layer$activator)
   weight_priors = lapply(layers, function(layer) layer$weight_prior)
 
+  weights = lapply(
+    1:n_layers,
+    function(i){
+      initialize_weights(layers[[i]],
+                         n_in = weight_dims[i],
+                         n_out = weight_dims[i + 1]
+      )
+    }
+  )
+
+
+  biases = lapply(
+    1:n_layers,
+    function(i){
+      if (is.null(layers[[i]]$biases)) {
+        if (i < n_layers) {
+          rep(0, layers[[i]]$n_nodes)
+        } else {
+          # binomial denominator is needed for the sigmoid activator and
+          # is ignored by all the other ones.
+          bd = error_distribution$family_parameters$bd
+          activators[[i]]$initialize_activator_biases(y, bd = bd)
+        }
+      } else{
+        layers[[i]]$biases
+      }
+    }
+  )
+
   network = list(
     x = x,
     y = y,
     par_list = list(
       z = matrix(random_sample(z_prior, n = n * n_z), nrow = n, ncol = n_z),
-      weights = lapply(
-        1:n_layers,
-        function(i){
-          initialize_weights(n_in = weight_dims[i], n_out = weight_dims[i + 1])
-        }
-      ),
-      biases = lapply(
-        1:n_layers,
-        function(i){
-          if (i < n_layers) {
-            rep(0, layers[[i]]$n_nodes)
-          } else {
-            # binomial denominator is needed for the sigmoid activator and
-            # is ignored by all the other ones.
-            bd = error_distribution$family_parameters$bd
-            activators[[i]]$initialize_activator_biases(y, bd = bd)
-          }
-        }
-      )
+      weights = weights,
+      biases = biases
     ),
     activators = activators,
     weight_priors = weight_priors,
