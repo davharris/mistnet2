@@ -38,7 +38,7 @@ test_that("Arguments are passed properly",{
 
   # Similarly, if bd=5 and mu = 1 are passed, all the samples should equal 5
   expect_true(
-    all.equal(random_sample(distribution, n = 300, mu = 1), rep(5, 300))
+    all.equal(draw_samples(distribution, n = 300, mu = 1), rep(5, 300))
   )
 
   # Gradient with respect to mu

@@ -126,7 +126,7 @@ mistnet = function(
     x = x,
     y = y,
     par_list = list(
-      z = matrix(random_sample(z_prior, n = n * n_z), nrow = n, ncol = n_z),
+      z = matrix(draw_samples(z_prior, n = n * n_z), nrow = n, ncol = n_z),
       weights = weights,
       biases = biases
     ),
