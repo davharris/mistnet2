@@ -19,3 +19,20 @@ ifelse_matrix = function(test, yes, no){
 
   ifelse_matrix_cpp(test, yes, no)
 }
+
+
+build_par_list = function(par, par_list){
+  if (is.numeric(par)) {
+    # Relist the parameters, using par_list
+    parameters = relist(flesh = par, skeleton = par_list)
+  } else {
+    if (is.list(par)) {
+      # Just use the list
+      parameters = par
+    } else {
+      stop("par is not a list or numeric vector")
+    }
+  }
+
+  parameters
+}

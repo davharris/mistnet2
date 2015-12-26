@@ -58,7 +58,6 @@ layer_list = list(
 )
 
 
-
 context("Mistnet: numeric gradients")
 
 test_that("mistnet's gradients are numerically accurate",{
@@ -102,6 +101,23 @@ test_that("mistnet's gradients are numerically accurate",{
       tolerance = 1E-5
     )
   }
+})
+
+
+context("mistnet: different arguments")
+
+test_that("build_par_list works on networks", {
+  # Compare missing with list in `feedforward`
+  expect_identical(
+    feedforward(network = net),
+    feedforward(network = net, par = net$par_list)
+  )
+
+  # Compare missing with unlisted() in `feedforward`
+  expect_identical(
+    backprop(network = net),
+    backprop(network = net, par = unlist(net$par_list))
+  )
 })
 
 

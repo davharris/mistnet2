@@ -13,7 +13,8 @@ backprop(network, state, par, ...)
 instead of producing a new one with \code{\link{feedforward}}. This may
 save some computation time.}
 
-\item{par}{A vector containing the parameters}
+\item{par}{A list or vector containing the parameters. If not included,
+\code{network$par_list} will be used}
 
 \item{...}{(currently not used)}
 }
