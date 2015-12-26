@@ -7,9 +7,9 @@
 \method{draw_samples}{distribution}(object, ...)
 }
 \arguments{
-\item{...}{additional arguments passed to \code{\link{get_values}}}
+\item{object}{an \code{\link{distribution}} object}
 
-\item{distribution}{an \code{\link{distribution}} object}
+\item{...}{additional arguments passed to \code{\link{get_values}}}
 }
 \description{
 Sample random numbers from a probability distribution
