@@ -1,6 +1,12 @@
+#' @export
+feedforward = function(network, ...){
+  UseMethod("feedforward")
+}
+
 #' Feed forward: calculate network state from its coefficients
 #' @param network a \code{network} object, as created by \code{\link{mistnet}}
-#' @param par A vector containing the parameters
+#' @param par A list or vector containing the parameters. If not included,
+#'    \code{network$par_list} will be used
 #' @param ... (currently not used)
 #' @return a \code{network_state} object, i.e. a \code{list} of \code{list}s.
 #' \itemize{
@@ -14,10 +20,17 @@
 #'    \item{\code{outputs}: A list of outputs for each layer, produced by applying the layer's
 #'        activation function to the \code{pre_activations}}.
 #' }
+#' @aliases feedforward
 #' @export
-feedforward = function(network, par, ...){
+feedforward.mistnet_network = function(network, par, ...){
 
-  parameters = relist(par, network$par_list)
+  if (missing(par)) {
+    parameters = network$par_list
+  } else {
+    parameters = build_par_list(par = par, par_list = network$par_list)
+  }
+
+
 
   # inputs, pre-activations, and outputs start empty
   inputs = pre_activations = outputs = list()

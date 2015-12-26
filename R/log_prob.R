@@ -7,7 +7,7 @@
 #' @seealso \code{\link{log_prob.distribution}},
 #'    \code{\link{log_prob.mistnet_network}}
 log_prob = function(object, ...){
-  UseMethod("log_prob", object)
+  UseMethod("log_prob")
 }
 
 #' Calculate the log probability of a distribution
@@ -50,7 +50,11 @@ log_prob.mistnet_network = function(object, state, par, include_penalties,
   )
 
   if (include_penalties) {
-    parameters = relist(par, object$par_list)
+    if (missing(par)) {
+      parameters = object$par_list
+    } else {
+      parameters = build_par_list(par = par, par_list = object$par_list)
+    }
 
     weight_penalties = sapply(
       1:length(object$weight_priors),

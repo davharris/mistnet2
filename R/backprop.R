@@ -1,15 +1,26 @@
+#' @export
+backprop = function(network, ...){
+  UseMethod("backprop")
+}
+
 #' Backprop: calculate network gradients using backpropagation
 #' @param network a \code{network} object, as created by \code{\link{mistnet}}
 #' @param state if a \code{network_sate} object is provided, it can be used
 #'    instead of producing a new one with \code{\link{feedforward}}. This may
 #'    save some computation time.
-#' @param par A vector containing the parameters
+#' @param par A list or vector containing the parameters. If not included,
+#'    \code{network$par_list} will be used
 #' @param ... (currently not used)
 #' @return a \code{vector} of gradients.
+#' @aliases backprop
 #' @export
-backprop = function(network, state, par, ...){
+backprop.mistnet_network = function(network, state, par, ...){
 
-  parameters = relist(par, network$par_list)
+  if (missing(par)) {
+    parameters = network$par_list
+  } else {
+    parameters = build_par_list(par = par, par_list = network$par_list)
+  }
 
   # We'll be filling in lists of gradients for the weights and biases.
   # Start them with empty lists.  Gradient for z is defined later.
@@ -18,6 +29,10 @@ backprop = function(network, state, par, ...){
   if (missing(state)) {
     state = feedforward(network, par = par)
   }
+
+  # Define input_grad early to stop the static code checker from complaining
+  # that it's defined later in this page than it's first used
+  input_grad = NULL
 
   # Start from the top of the network and work downwards:
   for (i in length(parameters$weights):1) {
