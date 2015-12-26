@@ -33,7 +33,7 @@
 #' distribution = make_distribution("NO", sigma = 1/3)
 #'
 #' # Sample 10 random values with mean=2 (and sigma=1/3 as defined above)
-#' samples = random_sample(distribution, n = 10, mu = 2)
+#' samples = draw_samples(distribution, n = 10, mu = 2)
 #'
 #' # find the log_prob of those samples under a distribution with mean=1
 #' log_prob(distribution, x = samples, mu = 1)
@@ -133,18 +133,6 @@ grad = function(distribution, name, ...){
 
   do.call(f, get_values(distribution, ...))
 }
-
-#' Sample random numbers from a probability distribution
-#' @param distribution an \code{\link{distribution}} object
-#' @param ... additional arguments passed to \code{\link{get_values}}
-#' @export
-random_sample = function(distribution, ...){
-  do.call(
-    distribution$r,
-    get_values(distribution, ...)
-  )
-}
-
 
 #' Get parameter values from a distribution object
 #'
