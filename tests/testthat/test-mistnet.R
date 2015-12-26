@@ -181,9 +181,9 @@ context("Mistnet: convex parameter recovery")
 rm(list = ls())
 
 test_that("single-layer network recovers 'true' parameters", {
-  n = 1000   # Number of rows of data
+  n = 250   # Number of rows of data
   n_x = 3   # Number of observed predictor variables
-  n_y = 20  # Number of response variables
+  n_y = 8   # Number of response variables
   n_z = 2   # Number of latent variables
 
   # "true" weights used to produce the new y.
@@ -215,13 +215,20 @@ test_that("single-layer network recovers 'true' parameters", {
       layers = list(
         layer(activator = identity_activator,
               n_nodes = ncol(true_y),
-              weight_prior = make_distribution("NO", mu = 0, sigma = 1),
-              weights = true_weights + rnorm(length(true_weights), sd = .5)
+              weight_prior = make_distribution("NO", mu = 0, sigma = 1)
         )
       ),
       error_distribution = make_distribution("NO", mu = 0, sigma = 0.1),
       z_prior = make_distribution("NO", mu = 0, sigma = 1),
-      fit = TRUE,
+      fit = FALSE
+    )
+
+    # Give the test a warm start to make it take less time
+    net$par_list$weights[[1]] = (true_weights + rnorm(length(true_weights))) / 2
+    net$z = (true_z + rnorm(length(true_z))) / 2
+
+    net = mistnet_fit(
+      net,
       control = list(maximize = TRUE, starttests = FALSE)
     )
   })
@@ -232,7 +239,7 @@ test_that("single-layer network recovers 'true' parameters", {
   # This version of R2 doesn't include an intercept or non-unit slope
   diff = (true_weights[1:n_x, ] - fitted_weights[1:n_x, ])
   R2 = 1 - sum(diff^2) / sum(true_weights[1:n_x, ]^2)
-  expect_more_than(R2, .98)
+  expect_more_than(R2, .95)
 
 
   # Identify rows of weights that deal with z
@@ -247,7 +254,7 @@ test_that("single-layer network recovers 'true' parameters", {
   lapply(
     z_weight_summaries,
     function(summary){
-      expect_more_than(summary$r.squared, .98)
+      expect_more_than(summary$r.squared, .95)
     }
   )
 
@@ -256,8 +263,7 @@ test_that("single-layer network recovers 'true' parameters", {
   lapply(
     z_summaries,
     function(summary){
-      expect_more_than(summary$r.squared, .98)
+      expect_more_than(summary$r.squared, .95)
     }
   )
-
 })
