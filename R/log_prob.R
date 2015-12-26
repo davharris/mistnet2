@@ -7,7 +7,7 @@
 #' @seealso \code{\link{log_prob.distribution}},
 #'    \code{\link{log_prob.mistnet_network}}
 log_prob = function(object, ...){
-  UseMethod("log_prob", object)
+  UseMethod("log_prob")
 }
 
 #' Calculate the log probability of a distribution

@@ -1,3 +1,8 @@
+#' @export
+backprop = function(network, ...){
+  UseMethod("backprop")
+}
+
 #' Backprop: calculate network gradients using backpropagation
 #' @param network a \code{network} object, as created by \code{\link{mistnet}}
 #' @param state if a \code{network_sate} object is provided, it can be used
@@ -7,8 +12,9 @@
 #'    \code{network$par_list} will be used
 #' @param ... (currently not used)
 #' @return a \code{vector} of gradients.
+#' @aliases backprop
 #' @export
-backprop = function(network, state, par, ...){
+backprop.mistnet_network = function(network, state, par, ...){
 
   if (missing(par)) {
     parameters = network$par_list

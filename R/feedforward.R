@@ -1,3 +1,4 @@
+#' @export
 feedforward = function(network, ...){
   UseMethod("feedforward")
 }
@@ -19,6 +20,7 @@ feedforward = function(network, ...){
 #'    \item{\code{outputs}: A list of outputs for each layer, produced by applying the layer's
 #'        activation function to the \code{pre_activations}}.
 #' }
+#' @aliases feedforward
 #' @export
 feedforward.mistnet_network = function(network, par, ...){
 
