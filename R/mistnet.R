@@ -96,13 +96,13 @@ mistnet = function(
   weights = lapply(
     1:n_layers,
     function(i){
-      if (is.null(layers[[i]]$weights)) {
-        initialize_weights(n_in = weight_dims[i], n_out = weight_dims[i + 1])
-      } else{
-        layers[[i]]$weights
-      }
+      initialize_weights(layers[[i]],
+                         n_in = weight_dims[i],
+                         n_out = weight_dims[i + 1]
+      )
     }
   )
+
 
   biases = lapply(
     1:n_layers,

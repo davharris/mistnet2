@@ -1,17 +1,4 @@
-context("layers")
-
-test_that("layer function's optional arguments work", {
-  example_layer = layer(
-    activator = sigmoid_activator,
-    n_nodes = 5,
-    weight_prior = make_distribution("NO", mu = 0, sigma = 1),
-    weights = matrix(pi, nrow = 3, ncol = 5),
-    biases = rep(exp(2), 5)
-  )
-
-  expect_true(all(example_layer$weights == pi))
-  expect_true(all(example_layer$biases == exp(2)))
-})
+context("Mistnet: layers")
 
 set.seed(1)
 
@@ -29,6 +16,30 @@ y = gamlss.dist::rBI(
   bd = bd
 )
 dim(y) = c(n, n_y)
+
+
+
+test_that("layer function's optional arguments work", {
+  example_layer = layer(
+    activator = sigmoid_activator,
+    n_nodes = ncol(y),
+    weight_prior = make_distribution("NO", mu = 0, sigma = 1),
+    weights = matrix(pi, nrow = n_x + n_z, ncol = ncol(y)),
+    biases = rep(exp(2), ncol(y))
+  )
+
+  net = mistnet(
+    x = x,
+    y = y,
+    n_z = n_z,
+    layers = list(example_layer),
+    error_distribution = make_distribution("BI", bd = bd),
+    fit = FALSE
+  )
+
+  expect_true(all(net$par_list$weights[[1]] == pi))
+  expect_true(all(net$par_list$biases[[1]] == exp(2)))
+})
 
 # Test up to four layers
 layer_list = list(
@@ -196,29 +207,21 @@ test_that("single-layer network recovers 'true' parameters", {
   # No noise in this data-generating process
   true_y = cbind(true_x, true_z) %*% true_weights
 
-  net = mistnet(
-    x = true_x,
-    y = true_y,
-    n_z = n_z,
-    layers = list(
-      layer(activator = identity_activator,
-            n_nodes = ncol(true_y),
-            weight_prior = make_distribution("NO", mu = 0, sigma = 1)
-      )
-    ),
-    error_distribution = make_distribution("NO", mu = 0, sigma = 0.1),
-    z_prior = make_distribution("NO", mu = 0, sigma = 1),
-    fit = FALSE
-  )
-
-  # Give the optimizer a warm start to reduce test running time
-  net$par_list$weights[[1]] = 0.5 * (net$par_list$weights[[1]] + true_weights)
-  net$par_list$z = 0.5 * (net$par_list$z + true_z)
-
-
   evaluate_promise({
-    net = mistnet_fit(
-      net,
+    net = mistnet(
+      x = true_x,
+      y = true_y,
+      n_z = n_z,
+      layers = list(
+        layer(activator = identity_activator,
+              n_nodes = ncol(true_y),
+              weight_prior = make_distribution("NO", mu = 0, sigma = 1),
+              weights = true_weights + rnorm(length(true_weights), sd = .5)
+        )
+      ),
+      error_distribution = make_distribution("NO", mu = 0, sigma = 0.1),
+      z_prior = make_distribution("NO", mu = 0, sigma = 1),
+      fit = TRUE,
       control = list(maximize = TRUE, starttests = FALSE)
     )
   })
