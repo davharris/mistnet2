@@ -78,6 +78,11 @@ mistnet = function(
   mistnet_optimizer = mistnet_fit_optimx,
   ...
 ){
+
+  if (is(layers, layer)) {
+
+  }
+
   n_layers = length(layers)
 
   n = nrow(x)

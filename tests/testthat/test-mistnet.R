@@ -17,8 +17,6 @@ y = gamlss.dist::rBI(
 )
 dim(y) = c(n, n_y)
 
-
-
 test_that("layer function's optional arguments work", {
   example_layer = layer(
     activator = sigmoid_activator,
@@ -40,6 +38,38 @@ test_that("layer function's optional arguments work", {
   expect_true(all(net$par_list$weights[[1]] == pi))
   expect_true(all(net$par_list$biases[[1]] == exp(2)))
 })
+
+context("mistnet: different arguments to par")
+
+test_that("build_par_list works on networks", {
+  net = mistnet(
+    x = x,
+    y = y,
+    n_z = n_z,
+    layers = list(
+      layer(
+        activator = sigmoid_activator,
+        n_nodes = ncol(y),
+        weight_prior = make_distribution("NO", mu = 0, sigma = 1)
+      )
+    ),
+    error_distribution = make_distribution("BI", bd = bd),
+    fit = FALSE
+  )
+
+  # Compare missing with list in `feedforward`
+  expect_identical(
+    feedforward(network = net),
+    feedforward(network = net, par = net$par_list)
+  )
+
+  # Compare missing with unlisted() in `feedforward`
+  expect_identical(
+    backprop(network = net),
+    backprop(network = net, par = unlist(net$par_list))
+  )
+})
+
 
 # Test up to four layers
 layer_list = list(
@@ -101,23 +131,6 @@ test_that("mistnet's gradients are numerically accurate",{
       tolerance = 1E-5
     )
   }
-})
-
-
-context("mistnet: different arguments")
-
-test_that("build_par_list works on networks", {
-  # Compare missing with list in `feedforward`
-  expect_identical(
-    feedforward(network = net),
-    feedforward(network = net, par = net$par_list)
-  )
-
-  # Compare missing with unlisted() in `feedforward`
-  expect_identical(
-    backprop(network = net),
-    backprop(network = net, par = unlist(net$par_list))
-  )
 })
 
 
