@@ -1,3 +1,4 @@
+#' @export
 draw_samples = function(object, ...){
   UseMethod("draw_samples")
 }
@@ -12,3 +13,4 @@ draw_samples.distribution = function(object, ...){
     get_values(object, ...)
   )
 }
+
