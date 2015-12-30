@@ -2,7 +2,7 @@
 
 S3method(backprop,mistnet_network)
 S3method(draw_samples,distribution)
-S3method(feedforward,mistnet_network)
+S3method(feedforward,network)
 S3method(log_prob,distribution)
 S3method(log_prob,mistnet_network)
 export(IU)
