@@ -78,6 +78,7 @@ mistnet = function(
   mistnet_optimizer = mistnet_fit_optimx,
   ...
 ){
+  stopifnot(nrow(x) == nrow(y))
 
   if (is(layers, "layer")) {
     # Correct for easy mistake with single-layer networks

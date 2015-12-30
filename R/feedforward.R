@@ -72,3 +72,12 @@ feedforward.network = function(network, par, ...){
 }
 
 
+feedforward_with_samples = function(network, z_samples){
+  lapply(
+    z_samples,
+    function(sample_matrix){
+      network$par_list$z = sample_matrix
+      feedforward(network)
+    }
+  )
+}
