@@ -41,7 +41,7 @@ mistnet_fit_optimx = function(
   gr,
   method = "L-BFGS-B",
   itnmax = 1000,
-  control = list(maximize = TRUE, starttests = TRUE),
+  control = list(maximize = TRUE, starttests = FALSE),
   hessian = FALSE
 ){
 
