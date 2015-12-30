@@ -30,12 +30,13 @@ feedforward.mistnet_network = function(network, par, ...){
     parameters = build_par_list(par = par, par_list = network$par_list)
   }
 
-
-
   # inputs, pre-activations, and outputs start empty
   inputs = pre_activations = outputs = list()
 
-  for (i in 1:length(parameters$weights)) {
+  n_layers = length(parameters$weights)
+
+
+  for (i in 1:n_layers) {
     if (i == 1) {
       # First layer's inputs are concatenated from x and z
       inputs[[i]] = cbind(network$x, parameters$z)
@@ -48,6 +49,8 @@ feedforward.mistnet_network = function(network, par, ...){
       parameters$biases[[i]]
     outputs[[i]] = network$activators[[i]]$f(pre_activations[[i]])
   }
+
+  dimnames(outputs[[n_layers]]) = dimnames(network$y)
 
   structure(
     list(
