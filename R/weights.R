@@ -1,7 +1,32 @@
+make_weight_list = function(n_x, n_z, layers) {
+  n_layers = length(layers)
+
+  weight_dims = numeric(n_layers + 1)
+
+  weight_dims[1] = n_x + n_z  # nrow of weight matrix 1
+
+  for (i in 1:n_layers) {
+    # ncol of weight matrix i
+    weight_dims[i + 1] = layers[[i]]$n_nodes
+  }
+
+  lapply(
+    1:n_layers,
+    function(i){
+      initialize_weights(
+        layers[[i]],
+        n_in = weight_dims[i],
+        n_out = weight_dims[i + 1]
+      )
+    }
+  )
+}
+
+
 initialize_weights = function(layer, n_in, n_out){
 
   if (is.null(layer$weights)) {
-      weights = initialize_weights_glorot_normal(n_in = n_in, n_out = n_out)
+    weights = initialize_weights_glorot_normal(n_in = n_in, n_out = n_out)
   } else{
     if (all(dim(layer$weights) == c(n_in, n_out))) {
       weights = layer$weights
