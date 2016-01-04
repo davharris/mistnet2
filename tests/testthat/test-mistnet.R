@@ -146,7 +146,8 @@ test_that("multi-layer mistnet_fit works", {
       n_z = n_z,
       layers = layer_list,
       error_distribution = make_distribution("BI", bd = bd),
-      fit = TRUE
+      fit = TRUE,
+      control = list(maximize = TRUE, starttests = TRUE)
     )
   })
 
@@ -173,8 +174,6 @@ test_that("multi-layer mistnet_fit works", {
 })
 
 test_that("`...` is passed through mistnet to optimx", {
-  # See previous test for why I'm suppressing warnings,
-  # capturing output, and using =
   evaluate_promise({
     net = mistnet(
       x = x,
@@ -185,7 +184,7 @@ test_that("`...` is passed through mistnet to optimx", {
       fit = TRUE,
       itnmax = 1,
       method = "Nelder-Mead",
-      control = list(maximize = TRUE, starttests = FALSE)
+      control = list(maximize = TRUE, starttests = TRUE)
     )
   })
 

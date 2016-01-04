@@ -10,9 +10,7 @@
 #' @export
 mistnet_fit = function(network, mistnet_optimizer = mistnet_fit_optimx, ...){
   fn = function(par){
-    sum(
-      log_prob(network, par = par, include_penalties = TRUE)
-    )
+    sum(log_prob(network, par = par, include_penalties = TRUE))
   }
   gr = function(par){unlist(backprop(network, par = par))}
 
@@ -41,7 +39,7 @@ mistnet_fit_optimx = function(
   gr,
   method = "L-BFGS-B",
   itnmax = 1000,
-  control = list(maximize = TRUE, starttests = TRUE),
+  control = list(maximize = TRUE, starttests = FALSE),
   hessian = FALSE
 ){
 

@@ -78,76 +78,38 @@ mistnet = function(
   mistnet_optimizer = mistnet_fit_optimx,
   ...
 ){
+  stopifnot(nrow(x) == nrow(y))
 
   if (is(layers, "layer")) {
     # Correct for easy mistake with single-layer networks
     layers = list(layers)
   }
 
-  n_layers = length(layers)
+  activators = lapply(layers, function(layer) layer$activator)
 
   n = nrow(x)
-  n_x = ncol(x)
-  n_y = ncol(y)
-
-  weight_dims = numeric(n_layers + 1)
-  weight_dims[1] = n_x + n_z              # nrow of first weight matrix
-  for (i in 1:n_layers) {
-    weight_dims[i + 1] = layers[[i]]$n_nodes
-  }
-
-  activators = lapply(layers, function(layer) layer$activator)
-  weight_priors = lapply(layers, function(layer) layer$weight_prior)
-
-  weights = lapply(
-    1:n_layers,
-    function(i){
-      initialize_weights(layers[[i]],
-                         n_in = weight_dims[i],
-                         n_out = weight_dims[i + 1]
-      )
-    }
-  )
-
-
-  biases = lapply(
-    1:n_layers,
-    function(i){
-      if (is.null(layers[[i]]$biases)) {
-        if (i < n_layers) {
-          rep(0, layers[[i]]$n_nodes)
-        } else {
-          # binomial denominator is needed for the sigmoid activator and
-          # is ignored by all the other ones.
-          bd = error_distribution$family_parameters$bd
-          activators[[i]]$initialize_activator_biases(y, bd = bd)
-        }
-      } else{
-        layers[[i]]$biases
-      }
-    }
-  )
 
   network = list(
     x = x,
     y = y,
     par_list = list(
       z = matrix(draw_samples(z_prior, n = n * n_z), nrow = n, ncol = n_z),
-      weights = weights,
-      biases = biases
+      weights = make_weight_list(n_x = ncol(x), n_z = n_z, layers = layers),
+      biases = make_bias_list(layers = layers,
+                              error_distribution = error_distribution,
+                              activators = activators,
+                              y = y)
     ),
     activators = activators,
-    weight_priors = weight_priors,
+    weight_priors = lapply(layers, function(layer) layer$weight_prior),
     z_prior = z_prior,
-    error_distribution = error_distribution
+    error_distribution = error_distribution,
+    optimization_results = list()
   )
   class(network) = c("mistnet_network", "network")
 
-
   if (fit) {
     network = mistnet_fit(network, ...)
-  } else {
-    network$optimization_results = list()
   }
 
   return(network)

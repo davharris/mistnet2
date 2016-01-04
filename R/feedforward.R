@@ -22,7 +22,7 @@ feedforward = function(network, ...){
 #' }
 #' @aliases feedforward
 #' @export
-feedforward.mistnet_network = function(network, par, ...){
+feedforward.network = function(network, par, ...){
 
   if (missing(par)) {
     parameters = network$par_list
@@ -30,24 +30,36 @@ feedforward.mistnet_network = function(network, par, ...){
     parameters = build_par_list(par = par, par_list = network$par_list)
   }
 
+  n_layers = length(parameters$weights)
 
+  # inputs, pre-activations, and outputs start as lists of NULL
+  empty_list = replicate(n_layers, NULL, simplify = FALSE)
+  inputs = pre_activations = outputs = empty_list
 
-  # inputs, pre-activations, and outputs start empty
-  inputs = pre_activations = outputs = list()
+  # Set up the first layer's inputs
+  if (is(network, "mistnet_network")) {
+    # Mistnet networks' first input layer concatenates x and z
+    inputs[[1]] = cbind(network$x, parameters$z)
+  } else {
+    # Networks with fully-observed inputs just take x
+    inputs[[1]] = network$x
+  }
 
-  for (i in 1:length(parameters$weights)) {
-    if (i == 1) {
-      # First layer's inputs are concatenated from x and z
-      inputs[[i]] = cbind(network$x, parameters$z)
-    }else{
-      # Subsequent layers' inputs are given by the previous layers' outputs
+  # Fill in the inputs, pre_activations, and outputs
+  for (i in 1:n_layers) {
+    if (is.null(inputs[[i]])) {
       inputs[[i]] = outputs[[i - 1]]
     }
 
+    # Matrix multiply inputs by weights and add biases
     pre_activations[[i]] = inputs[[i]] %*% parameters$weights[[i]] %plus%
       parameters$biases[[i]]
+
+    # Apply the activation function
     outputs[[i]] = network$activators[[i]]$f(pre_activations[[i]])
   }
+
+  dimnames(outputs[[n_layers]]) = dimnames(network$y)
 
   structure(
     list(
@@ -56,5 +68,16 @@ feedforward.mistnet_network = function(network, par, ...){
       outputs = outputs
     ),
     class = "network_state"
+  )
+}
+
+
+feedforward_with_samples = function(network, z_samples){
+  lapply(
+    z_samples,
+    function(sample_matrix){
+      network$par_list$z = sample_matrix
+      feedforward(network)
+    }
   )
 }
