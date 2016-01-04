@@ -1,23 +1,25 @@
 context("Prediction and sampling")
 
+n = 50
+n_x = 4
+n_y = 10
+n_z = 3
+
+x = matrix(rnorm(n * n_x), nrow = n, ncol = n_x)
+
+net = mistnet(
+  x = x,
+  y = matrix(0, nrow = n, ncol = n_y),
+  n_z = n_z,
+  layers = layer(elu_activator, n_y, weight_prior = make_distribution("NO", mu = 0, sigma = 1)),
+  error_distribution = make_distribution("NO", mu = 0, sigma = 1),
+  fit = FALSE
+)
+
+
+
 test_that("feedforward_with_samples works",{
   `%plus%` = mistnet2:::`%plus%`
-
-  n = 50
-  n_x = 4
-  n_y = 10
-  n_z = 3
-
-  x = matrix(rnorm(n * n_x), nrow = n, ncol = n_x)
-
-  net = mistnet(
-    x = x,
-    y = matrix(0, nrow = n, ncol = n_y),
-    n_z = n_z,
-    layers = layer(elu_activator, n_y, weight_prior = make_distribution("NO", mu = 0, sigma = 1)),
-    error_distribution = make_distribution("NO", mu = 0, sigma = 1),
-    fit = FALSE
-  )
 
   samples = replicate(
     10,
@@ -27,7 +29,7 @@ test_that("feedforward_with_samples works",{
 
   states = mistnet2:::feedforward_with_samples(net, samples)
 
-  # Manually feed forward for all teh samples and confirm that I get the same
+  # Manually feed forward for all the samples and confirm that I get the same
   # thing both ways.
   predicted_states = lapply(
     samples,
@@ -54,3 +56,40 @@ test_that("feedforward_with_samples works",{
 
   expect_equal(states, predicted_states)
 })
+
+test_that("predict.mistnet_network works", {
+  n_samples = 5
+  newdata = matrix(rnorm(n * n_x), nrow = n, ncol = n_x)
+
+  # create a network with newdata
+  newnet = net
+  newnet$x = newdata
+
+  # Generate samples and feed them forward manually through newnet
+  set.seed(1)
+  z_samples = replicate(
+    n_samples,
+    {
+      matrix(
+        draw_samples(net$z_prior, n = nrow(newdata) * n_z),
+        nrow = nrow(newdata),
+        ncol = n_z
+      )
+    },
+    simplify = FALSE
+  )
+  predicted_manual = mistnet2:::feedforward_with_samples(newnet, z_samples)
+
+  # Compare with `predict` output
+  set.seed(1)
+  predicted = predict(object = net, newdata = newdata, n_samples = n_samples)
+
+  for (i in 1:n_samples) {
+    expect_equal(
+      predicted[[i]],
+      predicted_manual[[i]]
+    )
+  }
+
+
+  })
