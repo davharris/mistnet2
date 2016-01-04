@@ -78,7 +78,10 @@ mistnet = function(
   mistnet_optimizer = mistnet_fit_optimx,
   ...
 ){
+  stopifnot(is.matrix(x))
+  stopifnot(is.matrix(y))
   stopifnot(nrow(x) == nrow(y))
+  stopifnot(layers[[length(layers)]]$n_nodes == ncol(y))
 
   if (is(layers, "layer")) {
     # Correct for easy mistake with single-layer networks
