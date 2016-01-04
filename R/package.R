@@ -1,4 +1,4 @@
-#' Neural Networks with Random Effects.
+#' Neural Networks with Latent Variables.
 #'
 #' Mistnet2 DESCRIPTION.
 #'

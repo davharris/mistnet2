@@ -4,7 +4,7 @@
 \name{mistnet2-package}
 \alias{mistnet2}
 \alias{mistnet2-package}
-\title{Neural Networks with Random Effects.}
+\title{Neural Networks with Latent Variables.}
 \description{
 Mistnet2 DESCRIPTION.
 }
