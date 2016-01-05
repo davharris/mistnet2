@@ -95,20 +95,26 @@ mistnet = function(
   assert_that(is(error_distribution, "distribution"))
   assert_that(is.flag(fit))
 
+
   activators = lapply(layers, function(layer) layer$activator)
   n = nrow(x)
+
+  par_list = list(
+    z = matrix(draw_samples(z_prior, n = n * n_z), nrow = n, ncol = n_z),
+    weights = make_weight_list(n_x = ncol(x), n_z = n_z, layers = layers),
+    biases = make_bias_list(layers = layers,
+                            error_distribution = error_distribution,
+                            activators = activators,
+                            y = y)
+  )
+
+  assert_that(is.numeric(unlist(par_list)), noNA(unlist(par_list)))
+
 
   network = list(
     x = x,
     y = y,
-    par_list = list(
-      z = matrix(draw_samples(z_prior, n = n * n_z), nrow = n, ncol = n_z),
-      weights = make_weight_list(n_x = ncol(x), n_z = n_z, layers = layers),
-      biases = make_bias_list(layers = layers,
-                              error_distribution = error_distribution,
-                              activators = activators,
-                              y = y)
-    ),
+    par_list = par_list,
     activators = activators,
     weight_priors = lapply(layers, function(layer) layer$weight_prior),
     z_prior = z_prior,
