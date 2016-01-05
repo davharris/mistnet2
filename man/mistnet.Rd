@@ -37,7 +37,7 @@ models are fitted using \code{\link{mistnet_fit_optimx}} using
 \value{
 An object of class \code{network} and subclass \code{mistnet_network}.
   This object will contain the original \code{x} and \code{y} matrices,
-  a list of adjustable parameters (\code{par_list}),
+  a list of adjustable parameters (\code{par_list}), [[etc.]]
 }
 \description{
 Build and fit a neural network with random effects

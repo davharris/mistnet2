@@ -4,7 +4,7 @@
 \alias{layer}
 \title{Describe a layer of a neural network}
 \usage{
-layer(activator, n_nodes, weight_prior, ..., weights = NULL, biases = NULL)
+layer(activator, n_nodes, weight_prior, weights = NULL, biases = NULL, ...)
 }
 \arguments{
 \item{activator}{an \code{\link{activator}} object, determining the nonlinear
@@ -17,14 +17,14 @@ last layer should have the same number of nodes as there are columns in
 \item{weight_prior}{a \code{\link{distribution}} object that acts as a prior
 distribution for the weight matrix.}
 
-\item{...}{Additional objects to include in the layer (not currently used
-by the \code{\link{mistnet}} function)}
-
 \item{weights}{an optional weight matrix; if omitted, the
 \code{\link{mistnet}} function will randomly initialize the weights}
 
 \item{biases}{an optional bias vector; if omitted, the
 \code{\link{mistnet}} function will randomly initialize the biases}
+
+\item{...}{Additional objects to include in the layer (not currently used
+by the \code{\link{mistnet}} function)}
 }
 \value{
 a list of class \code{layer} containing the objects above

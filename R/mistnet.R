@@ -17,9 +17,11 @@
 #' @param ... Additional arguments to \code{\link{mistnet_fit}}
 #' @return An object of class \code{network} and subclass \code{mistnet_network}.
 #'   This object will contain the original \code{x} and \code{y} matrices,
-#'   a list of adjustable parameters (\code{par_list}),
+#'   a list of adjustable parameters (\code{par_list}), [[etc.]]
 #' @useDynLib mistnet2
 #' @importFrom optimx optimx
+#' @importFrom assertthat assert_that is.scalar is.count are_equal noNA is.flag
+#' @importFrom purrr every
 #' @export
 #' @examples
 #' set.seed(1)
@@ -78,18 +80,22 @@ mistnet = function(
   mistnet_optimizer = mistnet_fit_optimx,
   ...
 ){
-  stopifnot(is.matrix(x))
-  stopifnot(is.matrix(y))
-  stopifnot(nrow(x) == nrow(y))
-  stopifnot(layers[[length(layers)]]$n_nodes == ncol(y))
-
   if (is(layers, "layer")) {
     # Correct for easy mistake with single-layer networks
     layers = list(layers)
   }
 
-  activators = lapply(layers, function(layer) layer$activator)
+  assert_that(is.matrix(x), is.numeric(x), noNA(x))
+  assert_that(is.matrix(y), is.numeric(y), noNA(y))
+  assert_that(are_equal(nrow(x), nrow(y)))
+  assert_that(every(layers, is, "layer"))
+  assert_that(is.count(n_z))
+  assert_that(are_equal(layers[[length(layers)]]$n_nodes, ncol(y)))
+  assert_that(is(z_prior, "distribution"))
+  assert_that(is(error_distribution, "distribution"))
+  assert_that(is.flag(fit))
 
+  activators = lapply(layers, function(layer) layer$activator)
   n = nrow(x)
 
   network = list(
