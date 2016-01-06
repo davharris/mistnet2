@@ -134,31 +134,30 @@ grad = function(distribution, name, ...){
   do.call(f, get_values(distribution, ...))
 }
 
-# Calculate error gradients for all the parameters that need it
-calculate_error_grads = function(network, parameters, state) {
-
-  # Need to calculate gradients for mu and any adjustable parameters
-  error_par_names = c("mu", names(parameters$error_distribution_par))
+# Calculate error gradients for all the parameters
+calculate_error_grads = function(error_distribution, error_par, y, mu) {
 
   # All the gradient calculations will require these arguments
-  arg_list = compact(
+  arg_list = c(
     list(
-      distribution = network$error_distribution,
-      y = network$y,
-      mu = state$outputs[[length(state$outputs)]],
-      network$par_list$error_distribution_par
-    )
+      distribution = error_distribution,
+      y = y,
+      mu = mu
+    ),
+    error_par[names(error_par) != mu] # mu is handled above, not here
   )
+
+  par_names = c("mu", names(error_par))
 
   # Loop through the parameters and calculate gradients for each
   out = lapply(
-    error_par_names,
+    par_names,
     function(name){
       do.call(grad, c(arg_list, name = name))
     }
   )
 
-  structure(out, names = error_par_names)
+  structure(out, names = par_names)
 }
 
 

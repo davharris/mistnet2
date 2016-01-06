@@ -27,9 +27,10 @@ backprop.mistnet_network = function(network, state, par, ...){
   }
 
   error_distribution_grads = calculate_error_grads(
-    network = network,
-    parameters = parameters,
-    state = state
+    error_distribution = network$error_distribution,
+    error_par = parameters$error_par,
+    y = network$y,
+    mu = state$outputs[[length(state$outputs)]]
   )
 
   weight_grads = bias_grads = list()
