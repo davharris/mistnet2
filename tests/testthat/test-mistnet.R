@@ -57,6 +57,7 @@ test_that("build_par_list works on networks", {
     fit = FALSE
   )
 
+
   # Compare missing with list in `feedforward`
   expect_identical(
     feedforward(network = net),

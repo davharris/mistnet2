@@ -2,12 +2,14 @@ context("Distributions")
 
 test_that("make_distribution accepts functions", {
   dist = make_distribution(gamlss.dist::NO, sigma = 2)
+  dist2 = make_distribution("NO", sigma = 2)
+  expect_equal(dist, dist2)
 })
 
 
 test_that("make_distribution rejects family objects", {
   expect_error(
-    make_distribution(NO(), sigma = 2),
+    make_distribution(gamlss.dist::NO(), sigma = 2),
     "not the object itself"
   )
 })
@@ -150,31 +152,5 @@ test_that("Improper uniform distribution works", {
   expect_equal(
     dist$dldx(x = 1:10, mu = 1),
     rep(0, 10)
-  )
-})
-
-
-test_that("missing `adjusted_values` leads to interpretable error messages", {
-  dist = make_distribution("BI", mu = adjustable(0.5), bd = 3)
-
-  expect_error(
-    grad(distribution = dist, "mu", y = 2),
-    "Distribution has adjustable parameters but `adjusted_values` is missing"
-  )
-})
-
-test_that("adjustable values are collected properly", {
-  dist = make_distribution("BI", mu = adjustable(0.5), bd = 3)
-
-  expect_equal(
-    grad(distribution = dist, "mu", y = 2, adjusted_values = list(mu = 0.6)),
-    BI()$dldm(y = 2, mu = 0.6, bd = 3)
-  )
-
-  # Values given at the top level should trump those given in `adjusted_values`
-  expect_equal(
-    grad(distribution = dist, "mu", y = 2, mu = .1,
-         adjusted_values = list(mu = 0.6)),
-    BI()$dldm(y = 2, mu = 0.1, bd = 3)
   )
 })

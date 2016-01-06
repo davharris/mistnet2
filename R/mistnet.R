@@ -21,7 +21,7 @@
 #' @useDynLib mistnet2
 #' @importFrom optimx optimx
 #' @importFrom assertthat assert_that is.scalar is.count are_equal noNA is.flag
-#' @importFrom purrr every
+#' @importFrom purrr every compact
 #' @export
 #' @examples
 #' set.seed(1)
@@ -94,6 +94,9 @@ mistnet = function(
   assert_that(is(z_prior, "distribution"))
   assert_that(is(error_distribution, "distribution"))
   assert_that(is.flag(fit))
+  if (!is.null(error_distribution$mu)) {
+    stop("user cannot specify mu for the error_distribution; learning mu is the network's job")
+  }
 
 
   activators = lapply(layers, function(layer) layer$activator)
@@ -105,16 +108,16 @@ mistnet = function(
     biases = make_bias_list(layers = layers,
                             error_distribution = error_distribution,
                             activators = activators,
-                            y = y)
+                            y = y),
+    error_distribution_par = get_adjustables(error_distribution)
   )
 
   assert_that(is.numeric(unlist(par_list)), noNA(unlist(par_list)))
 
-
   network = list(
     x = x,
     y = y,
-    par_list = par_list,
+    par_list = compact(par_list),
     activators = activators,
     weight_priors = lapply(layers, function(layer) layer$weight_prior),
     z_prior = z_prior,

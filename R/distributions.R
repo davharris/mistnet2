@@ -138,11 +138,9 @@ grad = function(distribution, name, ...){
 #'
 #' @param distribution a distribution object
 #' @param ... additional arguments, which will override values contained within
-#'    the \code{distribution} object or in the \code{adjusted_values}
-#' @param adjusted_values a \code{list} of adjusted values (for adjustable
-#' parameters)
+#'    the \code{distribution}
 #' @export
-get_values = function(distribution, ..., adjusted_values){
+get_values = function(distribution, ...){
 
   values = list(...)
 
@@ -150,16 +148,8 @@ get_values = function(distribution, ..., adjusted_values){
     if (param_name %in% names(values)) {
       # Do nothing: a value has already been provided
     } else {
-      if (is.adjustable(distribution$family_parameters[[param_name]])) {
-        # Get the updated value from `adjusted_values`
-        if (missing(adjusted_values)) {
-          stop("Distribution has adjustable parameters but `adjusted_values` is missing")
-        }
-        values[[param_name]] = adjusted_values[[param_name]]
-      }else{
-        # pull the value from the distribution object itself
-        values[[param_name]] = distribution$family_parameters[[param_name]]
-      }
+      # pull the value from the distribution object itself
+      values[[param_name]] = distribution$family_parameters[[param_name]]
     }
   }
 
