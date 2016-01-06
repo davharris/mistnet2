@@ -17,9 +17,11 @@
 #' @param ... Additional arguments to \code{\link{mistnet_fit}}
 #' @return An object of class \code{network} and subclass \code{mistnet_network}.
 #'   This object will contain the original \code{x} and \code{y} matrices,
-#'   a list of adjustable parameters (\code{par_list}),
+#'   a list of adjustable parameters (\code{par_list}), [[etc.]]
 #' @useDynLib mistnet2
 #' @importFrom optimx optimx
+#' @importFrom assertthat assert_that is.scalar is.count are_equal noNA is.flag
+#' @importFrom purrr every compact
 #' @export
 #' @examples
 #' set.seed(1)
@@ -78,28 +80,44 @@ mistnet = function(
   mistnet_optimizer = mistnet_fit_optimx,
   ...
 ){
-  stopifnot(nrow(x) == nrow(y))
-
   if (is(layers, "layer")) {
     # Correct for easy mistake with single-layer networks
     layers = list(layers)
   }
 
-  activators = lapply(layers, function(layer) layer$activator)
+  assert_that(is.matrix(x), is.numeric(x), noNA(x))
+  assert_that(is.matrix(y), is.numeric(y), noNA(y))
+  assert_that(are_equal(nrow(x), nrow(y)))
+  assert_that(every(layers, is, "layer"))
+  assert_that(is.count(n_z))
+  assert_that(are_equal(layers[[length(layers)]]$n_nodes, ncol(y)))
+  assert_that(is(z_prior, "distribution"))
+  assert_that(is(error_distribution, "distribution"))
+  assert_that(is.flag(fit))
+  if (!is.null(error_distribution$mu)) {
+    stop("user cannot specify mu for the error_distribution; learning mu is the network's job")
+  }
 
+
+  activators = lapply(layers, function(layer) layer$activator)
   n = nrow(x)
+
+  par_list = list(
+    z = matrix(draw_samples(z_prior, n = n * n_z), nrow = n, ncol = n_z),
+    weights = make_weight_list(n_x = ncol(x), n_z = n_z, layers = layers),
+    biases = make_bias_list(layers = layers,
+                            error_distribution = error_distribution,
+                            activators = activators,
+                            y = y),
+    error_distribution_par = get_adjustables(error_distribution)
+  )
+
+  assert_that(is.numeric(unlist(par_list)), noNA(unlist(par_list)))
 
   network = list(
     x = x,
     y = y,
-    par_list = list(
-      z = matrix(draw_samples(z_prior, n = n * n_z), nrow = n, ncol = n_z),
-      weights = make_weight_list(n_x = ncol(x), n_z = n_z, layers = layers),
-      biases = make_bias_list(layers = layers,
-                              error_distribution = error_distribution,
-                              activators = activators,
-                              y = y)
-    ),
+    par_list = compact(par_list),
     activators = activators,
     weight_priors = lapply(layers, function(layer) layer$weight_prior),
     z_prior = z_prior,

@@ -23,18 +23,15 @@ make_weight_list = function(n_x, n_z, layers) {
 }
 
 
-initialize_weights = function(layer, n_in, n_out){
+initialize_weights = function(layer, n_in, n_out,
+                              initializer = initialize_weights_glorot_normal){
 
   if (is.null(layer$weights)) {
-    weights = initialize_weights_glorot_normal(n_in = n_in, n_out = n_out)
+    weights = initializer(n_in = n_in, n_out = n_out)
   } else{
-    if (all(dim(layer$weights) == c(n_in, n_out))) {
-      weights = layer$weights
-    } else{
-      stop("weight matrix has incorrect dimensions")
-    }
+    assert_that(are_equal(dim(layer$weights), c(n_in, n_out)))
+    weights = layer$weights
   }
-
   weights
 }
 

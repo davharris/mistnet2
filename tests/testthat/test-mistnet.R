@@ -2,11 +2,11 @@ context("Mistnet: layers")
 
 set.seed(1)
 
-n = 7    # Number of rows of data
-n_x = 5  # Number of observed predictor variables
-n_y = 7  # Number of response variables
+n = 5    # Number of rows of data
+n_x = 3  # Number of observed predictor variables
+n_y = 2  # Number of response variables
 bd = 13  # Number of coin flips per observation
-n_z = 3  # Number of latent variables
+n_z = 2  # Number of latent variables
 
 x = matrix(rnorm(n * n_x), ncol = n_x)
 
@@ -39,7 +39,7 @@ test_that("layer function's optional arguments work", {
   expect_true(all(net$par_list$biases[[1]] == exp(2)))
 })
 
-context("mistnet: different arguments to par")
+context("Mistnet: different arguments to par")
 
 test_that("build_par_list works on networks", {
   net = mistnet(
@@ -56,6 +56,7 @@ test_that("build_par_list works on networks", {
     error_distribution = make_distribution("BI", bd = bd),
     fit = FALSE
   )
+
 
   # Compare missing with list in `feedforward`
   expect_identical(

@@ -134,15 +134,40 @@ grad = function(distribution, name, ...){
   do.call(f, get_values(distribution, ...))
 }
 
+# Calculate error gradients for all the parameters
+calculate_error_grads = function(error_distribution, error_par, y, mu) {
+
+  # All the gradient calculations will require these arguments
+  arg_list = c(
+    list(
+      distribution = error_distribution,
+      y = y,
+      mu = mu
+    ),
+    error_par[names(error_par) != mu] # mu is handled above, not here
+  )
+
+  par_names = c("mu", names(error_par))
+
+  # Loop through the parameters and calculate gradients for each
+  out = lapply(
+    par_names,
+    function(name){
+      do.call(grad, c(arg_list, name = name))
+    }
+  )
+
+  structure(out, names = par_names)
+}
+
+
 #' Get parameter values from a distribution object
 #'
 #' @param distribution a distribution object
 #' @param ... additional arguments, which will override values contained within
-#'    the \code{distribution} object or in the \code{adjusted_values}
-#' @param adjusted_values a \code{list} of adjusted values (for adjustable
-#' parameters)
+#'    the \code{distribution}
 #' @export
-get_values = function(distribution, ..., adjusted_values){
+get_values = function(distribution, ...){
 
   values = list(...)
 
@@ -150,16 +175,8 @@ get_values = function(distribution, ..., adjusted_values){
     if (param_name %in% names(values)) {
       # Do nothing: a value has already been provided
     } else {
-      if (is.adjustable(distribution$family_parameters[[param_name]])) {
-        # Get the updated value from `adjusted_values`
-        if (missing(adjusted_values)) {
-          stop("Distribution has adjustable parameters but `adjusted_values` is missing")
-        }
-        values[[param_name]] = adjusted_values[[param_name]]
-      }else{
-        # pull the value from the distribution object itself
-        values[[param_name]] = distribution$family_parameters[[param_name]]
-      }
+      # pull the value from the distribution object itself
+      values[[param_name]] = distribution$family_parameters[[param_name]]
     }
   }
 

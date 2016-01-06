@@ -11,9 +11,12 @@
 #' @return For generic networks, a \code{network_state} object, as in
 #'    \code{\link{feedforward}}. For mistnet networks, a list of such objects,
 #'    a list of such object (one for each Monte Carlo sample)
-#'
+#' @importFrom assertthat assert_that noNA
 #' @export
 predict.network = function(object, newdata, ...){
+  assert_that(is.matrix(newdata), is.numeric(newdata), noNA(newdata))
+  assert_that(are_equal(ncol(object$x), ncol(newdata)))
+
   object$x = newdata
   feedforward(object)
 }
@@ -29,8 +32,8 @@ predict.mistnet_network = function(
   n_samples,
   ...
 ){
-  stopifnot(is.matrix(newdata))
-  stopifnot(ncol(newdata) == ncol(object$x))
+  assert_that(is.matrix(newdata), is.numeric(newdata), noNA(newdata))
+  assert_that(are_equal(ncol(object$x), ncol(newdata)))
 
   object$x = newdata
 

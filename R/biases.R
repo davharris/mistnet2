@@ -1,4 +1,5 @@
 make_bias_list = function(layers, error_distribution, activators, y) {
+
   n_layers = length(layers)
 
   lapply(
