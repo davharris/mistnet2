@@ -112,6 +112,21 @@ mistnet = function(
     error_distribution_par = get_adjustables(error_distribution)
   )
 
+  # If a parameter is adjustable, replace it with NA. Its value is stored in
+  # the par_list, not in the distribution.
+  error_distribution$family_parameters = lapply(
+    error_distribution$family_parameters,
+    function(x){
+      if (is(x, "adjustable")) {
+        NA
+      }else{
+        x
+      }
+    }
+  )
+
+  error_distribution$family_parameters[]
+
   assert_that(is.numeric(unlist(par_list)), noNA(unlist(par_list)))
 
   network = list(
