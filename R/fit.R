@@ -10,13 +10,7 @@
 #' @export
 mistnet_fit = function(network, mistnet_optimizer = mistnet_fit_optimx, ...){
   fn = function(par){
-    out = sum(log_prob(network, par = par, include_penalties = TRUE))
-
-    if (!is.finite(out)) {
-      out = -sqrt(.Machine$double.xmax)
-    }
-
-    out
+    sum(log_prob(network, par = par, include_penalties = TRUE))
   }
 
 
@@ -43,6 +37,8 @@ mistnet_fit = function(network, mistnet_optimizer = mistnet_fit_optimx, ...){
 #'    supported.
 #' @param itnmax,control,hessian Additional arguments passed to
 #'    \code{\link[optimx]{optimx}}
+#' @param ... Additional arguments passed to
+#'    \code{\link[optimx]{optimx}}
 #' @export mistnet_fit_optimx
 mistnet_fit_optimx = function(
   network,
@@ -51,7 +47,8 @@ mistnet_fit_optimx = function(
   method = "L-BFGS-B",
   itnmax = 1000,
   control = list(maximize = TRUE, starttests = FALSE),
-  hessian = FALSE
+  hessian = FALSE,
+  ...
 ){
 
   stopifnot(length(method) == 1)
