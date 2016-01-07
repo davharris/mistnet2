@@ -27,6 +27,7 @@
 #'        called \code{dldx}.
 #' }
 #' @import gamlss.dist
+#' @importFrom assertthat assert_that is.string
 #' @aliases distribution
 #' @export
 #' @examples
@@ -55,9 +56,7 @@
 #' }
 #'
 make_distribution = function(family_function, ...){
-  if (is(family_function, "family")) {
-    stop("family_function should refer to a function that creates a family\nobject, not the object itself")
-  }
+  assert_that(is.function(family_function) || is.string(family_function))
 
   if (is.function(family_function)) {
     # Call the function and pull out the abbreviation
