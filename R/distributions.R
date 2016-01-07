@@ -100,16 +100,14 @@ make_distribution = function(family_function, ...){
   r = get(paste0("r", abbreviation), mode = "function")
 
   structure(
-    list(
-      family = family_object$family,
-      family_parameters = family_parameters,
+    c(
+      family_object["family"],
+      family_parameters = list(family_parameters),
+      family_object[grep("dld", names(family_object))],
+      dldx = get_dldx(family_object),
+      family_object[grep("link$|linkinv", names(family_object))],
       d = d,
-      r = r,
-      dldm = family_object$dldm,
-      dldd = family_object$dldd,
-      dldv = family_object$dldv,
-      dldt = family_object$dldt,
-      dldx = get_dldx(family_object)
+      r = r
     ),
     class = "distribution"
   )
