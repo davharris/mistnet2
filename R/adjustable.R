@@ -11,5 +11,5 @@ adjustable = function(x){
 
 
 get_adjustables = function(x){
-  unlist(x[is(x$family_parameters, "adjustable")])
+  purrr::keep(x$family_parameters, is, "adjustable")
 }

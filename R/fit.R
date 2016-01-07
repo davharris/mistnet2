@@ -10,9 +10,20 @@
 #' @export
 mistnet_fit = function(network, mistnet_optimizer = mistnet_fit_optimx, ...){
   fn = function(par){
-    sum(log_prob(network, par = par, include_penalties = TRUE))
+    out = sum(log_prob(network, par = par, include_penalties = TRUE))
+
+    if (!is.finite(out)) {
+      out = -sqrt(.Machine$double.xmax)
+    }
+
+    out
   }
-  gr = function(par){unlist(backprop(network, par = par))}
+
+
+  gr = function(par){
+    unlist(backprop(network, par = par))
+  }
+
 
   mistnet_optimizer(network, fn = fn, gr = gr, ...)
 }

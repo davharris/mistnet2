@@ -43,19 +43,30 @@ log_prob.mistnet_network = function(object, state, par, include_penalties,
     state = feedforward(object, par)
   }
 
+  if (missing(par)) {
+    parameters = object$par_list
+  } else {
+    parameters = build_par_list(par = par, par_list = object$par_list)
+  }
+
+  error_distribution = object$error_distribution
+
+  # Replace object's error distribution parameters with adjusted values
+  # wherever adjusted values exist
+  for (name in names(error_distribution$family_parameters)) {
+    if (name %in% names(parameters$error_distribution_par)) {
+      error_distribution$family_parameters[[name]] = parameters$error_distribution_par[[name]]
+    }
+  }
+
+
   out = log_prob(
-    object$error_distribution,
+    error_distribution,
     x = object$y,
     mu = state$outputs[[length(state$outputs)]]
   )
 
   if (include_penalties) {
-    if (missing(par)) {
-      parameters = object$par_list
-    } else {
-      parameters = build_par_list(par = par, par_list = object$par_list)
-    }
-
     weight_penalties = sapply(
       1:length(object$weight_priors),
       function(i){

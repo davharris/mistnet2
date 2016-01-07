@@ -106,7 +106,7 @@ test_that("mistnet's gradients are numerically accurate",{
         y = y,
         n_z = n_z,
         layers = layers,
-        error_distribution = make_distribution("BI", bd = bd),
+        error_distribution = make_distribution("BB", bd = bd, sigma = adjustable(10)),
         fit = FALSE
       )
     })
@@ -210,9 +210,9 @@ context("Mistnet: convex parameter recovery")
 rm(list = ls())
 
 test_that("single-layer network recovers 'true' parameters", {
-  n = 250   # Number of rows of data
+  n = 500   # Number of rows of data
   n_x = 3   # Number of observed predictor variables
-  n_y = 8   # Number of response variables
+  n_y = 20   # Number of response variables
   n_z = 2   # Number of latent variables
 
   # "true" weights used to produce the new y.
@@ -233,29 +233,32 @@ test_that("single-layer network recovers 'true' parameters", {
     ncol = n_z
   )
 
-  # No noise in this data-generating process
-  true_y = cbind(true_x, true_z) %*% true_weights
+  true_mu = cbind(true_x, true_z) %*% true_weights
+  true_sigma = .1
+
+  true_y = rnorm(
+    n = length(true_mu),
+    mean = true_mu,
+    sd = true_sigma
+  )
+  dim(true_y) = dim(true_mu)
+
+  net = mistnet(
+    x = true_x,
+    y = true_y,
+    n_z = n_z,
+    layers = list(
+      layer(activator = identity_activator,
+            n_nodes = ncol(true_y),
+            weight_prior = make_distribution("NO", mu = 0, sigma = 1)
+      )
+    ),
+    error_distribution = make_distribution("NO", sigma = .1),
+    z_prior = make_distribution("NO", mu = 0, sigma = 1),
+    fit = FALSE
+  )
 
   evaluate_promise({
-    net = mistnet(
-      x = true_x,
-      y = true_y,
-      n_z = n_z,
-      layers = list(
-        layer(activator = identity_activator,
-              n_nodes = ncol(true_y),
-              weight_prior = make_distribution("NO", mu = 0, sigma = 1)
-        )
-      ),
-      error_distribution = make_distribution("NO", mu = 0, sigma = 0.1),
-      z_prior = make_distribution("NO", mu = 0, sigma = 1),
-      fit = FALSE
-    )
-
-    # Give the test a warm start to make it take less time
-    net$par_list$weights[[1]] = (true_weights + rnorm(length(true_weights))) / 2
-    net$z = (true_z + rnorm(length(true_z))) / 2
-
     net = mistnet_fit(
       net,
       control = list(maximize = TRUE, starttests = FALSE)

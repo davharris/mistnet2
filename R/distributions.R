@@ -135,7 +135,7 @@ grad = function(distribution, name, ...){
 }
 
 # Calculate error gradients for all the parameters
-calculate_error_grads = function(error_distribution, error_par, y, mu) {
+all_error_grads = function(error_distribution, error_distribution_par, y, mu) {
 
   # All the gradient calculations will require these arguments
   arg_list = c(
@@ -144,16 +144,22 @@ calculate_error_grads = function(error_distribution, error_par, y, mu) {
       y = y,
       mu = mu
     ),
-    error_par[names(error_par) != mu] # mu is handled above, not here
+    error_distribution_par[names(error_distribution_par) != "mu"] # mu is handled above, not here
   )
 
-  par_names = c("mu", names(error_par))
+  par_names = c("mu", names(error_distribution_par))
 
   # Loop through the parameters and calculate gradients for each
   out = lapply(
     par_names,
     function(name){
-      do.call(grad, c(arg_list, name = name))
+      out = do.call(grad, c(arg_list, name = name))
+      if (name != "mu") {
+        # Currently assuming scalar values for adjustable parameters!
+        out = sum(out)
+      }
+
+      out
     }
   )
 

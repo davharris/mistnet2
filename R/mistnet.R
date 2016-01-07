@@ -94,7 +94,7 @@ mistnet = function(
   assert_that(is(z_prior, "distribution"))
   assert_that(is(error_distribution, "distribution"))
   assert_that(is.flag(fit))
-  if (!is.null(error_distribution$mu)) {
+  if (!is.na(error_distribution$family_par$mu)) {
     stop("user cannot specify mu for the error_distribution; learning mu is the network's job")
   }
 
