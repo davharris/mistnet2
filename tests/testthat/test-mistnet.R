@@ -2,7 +2,7 @@ context("Mistnet: layers")
 
 set.seed(1)
 
-n = 5    # Number of rows of data
+n = 6    # Number of rows of data
 n_x = 3  # Number of observed predictor variables
 n_y = 2  # Number of response variables
 bd = 13  # Number of coin flips per observation

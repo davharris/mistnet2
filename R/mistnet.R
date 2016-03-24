@@ -21,7 +21,7 @@
 #' @useDynLib mistnet2
 #' @importFrom optimx optimx
 #' @importFrom assertthat assert_that is.scalar is.count are_equal noNA is.flag
-#' @importFrom purrr every compact
+#' @importFrom purrr every
 #' @export
 #' @examples
 #' set.seed(1)
@@ -125,14 +125,12 @@ mistnet = function(
     }
   )
 
-  error_distribution$family_parameters[]
-
   assert_that(is.numeric(unlist(par_list)), noNA(unlist(par_list)))
 
   network = list(
     x = x,
     y = y,
-    par_list = compact(par_list),
+    par_list = purrr::compact(par_list),
     activators = activators,
     weight_priors = lapply(layers, function(layer) layer$weight_prior),
     z_prior = z_prior,
