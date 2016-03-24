@@ -196,7 +196,7 @@ get_dldx = function(family_object){
   # gamlss-based objects won't contain dldx
   if (is.null(family_object$dldx)) {
 
-    # Try looking for it in the package's dldx list
+    # Try looking for it in this package's dldx list
     if (!is.null(dldx_list[[abbreviation]])) {
       out = dldx_list[[abbreviation]]
     } else {

@@ -38,7 +38,7 @@ backprop.mistnet_network = function(network, state, par, ...){
 
   input_grad = error_distribution_grads$mu
 
-  # Start from the top of the network and work downwards:
+  # Start from the top of the network and work down to layer 1:
   for (i in length(parameters$weights):1) {
 
     # Gradient of the activation function (nonlinearity) for this layer
