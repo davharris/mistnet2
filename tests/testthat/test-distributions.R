@@ -10,7 +10,7 @@ test_that("make_distribution accepts functions", {
 test_that("make_distribution rejects family objects", {
   expect_error(
     make_distribution(gamlss.dist::NO(), sigma = 2),
-    "not the object itself"
+    "family_function is not a function or family_function is not a string"
   )
 })
 

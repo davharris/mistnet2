@@ -27,6 +27,7 @@
 #'        called \code{dldx}.
 #' }
 #' @import gamlss.dist
+#' @importFrom assertthat assert_that is.string
 #' @aliases distribution
 #' @export
 #' @examples
@@ -55,9 +56,7 @@
 #' }
 #'
 make_distribution = function(family_function, ...){
-  if (is(family_function, "family")) {
-    stop("family_function should refer to a function that creates a family\nobject, not the object itself")
-  }
+  assert_that(is.function(family_function) || is.string(family_function))
 
   if (is.function(family_function)) {
     # Call the function and pull out the abbreviation
@@ -101,16 +100,14 @@ make_distribution = function(family_function, ...){
   r = get(paste0("r", abbreviation), mode = "function")
 
   structure(
-    list(
-      family = family_object$family,
-      family_parameters = family_parameters,
+    c(
+      family_object["family"],
+      family_parameters = list(family_parameters),
+      family_object[grep("dld", names(family_object))],
+      dldx = get_dldx(family_object),
+      family_object[grep("link$|linkinv", names(family_object))],
       d = d,
-      r = r,
-      dldm = family_object$dldm,
-      dldd = family_object$dldd,
-      dldv = family_object$dldv,
-      dldt = family_object$dldt,
-      dldx = get_dldx(family_object)
+      r = r
     ),
     class = "distribution"
   )
@@ -135,7 +132,7 @@ grad = function(distribution, name, ...){
 }
 
 # Calculate error gradients for all the parameters
-calculate_error_grads = function(error_distribution, error_par, y, mu) {
+all_error_grads = function(error_distribution, error_distribution_par, y, mu) {
 
   # All the gradient calculations will require these arguments
   arg_list = c(
@@ -144,16 +141,22 @@ calculate_error_grads = function(error_distribution, error_par, y, mu) {
       y = y,
       mu = mu
     ),
-    error_par[names(error_par) != mu] # mu is handled above, not here
+    error_distribution_par[names(error_distribution_par) != "mu"] # mu is handled above, not here
   )
 
-  par_names = c("mu", names(error_par))
+  par_names = c("mu", names(error_distribution_par))
 
   # Loop through the parameters and calculate gradients for each
   out = lapply(
     par_names,
     function(name){
-      do.call(grad, c(arg_list, name = name))
+      out = do.call(grad, c(arg_list, name = name))
+      if (name != "mu") {
+        # Currently assuming scalar values for adjustable parameters!
+        out = sum(out)
+      }
+
+      out
     }
   )
 

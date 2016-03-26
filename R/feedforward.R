@@ -71,7 +71,8 @@ feedforward.network = function(network, par, ...){
   )
 }
 
-
+# Specify new values for the latent variables and feed them forward
+# through the network. Used in making predictions from a fitted model.
 feedforward_with_samples = function(network, z_samples){
   lapply(
     z_samples,

@@ -21,7 +21,7 @@
 #' @useDynLib mistnet2
 #' @importFrom optimx optimx
 #' @importFrom assertthat assert_that is.scalar is.count are_equal noNA is.flag
-#' @importFrom purrr every compact
+#' @importFrom purrr every
 #' @export
 #' @examples
 #' set.seed(1)
@@ -94,7 +94,7 @@ mistnet = function(
   assert_that(is(z_prior, "distribution"))
   assert_that(is(error_distribution, "distribution"))
   assert_that(is.flag(fit))
-  if (!is.null(error_distribution$mu)) {
+  if (!is.na(error_distribution$family_par$mu)) {
     stop("user cannot specify mu for the error_distribution; learning mu is the network's job")
   }
 
@@ -112,12 +112,25 @@ mistnet = function(
     error_distribution_par = get_adjustables(error_distribution)
   )
 
+  # If a parameter is adjustable, replace it with NA. Its value is stored in
+  # the par_list, not in the distribution.
+  error_distribution$family_parameters = lapply(
+    error_distribution$family_parameters,
+    function(x){
+      if (is(x, "adjustable")) {
+        NA
+      }else{
+        x
+      }
+    }
+  )
+
   assert_that(is.numeric(unlist(par_list)), noNA(unlist(par_list)))
 
   network = list(
     x = x,
     y = y,
-    par_list = compact(par_list),
+    par_list = purrr::compact(par_list),
     activators = activators,
     weight_priors = lapply(layers, function(layer) layer$weight_prior),
     z_prior = z_prior,

@@ -9,10 +9,16 @@
 #'    \code{optimization_results}
 #' @export
 mistnet_fit = function(network, mistnet_optimizer = mistnet_fit_optimx, ...){
+
+  # Objective function (sum of log_prob, including penalties)
   fn = function(par){
     sum(log_prob(network, par = par, include_penalties = TRUE))
   }
-  gr = function(par){unlist(backprop(network, par = par))}
+
+  # Gradient of objective function
+  gr = function(par){
+    unlist(backprop(network, par = par))
+  }
 
   mistnet_optimizer(network, fn = fn, gr = gr, ...)
 }
@@ -32,6 +38,9 @@ mistnet_fit = function(network, mistnet_optimizer = mistnet_fit_optimx, ...){
 #'    supported.
 #' @param itnmax,control,hessian Additional arguments passed to
 #'    \code{\link[optimx]{optimx}}
+#' @param ... Additional arguments passed to
+#'    \code{\link[optimx]{optimx}}
+#' @importFrom assertthat assert_that
 #' @export mistnet_fit_optimx
 mistnet_fit_optimx = function(
   network,
@@ -40,10 +49,11 @@ mistnet_fit_optimx = function(
   method = "L-BFGS-B",
   itnmax = 1000,
   control = list(maximize = TRUE, starttests = FALSE),
-  hessian = FALSE
+  hessian = FALSE,
+  ...
 ){
 
-  stopifnot(length(method) == 1)
+  assert_that(is.string(method))
 
   if (!isTRUE(control$maximize)) {
     warning("setting `maximize = TRUE` in optimx's control list")
@@ -57,16 +67,13 @@ mistnet_fit_optimx = function(
     method = method,
     itnmax = itnmax,
     control = control,
-    hessian = hessian
+    hessian = hessian,
+    ...
   )
 
-  network$optimization_results = list(
-    optimizer = "optimx",
-    method = method,
-    fevals = opt$fevals,
-    gevals = opt$gevals,
-    convcode = opt$convcode,
-    xtimes = opt$xtimes
+  network$optimization_results = c(
+    opt[c("value", "fevals", "gevals", "niter", "convcode", "xtimes")],
+    structure(c(attr(opt, "details")), names = colnames(attr(opt, "details")))
   )
 
   network$par_list = relist(coef(opt), network$par_list)

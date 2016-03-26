@@ -5,7 +5,7 @@
 \title{Optimize a mistnet model using the \code{\link[optimx]{optimx}} package}
 \usage{
 mistnet_fit_optimx(network, fn, gr, method = "L-BFGS-B", itnmax = 1000,
-  control = list(maximize = TRUE, starttests = FALSE), hessian = FALSE)
+  control = list(maximize = TRUE, starttests = FALSE), hessian = FALSE, ...)
 }
 \arguments{
 \item{network}{A \code{network} object, as produced by the
@@ -25,6 +25,9 @@ for some networks.  Note that the use of multiple methods is not currently
 supported.}
 
 \item{itnmax, control, hessian}{Additional arguments passed to
+\code{\link[optimx]{optimx}}}
+
+\item{...}{Additional arguments passed to
 \code{\link[optimx]{optimx}}}
 }
 \description{

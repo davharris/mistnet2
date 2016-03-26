@@ -12,7 +12,7 @@ net = mistnet(
   y = matrix(0, nrow = n, ncol = n_y),
   n_z = n_z,
   layers = layer(elu_activator, n_y, weight_prior = make_distribution("NO", mu = 0, sigma = 1)),
-  error_distribution = make_distribution("NO", mu = 0, sigma = 1),
+  error_distribution = make_distribution("NO", sigma = 1),
   fit = FALSE
 )
 
