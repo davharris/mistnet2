@@ -16,7 +16,8 @@
 \item{...}{(currently not used)}
 }
 \value{
-a \code{network_state} object, i.e. a \code{list} of \code{list}s.
+a \code{network_state} object, i.e. a \code{list} of three
+   \code{list}s, which each contain one matrix per layer.
 \itemize{
    \item{\code{inputs}: A list of input matrices for each layer.  The first layer's input
        is concatenated from the network's \code{x} and \code{z} matrices using

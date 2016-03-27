@@ -51,6 +51,7 @@ backprop.mistnet_network = function(network, state, par, ...){
     pre_activation_grad = input_grad * activation_grad
 
     # Weight gradients depend on the input values and gradients from above
+    # (i.e. pre_activation_grad)
     weight_grads[[i]] = crossprod(state$inputs[[i]], pre_activation_grad) +
       grad(network$weight_priors[[i]], "x", x = parameters$weights[[i]])
 
@@ -64,15 +65,16 @@ backprop.mistnet_network = function(network, state, par, ...){
 
     if (i == 1) {
       # The z_gradients are just the input gradients for the non-x columns
-      # plus the gradients of their prior
+      # plus the gradients of their prior; they only live in the first layer.
       z_grads = input_grad[ , -(1:ncol(network$x))] +
         grad(network$z_prior, "x", x = parameters$z)
     }
   }
 
 
+  par_names = names(parameters$error_distribution_par)
   out = list(z = z_grads, weights = weight_grads, biases = bias_grads,
-             error_distribution_par = error_distribution_grads[names(parameters$error_distribution_par)])
+             error_distribution_par = error_distribution_grads[par_names])
 
   # Force the output to have the same ordering as the original parameters so
   # that unlisting/relisting doesn't destroy information

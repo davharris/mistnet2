@@ -8,7 +8,8 @@ feedforward = function(network, ...){
 #' @param par A list or vector containing the parameters. If not included,
 #'    \code{network$par_list} will be used
 #' @param ... (currently not used)
-#' @return a \code{network_state} object, i.e. a \code{list} of \code{list}s.
+#' @return a \code{network_state} object, i.e. a \code{list} of three
+#'    \code{list}s, which each contain one matrix per layer.
 #' \itemize{
 #'    \item{\code{inputs}: A list of input matrices for each layer.  The first layer's input
 #'        is concatenated from the network's \code{x} and \code{z} matrices using
@@ -61,6 +62,7 @@ feedforward.network = function(network, par, ...){
 
   dimnames(outputs[[n_layers]]) = dimnames(network$y)
 
+  # Return the network state
   structure(
     list(
       inputs = inputs,

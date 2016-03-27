@@ -1,6 +1,6 @@
 Package: mistnet2
 Type: Package
-Title: Neural Networks with Latent Variables
+Title: Neural Networks with Latent Random Variables
 Version: 0.1.0
 Date: 2015-12-12
 Author: David J. Harris
@@ -10,7 +10,7 @@ License: GPL-2 | GPL-3
 LazyData: TRUE
 Depends: R (>= 3.0.2)
 Suggests:
-    knitr (>= 1.11),
+    knitr (>= 1.12.3),
     numDeriv (>= 2014.2-1),
     testthat (>= 0.11.0),
     vegan (>= 2.3-1)
@@ -23,3 +23,5 @@ Imports:
     purrr (>= 0.1.0.9000)
 RoxygenNote: 5.0.1
 Encoding: UTF-8
+VignetteBuilder: knitr
+
