@@ -1,0 +1,15 @@
+---
+title: "Vignette Title"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Vignette Title}
+  \usepackage[utf8]{inputenc}
+---
+
+## Functions of mistnet network objects
+
+* [`feedforward`](../../mistnet2/help/feedforward)
+* `backprop`
+* `log_prob`
+* `mistnet_fit`

@@ -8,17 +8,19 @@ feedforward = function(network, ...){
 #' @param par A list or vector containing the parameters. If not included,
 #'    \code{network$par_list} will be used
 #' @param ... (currently not used)
-#' @return a \code{network_state} object, i.e. a \code{list} of \code{list}s.
+#' @return a \code{network_state} object, i.e. a \code{list} of three
+#'    \code{list}s, which each contain one matrix per layer.
 #' \itemize{
-#'    \item{\code{inputs}: A list of input matrices for each layer.  The first layer's input
-#'        is concatenated from the network's \code{x} and \code{z} matrices using
-#'        \code{cbind}, while subsequent inputs come from the previous
-#'        layer's \code{output}}.
-#'    \item{\code{pre_activations}: A list of pre_activation matrices for each layer,
-#'        equal to the matrix product of the layer's \code{input} and its
+#'    \item{\code{inputs}: A list of input matrices for each layer.  The first
+#'        layer's input is concatenated from the network's \code{x} and \code{z}
+#'        matrices using \code{cbind}, while subsequent inputs come from the
+#'        previous layer's \code{output}}.
+#'    \item{\code{pre_activations}: A list of pre_activation matrices for each
+#'        layer, equal to the matrix product of the layer's \code{input} and its
 #'        \code{weights}, plus its \code{biases}}.
-#'    \item{\code{outputs}: A list of outputs for each layer, produced by applying the layer's
-#'        activation function to the \code{pre_activations}}.
+#'    \item{\code{outputs}: A list of outputs for each layer, produced by
+#'        applying the layer's activation function to the
+#'        \code{pre_activations}}.
 #' }
 #' @aliases feedforward
 #' @export
@@ -61,6 +63,7 @@ feedforward.network = function(network, par, ...){
 
   dimnames(outputs[[n_layers]]) = dimnames(network$y)
 
+  # Return the network state
   structure(
     list(
       inputs = inputs,
