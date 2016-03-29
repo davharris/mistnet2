@@ -38,3 +38,12 @@ inflate.inflatable = function(x){
 
 
 
+#' @export
+deflate = function(x, rep_rows){
+  assert_that(is.flag(rep_rows))
+  if (rep_rows) {
+    return(rowSums(x))
+  } else{
+    return(colSums(x))
+  }
+}
