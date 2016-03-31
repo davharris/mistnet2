@@ -7,18 +7,35 @@
 #'
 #' @param object an object of class \code{network} or \code{mistnet_network}
 #' @param newdata a matrix with the same columns as \code{x}
+#' @param full_state should the predictions include the full list of
+#'   \code{network_state} produced by \code{\link{feedforward}} or just the
+#'   final layer's outputs? By default, only the final layer's outputs are
+#'   returned.
 #' @param ... further arguments passed to or from other methods.
-#' @return For generic networks, a \code{network_state} object, as in
-#'    \code{\link{feedforward}}. For mistnet networks, a list of such objects,
-#'    a list of such object (one for each Monte Carlo sample)
+#' @return For generic networks, a matrix of output variables (one row per
+#'    row in \code{newdata}, one column per node in the network's final layer).
+#'    For mistnet networks, a three-dimensional array, with the first two
+#'    indices matching the generic case and with the third dimension indexing
+#'    the Monte Carlo samples.
+#'
+#'    Alternatively, if \code{} is \code{TRUE}, a \code{network_state} object
+#'    is returned, as in \code{\link{feedforward}}. For mistnet networks,
+#'    a list of such objects, a list of such objects (one for each Monte Carlo
+#'    sample) is returned.
 #' @importFrom assertthat assert_that noNA
 #' @export
-predict.network = function(object, newdata, ...){
+predict.network = function(object, newdata, full_state = FALSE, ...){
   assert_that(is.matrix(newdata), is.numeric(newdata), noNA(newdata))
   assert_that(are_equal(ncol(object$x), ncol(newdata)))
 
   object$x = newdata
-  feedforward(object)
+  out = feedforward(object)
+
+  if (full_state) {
+    return(out)
+  } else {
+    return(out$outputs[[length(out$outputs)]])
+  }
 }
 
 #' @rdname predict.network
@@ -30,6 +47,7 @@ predict.mistnet_network = function(
   object,
   newdata,
   n_samples,
+  full_state = FALSE,
   ...
 ){
   assert_that(is.matrix(newdata), is.numeric(newdata), noNA(newdata))
@@ -52,5 +70,16 @@ predict.mistnet_network = function(
     simplify = FALSE
   )
 
-  feedforward_with_samples(object, z_samples)
+  out_list = feedforward_with_samples(object, z_samples)
+
+  if (full_state) {
+    out = out_list
+  } else {
+    out = array(NA, c(nrow(newdata), ncol(object$y), n_samples))
+    for (i in 1:n_samples) {
+      out[ , , i] = out_list[[i]]$outputs[[length(out_list[[i]]$outputs)]]
+    }
+  }
+
+  out
 }

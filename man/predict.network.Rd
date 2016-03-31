@@ -5,14 +5,20 @@
 \alias{predict.network}
 \title{Make predictions from a trained network}
 \usage{
-\method{predict}{network}(object, newdata, ...)
+\method{predict}{network}(object, newdata, full_state = FALSE, ...)
 
-\method{predict}{mistnet_network}(object, newdata, n_samples, ...)
+\method{predict}{mistnet_network}(object, newdata, n_samples,
+  full_state = FALSE, ...)
 }
 \arguments{
 \item{object}{an object of class \code{network} or \code{mistnet_network}}
 
 \item{newdata}{a matrix with the same columns as \code{x}}
+
+\item{full_state}{should the predictions include the full list of
+\code{network_state} produced by \code{\link{feedforward}} or just the
+final layer's outputs? By default, only the final layer's outputs are
+returned.}
 
 \item{...}{further arguments passed to or from other methods.}
 
@@ -20,9 +26,16 @@
 Carlo samples to use}
 }
 \value{
-For generic networks, a \code{network_state} object, as in
-   \code{\link{feedforward}}. For mistnet networks, a list of such objects,
-   a list of such object (one for each Monte Carlo sample)
+For generic networks, a matrix of output variables (one row per
+   row in \code{newdata}, one column per node in the network's final layer).
+   For mistnet networks, a three-dimensional array, with the first two
+   indices matching the generic case and with the third dimension indexing
+   the Monte Carlo samples.
+
+   Alternatively, if \code{} is \code{TRUE}, a \code{network_state} object
+   is returned, as in \code{\link{feedforward}}. For mistnet networks,
+   a list of such objects, a list of such objects (one for each Monte Carlo
+   sample) is returned.
 }
 \description{
 Predictions are made by feeding new data through the network (see

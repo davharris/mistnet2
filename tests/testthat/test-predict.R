@@ -80,16 +80,22 @@ test_that("predict.mistnet_network works", {
   )
   predicted_manual = mistnet2:::feedforward_with_samples(newnet, z_samples)
 
-  # Compare with `predict` output
+  # Compare with `predict` output with full_state when full_state is TRUE
   set.seed(1)
-  predicted = predict(object = net, newdata = newdata, n_samples = n_samples)
+  predicted = predict(object = net, newdata = newdata, n_samples = n_samples,
+                      full_state = TRUE)
 
+  expect_identical(predicted_manual, predicted)
+
+  # Make sure the output array is good if full_state is FALSE
+  set.seed(1)
+  predicted = predict(object = net, newdata = newdata, n_samples = n_samples,
+                      full_state = FALSE)
   for (i in 1:n_samples) {
     expect_equal(
-      predicted[[i]],
-      predicted_manual[[i]]
+      predicted_manual[[i]]$outputs[[length(predicted_manual[[i]]$outputs)]],
+      predicted[ , , i]
     )
   }
 
-
-  })
+})
