@@ -135,6 +135,68 @@ test_that("new distributions can be created", {
 
 })
 
+test_that("Empirical Normal distribution works", {
+  x = matrix(rnorm(30), 6, 5)
+
+  # Row ---------------------------------------------------------------------
+  dist = make_distribution("ENO", by = "row")
+  expect_equal(
+    log_prob(dist, x, mu = pi),
+    t(apply(
+      x,
+      1,
+      function(x) {
+        dnorm(x, mean = mean(x), sd = sd(x), log = TRUE)
+      }
+    ))
+  )
+
+  mu = t(apply(x, 1, function(x){rep(mean(x), length(x))}))
+  sigma = t(apply(x, 1, function(x){rep(sd(x), length(x))}))
+
+  expect_equal(
+    mistnet2:::dldx_list$NO(x, mu, sigma),
+    grad(dist, "x", x = x)
+  )
+
+
+  # Col ---------------------------------------------------------------------
+  dist = make_distribution("ENO", by = "col")
+  expect_equal(
+    log_prob(dist, x, mu = pi),
+    apply(
+      x,
+      2,
+      function(x) {
+        dnorm(x, mean = mean(x), sd = sd(x), log = TRUE)
+      }
+    )
+  )
+  mu = apply(x, 2, function(x){rep(mean(x), length(x))})
+  sigma = apply(x, 2, function(x){rep(sd(x), length(x))})
+
+  expect_equal(
+    mistnet2:::dldx_list$NO(x, mu, sigma),
+    grad(dist, "x", x = x)
+  )
+
+
+  # Mat ---------------------------------------------------------------------
+  dist = make_distribution("ENO", by = "mat")
+  expect_equal(
+    log_prob(dist, x, mu = pi),
+    dnorm(x, mean = mean(x), sd = sd(x), log = TRUE)
+  )
+
+  mu = mean(x)
+  sigma = sd(x)
+
+  expect_equal(
+    mistnet2:::dldx_list$NO(x, mu, sigma),
+    grad(dist, "x", x = x)
+  )
+})
+
 
 test_that("Improper uniform distribution works", {
   dist = make_distribution("IU")
