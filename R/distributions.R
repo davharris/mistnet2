@@ -18,12 +18,11 @@ ENO = function(by) {
   list(
     family = c("ENO", "Empirical Normal"),
     parameters = list(
-      mu = TRUE, # Not actually used, but some code may assume it's there
       by = TRUE
     ),
     dldx = function(x, by, ...){
-      # eapply (the apply function for empirical distributions) is defined below
-      dldx_list$NO(x, mu = eapply(x, mean, by), sigma = eapply(x, mean, by))
+    # emp_apply (the apply function for empirical distributions) is defined below
+      dldx_list$NO(x, mu = emp_apply(x, mean, by), sigma = emp_apply(x, sd, by))
     }
   )
 }
@@ -31,7 +30,7 @@ ENO = function(by) {
 #' @export
 #' @rdname ENO
 dENO = function(x, log, by, ...) {
-  dnorm(x, mean = eapply(x, mean, by), sd = eapply(x, sd, by), log = log)
+  dnorm(x, mean = emp_apply(x, mean, by), sd = emp_apply(x, sd, by), log = log)
 }
 
 #' @export
@@ -45,8 +44,7 @@ rENO = function(n, x, ...) {
 # each column, or the whole matrix, then expand the result back up to the size
 # of the original matrix.
 # Note that `f` should return a scalar!
-eapply = function(x, f, by){
-  warning("eapply already exists in the base package. Get a new name")
+emp_apply = function(x, f, by){
   switch(
     by,
     row = matrix(apply(x, 1, f), nrow = nrow(x), ncol = ncol(x), byrow = FALSE),
