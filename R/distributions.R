@@ -135,28 +135,34 @@ grad = function(distribution, name, ...){
 all_error_grads = function(error_distribution, error_distribution_par, y, mu) {
 
   # All the gradient calculations will require these arguments
+  # Note that mu gets pulled from the arguments, not from error_distribution_par
   arg_list = c(
     list(
       distribution = error_distribution,
       y = y,
       mu = mu
     ),
-    error_distribution_par[names(error_distribution_par) != "mu"] # mu is handled above, not here
+    error_distribution_par[names(error_distribution_par) != "mu"]
   )
 
+  inflated_list = lapply(arg_list, inflate)
+
   par_names = c("mu", names(error_distribution_par))
+  par_classes = lapply(arg_list, class)
+  rep_rows = lapply(arg_list, function(x){attr(x, "rep_rows")})
 
   # Loop through the parameters and calculate gradients for each
   out = lapply(
     par_names,
     function(name){
-      out = do.call(grad, c(arg_list, name = name))
-      if (name != "mu") {
-        # Currently assuming scalar values for adjustable parameters!
-        out = sum(out)
+      grads = do.call(grad, c(inflated_list, name = name))
+      if ("inflatable" %in% par_classes[[name]]) {
+        grads = deflate(grads, rep_rows[[name]])
       }
-
-      out
+      if (length(arg_list[[name]]) == 1) {
+        grads = sum(grads)
+      }
+      return(grads)
     }
   )
 

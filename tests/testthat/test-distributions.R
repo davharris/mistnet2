@@ -83,6 +83,37 @@ test_that("dldx works for distributions that have it", {
   )
 })
 
+test_that("all_error_grads deals with inflatable input", {
+  for (rep_rows in c(TRUE, FALSE)) {
+    dist = make_distribution(
+      "NO",
+      sigma = inflatable(1:3, n = 5, rep_rows = rep_rows)
+    )
+    mu = matrix(rnorm(15), nrow = ifelse(rep_rows, 3, 5))
+    y = matrix(rnorm(15), nrow = ifelse(rep_rows, 3, 5))
+    mySums = ifelse(rep_rows, rowSums, colSums)
+
+
+    grad_list = all_error_grads(
+      error_distribution = dist,
+      error_distribution_par = dist$family_parameters["sigma"],
+      mu = mu,
+      y = y
+    )
+
+
+    mu_grad = dist$dldm(y = y, mu = mu, sigma = inflate(dist$family_parameters$sigma))
+    sigma_grad = mySums(
+      dist$dldd(y = y, mu = mu, sigma = inflate(dist$family_parameters$sigma))
+    )
+
+    expect_identical(grad_list$mu, mu_grad)
+    expect_identical(grad_list$sigma, sigma_grad)
+  }
+})
+
+
+
 
 test_that("new distributions can be created", {
   EXAMPLE = function(){
