@@ -4,9 +4,10 @@
 \name{mistnet2-package}
 \alias{mistnet2}
 \alias{mistnet2-package}
-\title{Neural Networks with Latent Variables.}
+\title{Neural Networks with Latent Random Variables.}
 \description{
-Mistnet2 DESCRIPTION.
+Estimate the joint distribution of many random variables, conditional on
+a set of observed inputs.
 }
 \details{
 DETAILS
