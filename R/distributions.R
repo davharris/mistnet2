@@ -4,34 +4,57 @@
 #' dynamically set to match \code{mean(x)} and \code{sd(x)}. It is used for
 #' empirical-Bayesian descriptions of the distribution of \code{x} (similar to
 #' the distribution of coefficients in a mixed effects model).
+#'
+#' @param by one of \code{"row"}, \code{"col"}, or \code{"mat"}. Should
+#'     the empirical moments be estimated for each row, each column, or for the
+#'     full matrix?
 #' @param x vector of quantiles
-#' @param mu vector of location parameters (not used)
 #' @param n number of samples
 #' @param log logical; if TRUE, probabilities p are instead given as log(p)
+#' @param ... additional arguments passed to or from other methods (currently
+#'     not used)
 #' @export
-eNO = function() {
+ENO = function(by) {
   list(
-    family = c("eNO", "Empirical Normal"),
+    family = c("ENO", "Empirical Normal"),
     parameters = list(
-      mu = TRUE # Not actually used, but some code may assume it's there
+      mu = TRUE, # Not actually used, but some code may assume it's there
+      by = TRUE
     ),
-    dldx = function(x, ...){
-      dldx_list$NO(x, mu = mean(x), sigma = sd(x))
+    dldx = function(x, by, ...){
+      # eapply (the apply function for empirical distributions) is defined below
+      dldx_list$NO(x, mu = eapply(x, mean, by), sigma = eapply(x, mean, by))
     }
   )
 }
 
 #' @export
-#' @rdname eNO
-deNO = function(x, log, ...) {
-  dnorm(x, mean = mean(x), sd = sd(x), log = log)
+#' @rdname ENO
+dENO = function(x, log, by, ...) {
+  dnorm(x, mean = eapply(x, mean, by), sd = eapply(x, sd, by), log = log)
 }
 
 #' @export
-#' @rdname eNO
-reNO = function(n, x, ...) {
+#' @rdname ENO
+rENO = function(n, x, ...) {
   stop("sampling is not defined for the empirical Normal distribution")
 }
+
+
+# Apply function for empirical distributions: apply a function to each row,
+# each column, or the whole matrix, then expand the result back up to the size
+# of the original matrix.
+# Note that `f` should return a scalar!
+eapply = function(x, f, by){
+  warning("eapply already exists in the base package. Get a new name")
+  switch(
+    by,
+    row = matrix(apply(x, 1, f), nrow = nrow(x), ncol = ncol(x), byrow = FALSE),
+    col = matrix(apply(x, 2, f), nrow = nrow(x), ncol = ncol(x), byrow = TRUE),
+    mat = matrix(f(x), nrow = nrow(x), ncol = ncol(x))
+  )
+}
+
 
 dldx_list = list(
   NO = function(x, mu, sigma){

@@ -128,6 +128,8 @@ grad = function(distribution, name, ...){
     x = distribution$dldx
   )
 
+  # The "by" object is only used by dynamically updated distributions like ENO.
+  # Otherwise it will be NULL.
   do.call(f, get_values(distribution, ...))
 }
 
