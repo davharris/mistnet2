@@ -3,7 +3,9 @@
 #' This distribution produces a Gaussian distribution whose moments are
 #' dynamically set to match \code{mean(x)} and \code{sd(x)}. It is used for
 #' empirical-Bayesian descriptions of the distribution of \code{x} (similar to
-#' the distribution of coefficients in a mixed effects model).
+#' the distribution of coefficients in a mixed effects model). The function is
+#' currently suited only for modeling parameter distributions, not data/error
+#' distributions.
 #'
 #' @param by one of \code{"row"}, \code{"col"}, or \code{"mat"}. Should
 #'     the empirical moments be estimated for each row, each column, or for the
@@ -104,4 +106,51 @@ dIU = function(x, mu, log){
 #' @rdname IU
 rIU = function(n, mu){
   stop("Sampling is not defined for improper distributions")
+}
+
+#' Approximate binary Markov network distribution
+#'
+#' Ising model, Markov random field, conditional random field, pseudolikelihood
+#' @param x a binary matrix
+#' @param alpha a vector of unary potentials, whose length equals the number of
+#'    columns in \code{x}.
+#' @param beta a square matrix of binary potentials with zeros along the
+#'    diagonal. The dimensions must equal the number of columns in \code{x}.
+#' @references
+#'  Holger Höfling and Robert Tibshirani. 2009. "Estimation of Spase Binary
+#'    Pairwise Markov Networks using Pseudo-likelihoods". \emph{Journal of Machine
+#'    Learning Research}.
+#'
+#' Jason D Lee, Trevor J Hastie. 2012. "Learning the Structure of Mixed Graphical
+#'    Models. \emph{Journal of Machine Learning Research}.
+#' @export
+BMN = function(x, mu, alpha, beta) {
+  list(
+    family = c("BMN", "Binary Markov Network"),
+    parameters = list(
+      mu = TRUE,
+      beta = TRUE
+    ),
+    dldm = function(x, mu, beta){
+
+    },
+    dldx = function(x, mu, beta){
+      stop("dldx is not implemented for binary Markov networks")
+    }
+  )
+}
+
+#' @rdname BMN
+#' @export
+dBMN = function(x, mu, alpha, beta, log) {
+  # Section 3 of Höfling and Tibshirani
+
+}
+
+#' @param n number of random samples in \code{rBMN}
+#' (which as not been implemented and will return an error)
+#' @rdname BMN
+#' @export
+rBMN = function(n, alpha, beta) {
+  stop("sampling has not been implemented for binary Markov networks")
 }
