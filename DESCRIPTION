@@ -7,7 +7,7 @@ Author: David J. Harris
 Maintainer: David J. Harris <harris.d@ufl.edu>
 Description: Fit models with both complex nonlinearities (using neural networks)
     as well as structured outputs (using graphical models).
-License: BSD_2_clause
+License: BSD_2_clause + file LICENSE
 LazyData: TRUE
 Depends: R (>= 3.0.2)
 Suggests:
