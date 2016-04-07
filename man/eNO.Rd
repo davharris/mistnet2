@@ -30,6 +30,8 @@ not used)}
 This distribution produces a Gaussian distribution whose moments are
 dynamically set to match \code{mean(x)} and \code{sd(x)}. It is used for
 empirical-Bayesian descriptions of the distribution of \code{x} (similar to
-the distribution of coefficients in a mixed effects model).
+the distribution of coefficients in a mixed effects model). The function is
+currently suited only for modeling parameter distributions, not data/error
+distributions.
 }
 
