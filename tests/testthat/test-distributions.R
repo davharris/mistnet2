@@ -135,6 +135,37 @@ test_that("new distributions can be created", {
 
 })
 
+test_that("all_error_grads deals with inflatable input", {
+  for (by in c("row", "col")) {
+    dist = make_distribution(
+      "NO",
+      sigma = make_inflatable(1:3, n = 5, by = by)
+    )
+    mu = matrix(rnorm(15), nrow = ifelse(by == "row", 3, 5))
+    y = matrix(rnorm(15), nrow = ifelse(by == "row", 3, 5))
+    mySums = ifelse(by == "row", rowSums, colSums)
+
+
+    grad_list = all_error_grads(
+      error_distribution = dist,
+      error_distribution_par = dist$family_parameters["sigma"],
+      mu = mu,
+      y = y
+    )
+
+
+    mu_grad = dist$dldm(y = y, mu = mu, sigma = inflate(dist$family_parameters$sigma))
+    sigma_grad = mySums(
+      dist$dldd(y = y, mu = mu, sigma = inflate(dist$family_parameters$sigma))
+    )
+
+    expect_identical(grad_list$mu, mu_grad)
+    expect_identical(grad_list$sigma, sigma_grad)
+  }
+})
+
+
+
 test_that("Empirical Normal distribution works", {
   x = matrix(rnorm(30), 6, 5)
 

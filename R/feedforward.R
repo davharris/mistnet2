@@ -31,6 +31,7 @@ feedforward.network = function(network, par, ...){
   } else {
     parameters = build_par_list(par = par, par_list = network$par_list)
   }
+  parameters = lapply(parameters, inflate)
 
   n_layers = length(parameters$weights)
 
@@ -74,8 +75,8 @@ feedforward.network = function(network, par, ...){
   )
 }
 
-# Specify new values for the latent variables and feed them forward
-# through the network. Used in making predictions from a fitted model.
+# Specify a list of matrices, each with samples for Z, and feed them all through
+# the network. Used in making predictions from a fitted mistnet model.
 feedforward_with_samples = function(network, z_samples){
   lapply(
     z_samples,

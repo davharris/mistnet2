@@ -21,7 +21,7 @@ ENO = function(by) {
       by = TRUE
     ),
     dldx = function(x, by, ...){
-    # emp_apply (the apply function for empirical distributions) is defined below
+      # emp_apply (the apply function for empirical distributions) is defined below
       dldx_list$NO(x, mu = emp_apply(x, mean, by), sigma = emp_apply(x, sd, by))
     }
   )
