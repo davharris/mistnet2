@@ -74,7 +74,7 @@ dldx_list = list(
 IU = function(){
   structure(
     list(
-      family = c("IU", "imporper uniform"),
+      family = c("IU", "improper uniform"),
       parameters = list(
         mu = TRUE # All distributions currently need mu
       ),
