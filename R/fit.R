@@ -12,7 +12,7 @@ mistnet_fit = function(network, mistnet_optimizer = mistnet_fit_optimx, ...){
 
   # Objective function (sum of log_prob, including penalties)
   fn = function(par){
-    sum(log_prob(network, par = par, include_penalties = TRUE))
+    max(sum(log_prob(network, par = par, include_penalties = TRUE)), -1E9)
   }
 
   # Gradient of objective function
