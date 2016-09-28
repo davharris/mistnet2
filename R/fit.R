@@ -41,6 +41,7 @@ mistnet_fit = function(network, mistnet_optimizer = mistnet_fit_optimx, ...){
 #' @param ... Additional arguments passed to
 #'    \code{\link[optimx]{optimx}}
 #' @importFrom assertthat assert_that
+#' @importFrom stats coef
 #' @export mistnet_fit_optimx
 mistnet_fit_optimx = function(
   network,

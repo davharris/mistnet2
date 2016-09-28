@@ -35,6 +35,7 @@ initialize_weights = function(layer, n_in, n_out,
   weights
 }
 
+#' @importFrom stats rnorm
 initialize_weights_glorot_normal = function(n_in, n_out){
 
   # Initizlization variance suggested by Xavier Glorot and Yoshua Bengio in

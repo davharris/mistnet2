@@ -19,6 +19,7 @@
 #'   This object will contain the original \code{x} and \code{y} matrices,
 #'   a list of adjustable parameters (\code{par_list}), [[etc.]]
 #' @useDynLib mistnet2
+#' @importFrom methods is
 #' @importFrom optimx optimx
 #' @importFrom assertthat assert_that is.scalar is.count are_equal noNA is.flag
 #' @importFrom purrr every

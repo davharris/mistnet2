@@ -20,7 +20,8 @@ Imports:
     gamlss.dist (>= 4.3-5),
     optimx (>= 2013.8.7),
     assertthat (>= 0.1),
-    purrr (>= 0.1.0.9000)
+    purrr (>= 0.1.0.9000),
+    methods
 RoxygenNote: 5.0.1
 Encoding: UTF-8
 VignetteBuilder: knitr

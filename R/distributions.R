@@ -27,6 +27,7 @@ ENO = function(by) {
   )
 }
 
+#' @importFrom stats sd dnorm
 #' @export
 #' @rdname ENO
 dENO = function(x, log, by, ...) {
